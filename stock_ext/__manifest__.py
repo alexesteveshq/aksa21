@@ -14,9 +14,6 @@
     'data': [
         'views/stock_views.xml',
     ],
-    'external_dependencies': {
-        'python': ['serial'],
-    },
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,

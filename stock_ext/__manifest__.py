@@ -13,6 +13,7 @@
     ],
     'data': [
         'views/stock_views.xml',
+        'security/ir.model.access.csv',
     ],
     'license': 'AGPL-3',
     'installable': True,

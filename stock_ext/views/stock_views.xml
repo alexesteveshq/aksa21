@@ -7,6 +7,23 @@
             <xpath expr="//div[@name='button_box']" postion="before">
                 <button name="calculate_lot_price" icon="fa-cubes" string="Calculate Price" type="object" class="btn-primary"/>
             </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]" postion="after">
+                <field name="scale_read" invisible="1"/>
+                <div class="alert alert-warning text-left" role="alert" attrs="{'invisible': [('scale_read', '=', False)]}">
+                    Please put your piece on the scale.
+                </div>
+            </xpath>
+            <xpath expr="//notebook" postion="inside">
+                <page string="Pieces" name="pieces">
+                    <field nolabel="1" name="pieces_ids">
+                        <tree>
+                            <field name="product_id"/>
+                            <field name="weight"/>
+                            <field name="price"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
             <field name="ref" position="before">
                 <field name="weight_price"/>
             </field>

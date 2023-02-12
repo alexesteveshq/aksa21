@@ -13,13 +13,14 @@
                     Please put your piece on the scale.
                 </div>
             </xpath>
-            <xpath expr="//notebook" postion="inside">
+            <xpath expr="//page[@name='description']" position="before">
                 <page string="Pieces" name="pieces">
                     <field nolabel="1" name="pieces_ids">
-                        <tree>
+                        <tree editable="bottom">
                             <field name="product_id"/>
                             <field name="weight"/>
                             <field name="price"/>
+                            <button name="print_sticker" type="object" string="Print sticker" class="btn-primary"/>
                         </tree>
                     </field>
                 </page>

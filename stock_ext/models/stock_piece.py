@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models
+from ..LabelManager import LabelManager
 
 
 class StockPiece(models.Model):
@@ -9,15 +10,12 @@ class StockPiece(models.Model):
 
     lot_id = fields.Many2one('stock.lot', string='Lot')
     product_id = fields.Many2one('product.product', string='Product')
+    raw_data = fields.Char(string='Raw data')
     weight = fields.Float(string='Weight')
     price = fields.Float(string='Price')
-
-    def create_from_scale(self, weight, lot_id):
-        self.env['stock.piece'].create({'weight': weight, 'lot_id': lot_id})
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'reload',
-        }
+    print_enabled = fields.Boolean(string='Print enabled')
 
     def print_sticker(self):
-        print("Hola")
+        manager = LabelManager()
+        label = manager.generate_label_data(self.lot_id.name)
+        self.write({'raw_data': label.code, 'print_enabled': True})

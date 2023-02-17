@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models
-from odoo.exceptions import ValidationError
 
 
 class StockLot(models.Model):

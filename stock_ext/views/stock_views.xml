@@ -10,15 +10,15 @@
             <xpath expr="//div[hasclass('oe_button_box')]" postion="after">
                 <field name="scale_read" invisible="1"/>
                 <div class="alert alert-warning text-left" role="alert" attrs="{'invisible': [('scale_read', '=', False)]}">
-                    Please put your piece on the scale.
+                    Scale weight detection active.
                 </div>
             </xpath>
             <xpath expr="//page[@name='description']" position="before">
                 <page string="Pieces" name="pieces">
-                    <field nolabel="1" name="pieces_ids">
+                    <field nolabel="1" name="pieces_ids" widget="x2many_field_refresher">
                         <tree editable="bottom">
                             <field name="product_id"/>
-                            <field name="weight"/>
+                            <field name="weight" widget="phone"/>
                             <field name="price"/>
                             <button name="print_sticker" type="object" string="Print sticker" class="btn-primary"/>
                         </tree>

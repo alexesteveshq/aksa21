@@ -10,6 +10,7 @@
     'author': 'Alex Esteves',
     'depends': [
         'stock',
+        'web_refresher',
     ],
     'data': [
         'views/stock_views.xml',

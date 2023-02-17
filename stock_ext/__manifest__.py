@@ -16,6 +16,9 @@
         'views/stock_views.xml',
         'security/ir.model.access.csv',
     ],
+    'external_dependencies': {
+        'python': ['zpl'],
+    },
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,

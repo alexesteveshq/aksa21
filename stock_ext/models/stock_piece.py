@@ -18,4 +18,4 @@ class StockPiece(models.Model):
     def print_sticker(self):
         manager = LabelManager()
         label = manager.generate_label_data(self.lot_id.name)
-        self.write({'raw_data': label.code, 'print_enabled': True})
+        self.write({'raw_data': label.dumpZPL(), 'print_enabled': True})

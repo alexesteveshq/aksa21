@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_piece_seq" model="ir.sequence">
+        <field name="name">Stock Piece Sequence</field>
+        <field name="code">stock_ext.stock_piece</field>
+        <field name="prefix">P</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>

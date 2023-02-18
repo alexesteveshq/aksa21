@@ -1,13 +1,13 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* attendance_delays
+# 	* stock_ext
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-07 17:23+0000\n"
-"PO-Revision-Date: 2022-04-07 17:23+0000\n"
+"POT-Creation-Date: 2023-02-18 10:49+0000\n"
+"PO-Revision-Date: 2023-02-18 10:49+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,27 +15,135 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: attendance_delays
-#: model:ir.model,name:attendance_delays.model_hr_attendance
-msgid "Attendance"
-msgstr "Asistencia"
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__barcode
+msgid "Barcode"
+msgstr "Código"
 
-#. module: attendance_delays
-#: model:ir.model.fields,field_description:attendance_delays.field_hr_attendance__delay_calculation
-msgid "Delay calculation"
-msgstr "Cálculo de retraso"
+#. module: stock_ext
+#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
+msgid "Calculate Weight"
+msgstr "Calcular Peso"
 
-#. module: attendance_delays
-#: model:ir.model.fields,field_description:attendance_delays.field_hr_attendance__display_name
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__display_name
 msgid "Display Name"
-msgstr "Nombre mostrado"
+msgstr ""
 
-#. module: attendance_delays
-#: model:ir.model.fields,field_description:attendance_delays.field_hr_attendance__id
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__id
 msgid "ID"
 msgstr ""
 
-#. module: attendance_delays
-#: model:ir.model.fields,field_description:attendance_delays.field_hr_attendance____last_update
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece____last_update
 msgid "Last Modified on"
-msgstr "Última modificación el"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__lot_id
+msgid "Lot"
+msgstr "Lote"
+
+#. module: stock_ext
+#: model_terms:ir.ui.view,arch_db:stock_ext.view_stock_piece_form
+#: model_terms:ir.ui.view,arch_db:stock_ext.view_stock_piece_tree
+msgid "Lot Piece"
+msgstr "Pieza de lote"
+
+#. module: stock_ext
+#: model:ir.actions.act_window,name:stock_ext.stock_piece_action
+#: model:ir.ui.menu,name:stock_ext.menu_stock_piece
+msgid "Lot Pieces"
+msgstr "Piezas de lote"
+
+#. module: stock_ext
+#: model:ir.model,name:stock_ext.model_stock_lot
+msgid "Lot/Serial"
+msgstr "Número de lote/de serie"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__pieces_ids
+#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
+msgid "Pieces"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__weight_price
+msgid "Price"
+msgstr "Precio"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__price_mxn
+msgid "Price MXN"
+msgstr "Precio MXN"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__price_usd
+msgid "Price USD"
+msgstr "Precio USD"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__print_enabled
+msgid "Print enabled"
+msgstr ""
+
+#. module: stock_ext
+#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
+msgid "Print sticker"
+msgstr "Imprimir etiqueta"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__product_id
+msgid "Product"
+msgstr "Producto"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__product_qty
+msgid "Quantity"
+msgstr "Cantidad"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__raw_data
+msgid "Raw data"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__scale_read
+msgid "Scale read"
+msgstr ""
+
+#. module: stock_ext
+#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
+msgid "Scale weight detection active."
+msgstr "Lectura de balanza activa."
+
+#. module: stock_ext
+#: model:ir.model,name:stock_ext.model_stock_piece
+msgid "Stock Piece"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__weight
+msgid "Weight"
+msgstr "Gramaje"

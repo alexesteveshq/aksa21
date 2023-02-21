@@ -9,14 +9,15 @@
     'category': 'Inventory',
     'author': 'Alex Esteves',
     'depends': [
+        'account',
         'stock',
         'web_refresher',
     ],
     'data': [
+        'data/stock_ext_data.xml',
         'views/stock_views.xml',
         'security/ir.model.access.csv',
         'views/stock_pieces_views.xml',
-        'data/stock_ext_data.xml',
     ],
     'external_dependencies': {
         'python': ['zpl'],

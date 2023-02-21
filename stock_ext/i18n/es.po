@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-18 10:49+0000\n"
-"PO-Revision-Date: 2023-02-18 10:49+0000\n"
+"POT-Creation-Date: 2023-02-21 11:01+0000\n"
+"PO-Revision-Date: 2023-02-21 11:01+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,21 @@ msgstr "Código"
 #: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
 msgid "Calculate Weight"
 msgstr "Calcular Peso"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__purchase_cost
+msgid "Cost 1 (purchase)"
+msgstr "Costo 1 (compra)"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__cost_2
+msgid "Cost 2 (logistic)"
+msgstr "Costo 2 (logistica)"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__cost_3
+msgid "Cost 3"
+msgstr "Costo 3"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__create_uid
@@ -44,6 +59,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__id
 msgid "ID"
 msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__import_cost
+msgid "Import Cost %"
+msgstr "Costo de importación (%)"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece____last_update
@@ -86,12 +106,7 @@ msgstr "Número de lote/de serie"
 #: model:ir.model.fields,field_description:stock_ext.field_stock_lot__pieces_ids
 #: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
 msgid "Pieces"
-msgstr ""
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__weight_price
-msgid "Price"
-msgstr "Precio"
+msgstr "Piezas de Lote"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__price_mxn
@@ -104,14 +119,14 @@ msgid "Price USD"
 msgstr "Precio USD"
 
 #. module: stock_ext
+#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
+msgid "Print"
+msgstr "Imprimir"
+
+#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__print_enabled
 msgid "Print enabled"
 msgstr ""
-
-#. module: stock_ext
-#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
-msgid "Print sticker"
-msgstr "Imprimir etiqueta"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__product_id
@@ -141,7 +156,17 @@ msgstr "Lectura de balanza activa."
 #. module: stock_ext
 #: model:ir.model,name:stock_ext.model_stock_piece
 msgid "Stock Piece"
-msgstr ""
+msgstr "Pieza de Lote"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__tax_id
+msgid "Tax"
+msgstr "Impuesto"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__variant
+msgid "Variant"
+msgstr "Variante"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__weight

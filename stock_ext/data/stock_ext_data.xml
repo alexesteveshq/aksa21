@@ -6,12 +6,4 @@
         <field name="prefix">P</field>
         <field name="padding">5</field>
     </record>
-
-    <record id="tax_mxn" model="account.tax">
-        <field name="name">Tax 16%</field>
-        <field name="description">Tax 16%</field>
-        <field name="sequence">4</field>
-        <field name="amount_type">fixed</field>
-        <field name="amount" eval="16"/>
-    </record>
 </odoo>

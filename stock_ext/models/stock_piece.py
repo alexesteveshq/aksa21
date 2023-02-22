@@ -36,7 +36,7 @@ class StockPiece(models.Model):
             price = price_untaxed + (price_untaxed * piece.lot_id.tax_id.amount/100)
             currency_usd = currency_model.browse(self.env.ref('base.USD').id)
             currency_mxn = currency_model.browse(self.env.ref('base.MXN').id)
-            price_mxn = currency_usd._convert(price, currency_mxn, self.env.company, fields.Date.today())
+            price_mxn = currency_usd._convert(int(price), currency_mxn, self.env.company, fields.Date.today())
             piece.price_usd = piece.lot_id.purchase_cost if not price else price
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
 

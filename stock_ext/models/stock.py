@@ -8,6 +8,7 @@ class StockLot(models.Model):
 
     purchase_cost = fields.Float(string='Cost 1 (purchase)')
     import_cost = fields.Float(string='Import Cost %')
+    variant = fields.Float(string='Variant')
     cost_2 = fields.Float(string='Cost 2 (logistic)', compute='_compute_cost_2', store=True, readonly=False)
     product_qty = fields.Float(store=True)
     pieces_ids = fields.One2many('stock.piece', 'lot_id', string='Pieces')

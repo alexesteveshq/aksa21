@@ -21,7 +21,6 @@
                             <field name="barcode" style="width:20%"/>
                             <field name="weight"/>
                             <field name="cost_3"/>
-                            <field name="variant"/>
                             <field name="price_usd" force_save="1"/>
                             <field name="price_mxn" force_save="1"/>
                             <button name="print_sticker" type="object" string="Print" class="btn-primary"/>
@@ -29,12 +28,15 @@
                     </field>
                 </page>
             </xpath>
-            <field name="ref" position="before">
-                <field name="tax_id"/>
-                <field name="import_cost"/>
-                <field name="purchase_cost"/>
-                <field name="cost_2"/>
-            </field>
+            <xpath expr="//field[@name='ref']/.." position="after">
+                <group>
+                    <field name="tax_id"/>
+                    <field name="import_cost"/>
+                    <field name="variant"/>
+                    <field name="purchase_cost"/>
+                    <field name="cost_2"/>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

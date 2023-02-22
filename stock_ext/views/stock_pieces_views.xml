@@ -12,7 +12,6 @@
                         <field name="product_id" readonly="1"/>
                         <field name="weight" readonly="1"/>
                         <field name="cost_3"/>
-                        <field name="variant"/>
                         <field name="price_usd" readonly="1"/>
                         <field name="price_mxn" readonly="1"/>
                     </group>
@@ -31,7 +30,6 @@
                 <field name="product_id"/>
                 <field name="weight"/>
                 <field name="cost_3"/>
-                <field name="variant"/>
                 <field name="price_usd"/>
                 <field name="price_mxn"/>
             </tree>

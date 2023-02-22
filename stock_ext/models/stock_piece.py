@@ -18,7 +18,6 @@ class StockPiece(models.Model):
     raw_data = fields.Char(string='Raw data')
     weight = fields.Float(string='Weight')
     cost_3 = fields.Float(string='Cost 3', compute='_compute_cost_3', store=True)
-    variant = fields.Float(string='Variant')
     price_usd = fields.Float(string='Price USD', compute='_compute_price', store=True, readonly=False)
     price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False)
     print_enabled = fields.Boolean(string='Print enabled')
@@ -28,11 +27,11 @@ class StockPiece(models.Model):
         for piece in self:
             piece.cost_3 = piece.lot_id.cost_2 * piece.weight
 
-    @api.depends('lot_id', 'cost_3', 'lot_id.tax_id', 'variant')
+    @api.depends('lot_id', 'cost_3', 'lot_id.tax_id', 'lot_id.variant')
     def _compute_price(self):
         currency_model = self.env['res.currency']
         for piece in self:
-            price_untaxed = (piece.cost_3 * (piece.variant or 1))
+            price_untaxed = (piece.cost_3 * (piece.lot_id.variant or 1))
             price = price_untaxed + (price_untaxed * piece.lot_id.tax_id.amount/100)
             currency_usd = currency_model.browse(self.env.ref('base.USD').id)
             currency_mxn = currency_model.browse(self.env.ref('base.MXN').id)

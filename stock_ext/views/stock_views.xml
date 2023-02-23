@@ -35,6 +35,7 @@
                     <field name="variant"/>
                     <field name="purchase_cost"/>
                     <field name="cost_2"/>
+                    <field name="additional_usd"/>
                 </group>
             </xpath>
         </field>

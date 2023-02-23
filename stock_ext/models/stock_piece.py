@@ -22,10 +22,10 @@ class StockPiece(models.Model):
     price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False)
     print_enabled = fields.Boolean(string='Print enabled')
 
-    @api.depends('lot_id', 'lot_id.cost_2', 'weight')
+    @api.depends('lot_id', 'lot_id.cost_2', 'lot_id.additional_usd', 'weight')
     def _compute_cost_3(self):
         for piece in self:
-            piece.cost_3 = piece.lot_id.cost_2 * piece.weight
+            piece.cost_3 = (piece.lot_id.cost_2 + piece.lot_id.additional_usd) * piece.weight
 
     @api.depends('lot_id', 'cost_3', 'lot_id.tax_id', 'lot_id.variant')
     def _compute_price(self):

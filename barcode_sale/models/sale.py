@@ -21,6 +21,6 @@ class SaleOrder(models.Model):
         if piece:
             self.order_line = [(0, 0, {'product_id': piece.id,
                                        'product_uom_qty': 1,
-                                       'price_unit': piece.price_usd})]
+                                       'price_unit': piece.price_lst})]
         else:
             raise UserError(_('Scanned piece with barcode %s does not exist.') % barcode)

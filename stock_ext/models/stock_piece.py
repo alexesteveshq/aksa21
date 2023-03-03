@@ -28,7 +28,8 @@ class StockPiece(models.Model):
         products = self.env['product.product']
         for piece in self:
             if piece.product_tmpl_id:
-                piece.product_id.lst_price = piece.price_usd
+                piece.product_id.list_price = piece.price_usd
+                piece.product_id._compute_product_lst_price()
             else:
                 products |= piece.product_id
                 template = product_tmpl_model.search([('name', '=', piece.product_id.name),

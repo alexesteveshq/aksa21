@@ -27,13 +27,16 @@ class StockPiece(models.Model):
         product_tmpl_model = self.env['product.template']
         products = self.env['product.product']
         for piece in self:
-            products |= piece.product_id
-            template = product_tmpl_model.search([('name', '=', piece.product_id.name),
-                                                  ('detailed_type', '=', 'product')])
-            if not template:
-                template = product_tmpl_model.create({'name': piece.product_id.name, 'detailed_type': 'product'})
-            piece.product_tmpl_id = template
-            piece.create_variant()
+            if piece.product_tmpl_id:
+                piece.product_id.lst_price = piece.price_usd
+            else:
+                products |= piece.product_id
+                template = product_tmpl_model.search([('name', '=', piece.product_id.name),
+                                                      ('detailed_type', '=', 'product')])
+                if not template:
+                    template = product_tmpl_model.create({'name': piece.product_id.name, 'detailed_type': 'product'})
+                piece.product_tmpl_id = template
+                piece.create_variant()
         products.unlink()
 
     def create_variant(self):

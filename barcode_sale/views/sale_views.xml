@@ -11,9 +11,6 @@
             <notebook position="after">
                 <field name="_barcode_scanned" widget="barcode_handler"/>
             </notebook>
-            <xpath expr="//field[@name='order_line']//tree//field[@name='product_template_id']" position="after">
-                <field name="piece_id"/>
-            </xpath>
         </field>
     </record>
 </odoo>

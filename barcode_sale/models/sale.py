@@ -16,8 +16,6 @@ class SaleOrder(models.Model):
 
     def on_barcode_scanned(self, barcode):
         product = self.env['product.product'].search([('barcode', 'like', barcode)], limit=1)
-        if product.qty_available == 0:
-            raise UserError(_('Scanned piece with barcode %s is not available.') % barcode)
         if product:
             self.order_line = [(0, 0, {'product_id': product.id,
                                        'product_uom_qty': 1,

@@ -6,14 +6,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-03 20:54+0000\n"
-"PO-Revision-Date: 2023-03-03 20:54+0000\n"
+"POT-Creation-Date: 2023-03-04 13:05+0000\n"
+"PO-Revision-Date: 2023-03-04 13:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__acquisition_date
+msgid "Acquisition date"
+msgstr "Fecha de adquisición"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_lot__additional_usd
@@ -145,6 +150,11 @@ msgid "Product"
 msgstr "Producto"
 
 #. module: stock_ext
+#: model:ir.model,name:stock_ext.model_product_product
+msgid "Product Variant"
+msgstr "Variantes de producto"
+
+#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_lot__product_qty
 msgid "Quantity"
 msgstr "Cantidad"
@@ -152,6 +162,11 @@ msgstr "Cantidad"
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__raw_data
 msgid "Raw data"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_product_product__price_usd
+msgid "Sale Price"
 msgstr ""
 
 #. module: stock_ext

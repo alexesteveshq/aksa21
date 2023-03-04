@@ -28,8 +28,8 @@ class StockPiece(models.Model):
         products = self.env['product.product']
         for piece in self:
             if piece.product_tmpl_id:
-                piece.product_id.list_price = piece.price_usd
-                piece.product_id._compute_product_lst_price()
+                piece.product_id.price_usd = (piece.cost_3 * (piece.lot_id.variant or 1))
+                piece.print_sticker(False)
             else:
                 products |= piece.product_id
                 template = product_tmpl_model.search([('name', '=', piece.product_id.name),
@@ -65,7 +65,7 @@ class StockPiece(models.Model):
                                             ('product_tmpl_id', '=', self.product_tmpl_id.id)])
             variant.write({'detailed_type': 'product',
                            'standard_price': self.cost_3,
-                           'lst_price': self.price_usd,
+                           'price_usd': self.price_usd,
                            'taxes_id': self.lot_id.tax_id.ids,
                            'barcode': self.barcode})
             self.env['stock.quant'].create({
@@ -99,7 +99,7 @@ class StockPiece(models.Model):
             piece.price_usd = piece.lot_id.purchase_cost if not price else price
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
 
-    def print_sticker(self):
+    def print_sticker(self, print_enabled=True):
         manager = LabelManager()
         data = {'code': self.barcode or "",
                 'product': self.product_id.name or "",
@@ -107,4 +107,4 @@ class StockPiece(models.Model):
                 'price_usd': str(int(self.price_usd)),
                 'price_mxn': str(int(self.price_mxn))}
         label = manager.generate_label_data(data)
-        self.write({'raw_data': label.dumpZPL(), 'print_enabled': True})
+        self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})

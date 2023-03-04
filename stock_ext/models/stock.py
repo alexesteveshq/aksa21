@@ -7,6 +7,7 @@ class StockLot(models.Model):
     _inherit = 'stock.lot'
 
     purchase_cost = fields.Float(string='Cost 1 (purchase)')
+    acquisition_date = fields.Date(string='Acquisition date')
     import_cost = fields.Float(string='Import Cost %')
     variant = fields.Float(string='Variant')
     cost_2 = fields.Float(string='Cost 2 (logistic)', compute='_compute_cost_2', store=True, readonly=False)

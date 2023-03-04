@@ -87,7 +87,7 @@ class StockPiece(models.Model):
     def write(self, vals):
         result = super(StockPiece, self).write(vals)
         if vals and 'product_tmpl_id' in vals and vals['product_tmpl_id']:
-            self.create_variant()
+            self.create_products()
         return result
 
     @api.depends('lot_id', 'lot_id.cost_2', 'lot_id.additional_usd', 'weight')

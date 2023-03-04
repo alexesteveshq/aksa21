@@ -87,7 +87,7 @@ class StockPiece(models.Model):
     def write(self, vals):
         result = super(StockPiece, self).write(vals)
         if vals and 'product_tmpl_id' in vals and vals['product_tmpl_id']:
-            self.create_products()
+            self.create_variant()
         return result
 
     @api.depends('lot_id', 'lot_id.cost_2', 'lot_id.additional_usd', 'weight')
@@ -108,6 +108,8 @@ class StockPiece(models.Model):
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
 
     def print_sticker(self, print_enabled=True):
+        if self.product_tmpl_id and not self.product_id:
+            self.create_variant()
         manager = LabelManager()
         data = {'code': self.barcode or "",
                 'product': self.product_id.name or "",

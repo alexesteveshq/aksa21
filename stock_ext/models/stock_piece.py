@@ -30,6 +30,8 @@ class StockPiece(models.Model):
             if piece.product_tmpl_id:
                 piece.product_id.price_usd = (piece.cost_3 * (piece.lot_id.variant or 1))
                 piece.print_sticker(False)
+                if not piece.product_id:
+                    piece.create_variant()
             else:
                 products |= piece.product_id
                 template = product_tmpl_model.search([('name', '=', piece.product_id.name),

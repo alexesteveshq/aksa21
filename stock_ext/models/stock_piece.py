@@ -84,6 +84,12 @@ class StockPiece(models.Model):
             piece.create_variant()
         return result
 
+    def write(self, vals):
+        result = super(StockPiece, self).write(vals)
+        if vals and 'product_tmpl_id' in vals and vals['product_tmpl_id']:
+            self.create_variant()
+        return result
+
     @api.depends('lot_id', 'lot_id.cost_2', 'lot_id.additional_usd', 'weight')
     def _compute_cost_3(self):
         for piece in self:

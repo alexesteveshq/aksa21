@@ -28,10 +28,9 @@ class StockPiece(models.Model):
         products = self.env['product.product']
         for piece in self:
             if piece.product_tmpl_id:
-                piece.product_id.price_usd = (piece.cost_3 * (piece.lot_id.variant or 1))
+                piece.product_id.list_price = (piece.cost_3 * (piece.lot_id.variant or 1))
                 piece.print_sticker(False)
-                if not piece.product_id:
-                    piece.create_variant()
+                piece.create_variant()
             else:
                 products |= piece.product_id
                 template = product_tmpl_model.search([('name', '=', piece.product_id.name),
@@ -46,7 +45,7 @@ class StockPiece(models.Model):
         product_model = self.env['product.product']
         weight_attr = self.env.ref('stock_ext.product_attribute_weight')
         value_model = self.env['product.attribute.value']
-        if self.product_tmpl_id:
+        if self.product_tmpl_id and not self.product_id:
             attr_value = value_model.search([('attribute_id', '=', weight_attr.id), ('name', '=', self.weight)])
             if attr_value:
                 values = attr_value.ids
@@ -108,8 +107,7 @@ class StockPiece(models.Model):
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
 
     def print_sticker(self, print_enabled=True):
-        if self.product_tmpl_id and not self.product_id:
-            self.create_variant()
+        self.create_variant()
         manager = LabelManager()
         data = {'code': self.barcode or "",
                 'product': self.product_id.name or "",

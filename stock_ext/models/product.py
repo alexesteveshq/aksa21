@@ -14,3 +14,4 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     price_usd = fields.Float(string='Sale Price')
+    list_price = fields.Float(string='List price')

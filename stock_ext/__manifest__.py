@@ -26,6 +26,4 @@
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,
-    'uninstall_hook': 'uninstall_hook',
-    'post_load': 'post_load_hook',
 }

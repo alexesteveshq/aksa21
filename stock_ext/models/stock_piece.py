@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api
 from ..LabelManager import LabelManager
+import math
 
 
 class StockPiece(models.Model):
@@ -26,9 +27,13 @@ class StockPiece(models.Model):
     def create_products(self):
         product_tmpl_model = self.env['product.template']
         products = self.env['product.product']
+        currency_model = self.env['res.currency']
         for piece in self:
             if piece.product_tmpl_id:
-                piece.product_id.list_price = (piece.cost_3 * (piece.lot_id.variant or 1))
+                currency_mxn = currency_model.browse(self.env.ref('base.MXN').id)
+                piece.price_mxn = piece.price_usd * currency_mxn.rate
+                piece.product_id.write({'list_price': (piece.cost_3 * (piece.lot_id.variant or 1)),
+                                        'standard_price': piece.cost_3})
                 piece.print_sticker(False)
                 piece.create_variant()
             else:
@@ -66,7 +71,7 @@ class StockPiece(models.Model):
                                             ('product_tmpl_id', '=', self.product_tmpl_id.id)])
             variant.write({'detailed_type': 'product',
                            'standard_price': self.cost_3,
-                           'price_usd': self.price_usd,
+                           'list_price': self.cost_3 * (self.lot_id.variant or 1),
                            'taxes_id': self.lot_id.tax_id.ids,
                            'barcode': self.barcode})
             self.env['stock.quant'].create({
@@ -100,9 +105,8 @@ class StockPiece(models.Model):
         for piece in self:
             price_untaxed = (piece.cost_3 * (piece.lot_id.variant or 1))
             price = price_untaxed + (price_untaxed * piece.lot_id.tax_id.amount / 100)
-            currency_usd = currency_model.browse(self.env.ref('base.USD').id)
             currency_mxn = currency_model.browse(self.env.ref('base.MXN').id)
-            price_mxn = currency_usd._convert(int(price), currency_mxn, self.env.company, fields.Date.today())
+            price_mxn = price * currency_mxn.rate
             piece.price_usd = piece.lot_id.purchase_cost if not price else price
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
 
@@ -112,7 +116,7 @@ class StockPiece(models.Model):
         data = {'code': self.barcode or "",
                 'product': self.product_id.name or "",
                 'weight': self.weight,
-                'price_usd': str(int(self.price_usd)),
-                'price_mxn': str(int(self.price_mxn))}
+                'price_usd': str(math.ceil(self.price_usd)),
+                'price_mxn': str(math.ceil(self.price_mxn))}
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})

@@ -1,13 +1,13 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* stock_ext
+# 	* sale_ext
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 08:04+0000\n"
-"PO-Revision-Date: 2023-02-23 08:04+0000\n"
+"POT-Creation-Date: 2023-03-09 14:43+0000\n"
+"PO-Revision-Date: 2023-03-09 14:43+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,165 +15,24 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__additional_usd
-msgid "Additional USD"
-msgstr "USD adicional"
+#. module: sale_ext
+#: model:ir.model,name:sale_ext.model_product_pricelist
+msgid "Pricelist"
+msgstr "Lista de precios"
 
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__barcode
-msgid "Barcode"
-msgstr "Código"
-
-#. module: stock_ext
-#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
-msgid "Calculate Weight"
-msgstr "Calcular Peso"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__purchase_cost
-msgid "Cost 1 (purchase)"
-msgstr "Costo 1 (compra)"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__cost_2
-msgid "Cost 2 (logistic)"
-msgstr "Costo 2 (logistica)"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__cost_3
-msgid "Cost 3"
-msgstr "Costo 3"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__create_uid
-msgid "Created by"
+#. module: sale_ext
+#. odoo-javascript
+#: code:addons/sale_ext/static/src/xml/printer.xml:0
+#, python-format
+msgid "Print Receipt"
 msgstr ""
 
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__create_date
-msgid "Created on"
-msgstr ""
+#. module: sale_ext
+#: model:ir.model,name:sale_ext.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Línea de la orden de venta"
 
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__display_name
-msgid "Display Name"
-msgstr ""
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__id
-msgid "ID"
-msgstr ""
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__import_cost
-msgid "Import Cost %"
-msgstr "Costo de importación (%)"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__write_uid
-msgid "Last Updated by"
-msgstr ""
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__write_date
-msgid "Last Updated on"
-msgstr ""
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__lot_id
-msgid "Lot"
-msgstr "Lote"
-
-#. module: stock_ext
-#: model_terms:ir.ui.view,arch_db:stock_ext.view_stock_piece_form
-#: model_terms:ir.ui.view,arch_db:stock_ext.view_stock_piece_tree
-msgid "Lot Piece"
-msgstr "Pieza de lote"
-
-#. module: stock_ext
-#: model:ir.actions.act_window,name:stock_ext.stock_piece_action
-#: model:ir.ui.menu,name:stock_ext.menu_stock_piece
-msgid "Lot Pieces"
-msgstr "Piezas de lote"
-
-#. module: stock_ext
-#: model:ir.model,name:stock_ext.model_stock_lot
-msgid "Lot/Serial"
-msgstr "Número de lote/de serie"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__pieces_ids
-#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
-msgid "Pieces"
-msgstr "Piezas de Lote"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__price_mxn
-msgid "Price MXN"
-msgstr "Precio MXN"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__price_usd
-msgid "Price USD"
-msgstr "Precio USD"
-
-#. module: stock_ext
-#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
-msgid "Print"
-msgstr "Imprimir"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__print_enabled
-msgid "Print enabled"
-msgstr ""
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__product_id
-msgid "Product"
-msgstr "Producto"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__product_qty
-msgid "Quantity"
-msgstr "Cantidad"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__raw_data
-msgid "Raw data"
-msgstr ""
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__scale_read
-msgid "Scale read"
-msgstr ""
-
-#. module: stock_ext
-#: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
-msgid "Scale weight detection active."
-msgstr "Lectura de balanza activa."
-
-#. module: stock_ext
-#: model:ir.model,name:stock_ext.model_stock_piece
-msgid "Stock Piece"
-msgstr "Pieza de Lote"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__tax_id
-msgid "Tax"
-msgstr "Impuesto"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_lot__variant
+#. module: sale_ext
+#: model:ir.model.fields,field_description:sale_ext.field_product_pricelist__variant
 msgid "Variant"
 msgstr "Variante"
-
-#. module: stock_ext
-#: model:ir.model.fields,field_description:stock_ext.field_stock_piece__weight
-msgid "Weight"
-msgstr "Gramaje"

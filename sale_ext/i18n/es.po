@@ -53,12 +53,12 @@ msgstr ""
 #. module: sale_ext
 #: model:ir.model.fields,field_description:sale_ext.field_pricelist_variant__max_weight
 msgid "Max weight"
-msgstr ""
+msgstr "Gramaje máximo"
 
 #. module: sale_ext
 #: model:ir.model.fields,field_description:sale_ext.field_pricelist_variant__min_weight
 msgid "Min weight"
-msgstr ""
+msgstr "Gramaje mínimo"
 
 #. module: sale_ext
 #: model:ir.model,name:sale_ext.model_product_pricelist
@@ -86,7 +86,7 @@ msgstr "Línea de la orden de venta"
 #. module: sale_ext
 #: model:ir.model.fields,field_description:sale_ext.field_pricelist_variant__value
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #. module: sale_ext
 #: model:ir.model.fields,field_description:sale_ext.field_product_pricelist__variant_ids

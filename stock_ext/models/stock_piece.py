@@ -34,8 +34,7 @@ class StockPiece(models.Model):
                 piece.price_mxn = piece.price_usd * currency_mxn.rate
                 piece.product_id.write({'list_price': (piece.cost_3 * (piece.lot_id.variant or 1)),
                                         'standard_price': piece.cost_3,
-                                        'weight': piece.weight,
-                                        'uom_id': self.env.ref('uom.product_uom_gram').id})
+                                        'weight': piece.weight})
                 piece.print_sticker(False)
                 piece.create_variant()
             else:

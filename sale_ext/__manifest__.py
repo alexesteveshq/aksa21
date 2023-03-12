@@ -13,6 +13,7 @@
     'data': [
         'views/sale_views.xml',
         'views/product_pricelist_views.xml',
+        'security/ir.model.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

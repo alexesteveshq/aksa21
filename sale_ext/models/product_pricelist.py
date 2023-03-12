@@ -6,4 +6,4 @@ from odoo import fields, models
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
-    variant = fields.Float(string='Variant', default=1)
+    variant_ids = fields.One2many('pricelist.variant', 'pricelist_id', string='Variants')

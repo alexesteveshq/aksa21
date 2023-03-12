@@ -33,7 +33,9 @@ class StockPiece(models.Model):
                 currency_mxn = currency_model.browse(self.env.ref('base.MXN').id)
                 piece.price_mxn = piece.price_usd * currency_mxn.rate
                 piece.product_id.write({'list_price': (piece.cost_3 * (piece.lot_id.variant or 1)),
-                                        'standard_price': piece.cost_3})
+                                        'standard_price': piece.cost_3,
+                                        'weight': piece.weight,
+                                        'uom_id': self.env.ref('uom.product_uom_gram').id})
                 piece.print_sticker(False)
                 piece.create_variant()
             else:
@@ -73,6 +75,8 @@ class StockPiece(models.Model):
                            'standard_price': self.cost_3,
                            'list_price': self.cost_3 * (self.lot_id.variant or 1),
                            'taxes_id': self.lot_id.tax_id.ids,
+                           'weight': self.weight,
+                           'uom_id': self.env.ref('uom.product_uom_gram').id,
                            'barcode': self.barcode})
             self.env['stock.quant'].create({
                 'product_id': variant.id,

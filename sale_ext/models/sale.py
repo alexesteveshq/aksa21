@@ -8,5 +8,8 @@ class SaleOrderLine(models.Model):
 
     def _get_display_price(self):
         price = super(SaleOrderLine, self)._get_display_price()
-        price = price * self.order_id.pricelist_id.variant
+        variant = self.order_id.pricelist_id.variant_ids.filtered(
+            lambda var: var.min_weight <= self.product_id.weight <= var.max_weight)
+        if variant:
+            price = price * variant.value
         return price

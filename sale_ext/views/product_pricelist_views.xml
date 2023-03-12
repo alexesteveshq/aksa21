@@ -6,7 +6,13 @@
         <field name="inherit_id" ref="product.product_pricelist_view"/>
         <field name="arch" type="xml">
             <field name="currency_id" position="after">
-                <field name="variant"/>
+                <field name="variant_ids">
+                    <tree editable="bottom">
+                        <field name="min_weight"/>
+                        <field name="max_weight"/>
+                        <field name="value"/>
+                    </tree>
+                </field>
             </field>
         </field>
     </record>

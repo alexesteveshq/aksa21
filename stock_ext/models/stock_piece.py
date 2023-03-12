@@ -75,7 +75,6 @@ class StockPiece(models.Model):
                            'list_price': self.cost_3 * (self.lot_id.variant or 1),
                            'taxes_id': self.lot_id.tax_id.ids,
                            'weight': self.weight,
-                           'uom_id': self.env.ref('uom.product_uom_gram').id,
                            'barcode': self.barcode})
             self.env['stock.quant'].create({
                 'product_id': variant.id,

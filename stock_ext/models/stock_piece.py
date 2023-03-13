@@ -118,7 +118,7 @@ class StockPiece(models.Model):
         data = {'code': self.barcode or "",
                 'product': self.product_id.name or "",
                 'weight': self.weight,
-                'price_usd': str(math.ceil(self.price_usd)),
-                'price_mxn': str(math.ceil(self.price_mxn))}
+                'price_usd': str(round(self.price_usd)),
+                'price_mxn': str(round(self.price_mxn))}
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})

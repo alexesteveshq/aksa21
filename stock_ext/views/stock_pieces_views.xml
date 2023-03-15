@@ -39,7 +39,7 @@
     <record id="stock_piece_action" model="ir.actions.act_window">
         <field name="name">Lot Pieces</field>
         <field name="res_model">stock.piece</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,pivot</field>
     </record>
 
     <menuitem id="menu_stock_piece"

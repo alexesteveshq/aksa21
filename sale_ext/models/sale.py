@@ -12,4 +12,4 @@ class SaleOrderLine(models.Model):
             lambda var: var.min_weight <= self.product_id.weight <= var.max_weight)
         if variant:
             price = price * variant.value
-        return round(price)
+        return price

@@ -19,6 +19,7 @@ class StockPiece(models.Model):
     product_id = fields.Many2one('product.product', string='Product')
     raw_data = fields.Char(string='Raw data')
     weight = fields.Float(string='Weight')
+    total_cost = fields.Float(string='Total Cost', compute='_compute_cost_3', store=True)
     cost_3 = fields.Float(string='Cost 3', compute='_compute_cost_3', store=True)
     price_usd = fields.Float(string='Price USD', compute='_compute_price', store=True, readonly=False)
     price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False)
@@ -100,6 +101,7 @@ class StockPiece(models.Model):
     def _compute_cost_3(self):
         for piece in self:
             piece.cost_3 = (piece.lot_id.cost_2 + piece.lot_id.additional_usd) * piece.weight
+            piece.total_cost = piece.lot_id.cost_2 * piece.weight
 
     @api.depends('lot_id', 'cost_3', 'lot_id.tax_id', 'lot_id.variant')
     def _compute_price(self):

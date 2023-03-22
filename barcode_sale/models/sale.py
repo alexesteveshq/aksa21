@@ -15,7 +15,8 @@ class SaleOrder(models.Model):
     _inherit = ['sale.order', 'barcodes.barcode_events_mixin']
 
     def on_barcode_scanned(self, barcode=''):
-        piece = self.env['product.product'].search([('barcode', '=', barcode.upper())], limit=1)
+        piece = self.env['stock.piece'].search([('barcode', '=', barcode.upper())], limit=1)
+        piece = piece.product_id
         if piece.qty_available == 0:
             raise UserError(_('Scanned piece with barcode %s is not available.') % barcode)
         if piece:

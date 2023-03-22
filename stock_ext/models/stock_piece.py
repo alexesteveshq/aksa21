@@ -33,9 +33,9 @@ class StockPiece(models.Model):
             if piece.product_tmpl_id:
                 currency_mxn = currency_model.browse(self.env.ref('base.MXN').id)
                 piece.price_mxn = piece.price_usd * currency_mxn.rate
+                piece.barcode = piece.product_id.barcode if piece.product_id.barcode else piece.barcode
                 piece.product_id.write({'list_price': (piece.cost_3 * (piece.lot_id.variant or 1)),
                                         'standard_price': piece.cost_3,
-                                        'barcode': piece.barcode,
                                         'weight': piece.weight})
                 piece.print_sticker(False)
                 piece.create_variant()
@@ -72,6 +72,7 @@ class StockPiece(models.Model):
             variant = product_model.search([('product_template_variant_value_ids.name', '=', self.weight),
                                             ('detailed_type', '=', 'product'),
                                             ('product_tmpl_id', '=', self.product_tmpl_id.id)])
+            self.barcode = variant.barcode if variant.barcode else self.barcode
             variant.write({'detailed_type': 'product',
                            'standard_price': self.cost_3,
                            'list_price': self.cost_3 * (self.lot_id.variant or 1),

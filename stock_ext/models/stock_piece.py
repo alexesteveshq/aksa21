@@ -31,10 +31,11 @@ class StockPiece(models.Model):
         currency_model = self.env['res.currency']
         for piece in self:
             if piece.product_tmpl_id:
-                currency_mxn = currency_model.browse(self.env.ref('base.MXN').id)
-                piece.price_mxn = piece.price_usd * currency_mxn.rate
-                piece.product_id.write({'list_price': (piece.cost_3 * (piece.lot_id.variant or 1)),
-                                        'standard_price': piece.cost_3,
+                currency_usd = currency_model.browse(self.env.ref('base.USD').id)
+                piece.price_mxn = piece.price_usd * currency_usd.inverse_rate
+                piece.product_id.write({'list_price': (piece.cost_3 * (piece.lot_id.variant or 1)) *
+                                                      currency_usd.inverse_rate,
+                                        'standard_price': piece.cost_3 * currency_usd.inverse_rate,
                                         'weight': piece.weight})
                 piece.print_sticker(False)
                 piece.create_variant()
@@ -71,7 +72,6 @@ class StockPiece(models.Model):
             variant = product_model.search([('product_template_variant_value_ids.name', '=', self.weight),
                                             ('detailed_type', '=', 'product'),
                                             ('product_tmpl_id', '=', self.product_tmpl_id.id)])
-            self.barcode = variant.barcode if variant.barcode else self.barcode
             variant.write({'detailed_type': 'product',
                            'standard_price': self.cost_3,
                            'list_price': self.cost_3 * (self.lot_id.variant or 1),
@@ -110,8 +110,8 @@ class StockPiece(models.Model):
         for piece in self:
             price_untaxed = (piece.cost_3 * (piece.lot_id.variant or 1))
             price = price_untaxed + (price_untaxed * piece.lot_id.tax_id.amount / 100)
-            currency_mxn = currency_model.browse(self.env.ref('base.MXN').id)
-            price_mxn = price * currency_mxn.rate
+            currency_mxn = currency_model.browse(self.env.ref('base.USD').id)
+            price_mxn = price * currency_mxn.inverse_rate
             piece.price_usd = piece.lot_id.purchase_cost if not price else price
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
 

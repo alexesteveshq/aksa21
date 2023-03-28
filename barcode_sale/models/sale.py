@@ -16,12 +16,11 @@ class SaleOrder(models.Model):
 
     def on_barcode_scanned(self, barcode=''):
         piece = self.env['stock.piece'].search([('barcode', '=', barcode.upper())], limit=1)
-        piece = piece.product_id
-        if piece.qty_available == 0:
+        if piece.product_id.qty_available == 0:
             raise UserError(_('Scanned piece with barcode %s is not available.') % barcode)
-        if piece:
-            self.order_line = [(0, 0, {'product_id': piece.id,
+        if piece.product_id:
+            self.order_line = [(0, 0, {'product_id': piece.product_id.id,
                                        'product_uom_qty': 1,
-                                       'price_unit': piece.lst_price})]
+                                       'price_unit': piece.price_mxn})]
         else:
             raise UserError(_('Scanned piece with barcode %s does not exist.') % barcode)

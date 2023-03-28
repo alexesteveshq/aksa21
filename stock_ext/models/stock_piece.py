@@ -23,6 +23,7 @@ class StockPiece(models.Model):
     cost_3 = fields.Float(string='Cost 3', compute='_compute_cost_3', store=True)
     price_usd = fields.Float(string='Price USD', compute='_compute_price', store=True, readonly=False)
     price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False)
+    price_mxn_untaxed = fields.Float(string='Price MXN untaxed', compute='_compute_price', store=True, readonly=False)
     print_enabled = fields.Boolean(string='Print enabled')
 
     def create_products(self):
@@ -114,6 +115,7 @@ class StockPiece(models.Model):
             price_mxn = price * currency_mxn.inverse_rate
             piece.price_usd = piece.lot_id.purchase_cost if not price else price
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
+            piece.price_mxn_untaxed = piece.cost_3 * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
 
     def print_sticker(self, print_enabled=True):
         self.create_variant()

@@ -9,6 +9,7 @@
     'author': 'Alex Esteves',
     'depends': [
         'sale',
+        'stock_ext',
     ],
     'data': [
         'views/sale_views.xml',

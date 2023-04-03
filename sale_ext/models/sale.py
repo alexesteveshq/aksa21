@@ -25,3 +25,12 @@ class SaleOrderLine(models.Model):
         if variant:
             price = price * variant.value
         return price
+
+    @api.depends('product_id', 'product_uom', 'product_uom_qty', 'order_id.lot_discount_ids',
+                 'order_id.lot_discount_ids.lot_id', 'order_id.lot_discount_ids.value')
+    def _compute_discount(self):
+        super(SaleOrderLine, self)._compute_discount()
+        for line in self:
+            disc_line = line.order_id.lot_discount_ids.filtered(lambda disc: disc.lot_id == line.piece_id.lot_id)
+            if disc_line:
+                line.discount = disc_line[0].value

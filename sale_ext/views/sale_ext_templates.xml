@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="sale_ext_inherit" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//th[@name='th_description']" position="after">
+            <th name="th_lot" class="text-start">Lot</th>
+            <th name="th_barcode" class="text-start">Barcode</th>
+            <th name="th_weight" class="text-start">Weight</th>
+        </xpath>
+        <xpath expr="//td[@name='td_name']" position="after">
+            <td name="td_lot"><span t-field="line.piece_lot_it"/></td>
+            <td name="td_barcode"><span t-field="line.barcode"/></td>
+            <td name="td_weight"><span t-field="line.weight"/></td>
+        </xpath>
+    </template>
+</odoo>

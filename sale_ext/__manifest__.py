@@ -14,13 +14,9 @@
     'data': [
         'views/sale_views.xml',
         'views/product_pricelist_views.xml',
+        'views/sale_ext_templates.xml',
         'security/ir.model.access.csv',
     ],
-    'assets': {
-        'web.assets_backend': [
-            'sale_ext/static/src/**/*',
-        ],
-    },
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,

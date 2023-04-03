@@ -5,11 +5,23 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <widget name='printer_button'/>
-            </xpath>
             <xpath expr="//field[@name='order_line']//tree//field[@name='product_id']" position="after">
                 <field name="piece_id" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_template_id']" position="after">
+                <field name="piece_lot_it" optional="show"/>
+                <field name="barcode" optional="show"/>
+                <field name="weight" optional="show"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page name="lot_discounts" string="Lot Discounts">
+                    <field name="lot_discount_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="lot_id"/>
+                            <field name="value"/>
+                        </tree>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>

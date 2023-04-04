@@ -11,5 +11,19 @@
             <td name="td_barcode"><span t-field="line.barcode"/></td>
             <td name="td_weight"><span t-field="line.weight"/></td>
         </xpath>
+        <xpath expr="//t[@t-call='account.document_tax_totals']" position="before">
+            <tr class="border-black">
+                <td><strong>Total Pieces</strong></td>
+                <td class="text-end">
+                    <span t-esc="len(doc.order_line)"/>
+                </td>
+            </tr>
+            <tr class="border-black">
+                <td><strong>Total Weight</strong></td>
+                <td class="text-end">
+                    <span t-esc="round(sum(doc.order_line.mapped('weight')), 2)"/>
+                </td>
+            </tr>
+        </xpath>
     </template>
 </odoo>

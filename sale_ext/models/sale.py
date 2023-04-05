@@ -33,6 +33,11 @@ class SaleOrderLine(models.Model):
     weight = fields.Float(related='piece_id.weight')
     discount = fields.Float()
 
+    @api.onchange('piece_id')
+    def onchange_piece_id(self):
+        if self.piece_id:
+            self.product_id = self.piece_id.product_id
+
     def _get_display_price(self):
         price = super(SaleOrderLine, self.with_context(piece=self.piece_id))._get_display_price()
         variant = self.order_id.pricelist_id.variant_ids.filtered(

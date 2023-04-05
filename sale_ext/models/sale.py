@@ -8,6 +8,21 @@ class SaleOrder(models.Model):
 
     lot_discount_ids = fields.One2many('lot.discount', 'order_id', string='Lot discount')
 
+    def set_line_pieces(self, lot_ids=[]):
+        pieces = self.env['stock.piece'].search([('lot_id', 'in', lot_ids)])
+        for order in self:
+            for line in order.order_line:
+                piece = line.piece_id
+                if not piece:
+                    piece = pieces.filtered(lambda p: p.product_id == line.product_id)
+                    piece = piece if len(piece) <= 1 else piece[0]
+                if piece:
+                    line.write({'piece_id': piece, 'price_unit': piece.price_mxn_untaxed})
+            discounts = {line.id: line.discount for line in order.order_line}
+            order.action_update_prices()
+            for line in order.order_line:
+                line.discount = discounts[line.id]
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

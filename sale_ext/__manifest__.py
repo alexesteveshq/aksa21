@@ -15,6 +15,7 @@
         'views/sale_views.xml',
         'views/product_pricelist_views.xml',
         'views/sale_ext_templates.xml',
+        'data/ir_actions_data.xml',
         'security/ir.model.access.csv',
     ],
     'license': 'AGPL-3',

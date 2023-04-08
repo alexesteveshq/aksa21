@@ -43,7 +43,7 @@ class SaleOrderLine(models.Model):
         variant = self.order_id.pricelist_id.variant_ids.filtered(
             lambda var: var.min_weight <= self.product_id.weight <= var.max_weight)
         if variant:
-            price = price * variant.value
+            price = price * variant.value - ((price * variant.value) * 15/100)
         return price
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty', 'order_id.lot_discount_ids',

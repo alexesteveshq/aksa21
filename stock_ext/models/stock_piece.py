@@ -2,7 +2,6 @@
 
 from odoo import fields, models, api
 from ..LabelManager import LabelManager
-import math
 
 
 class StockPiece(models.Model):

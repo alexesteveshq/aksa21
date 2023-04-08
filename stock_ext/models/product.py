@@ -13,3 +13,4 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     list_price = fields.Float(string='List price')
+    pieces_ids = fields.One2many('stock.piece', 'product_id', string='Pieces')

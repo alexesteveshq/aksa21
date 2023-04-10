@@ -8,4 +8,13 @@
         <field name="state">code</field>
         <field name="code">records.create_products()</field>
     </record>
+
+    <record id="action_create_from_piece" model="ir.actions.server">
+        <field name="name">Create from piece</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="model_stock_piece" />
+        <field name="binding_model_id" ref="model_stock_piece" />
+        <field name="state">code</field>
+        <field name="code">records.create_from_piece()</field>
+    </record>
 </odoo>

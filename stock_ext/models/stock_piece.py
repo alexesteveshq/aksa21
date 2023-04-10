@@ -25,17 +25,26 @@ class StockPiece(models.Model):
     price_mxn_untaxed = fields.Float(string='Price MXN untaxed', compute='_compute_price', store=True, readonly=False)
     print_enabled = fields.Boolean(string='Print enabled')
 
+    def create_from_piece(self):
+        weight_attr = self.env.ref('stock_ext.product_attribute_weight')
+        value_model = self.env['product.attribute.value']
+        for piece in self.filtered(lambda pc: pc.barcode != pc.product_id.barcode):
+            attr_value = value_model.search([('attribute_id', '=', weight_attr.id),
+                                             ('name', '=', "%s |%s|" % (piece.weight, piece.barcode))])
+            if not attr_value:
+                line = piece.product_tmpl_id.attribute_line_ids.filtered(
+                    lambda ln: ln.attribute_id == weight_attr)
+                line.value_ids = [(0, 0, {'attribute_id': weight_attr.id,
+                                          'name': "%s |%s|" % (piece.weight, piece.barcode)})]
+                piece.variant_process()
+                self.env.cr.commit()
+
     def create_products(self):
         product_tmpl_model = self.env['product.template']
         products = self.env['product.product']
-        currency_model = self.env['res.currency']
         for piece in self:
             if piece.product_tmpl_id:
-                currency_usd = currency_model.browse(self.env.ref('base.USD').id)
-                piece.price_mxn = piece.price_usd * currency_usd.inverse_rate
-                piece.product_id.write({'list_price': (piece.cost_3 * (piece.lot_id.variant or 1)) *
-                                                      currency_usd.inverse_rate,
-                                        'standard_price': piece.cost_3 * currency_usd.inverse_rate,
+                piece.product_id.write({'list_price': piece.price_mxn_untaxed,
                                         'weight': piece.weight})
                 piece.print_sticker(False)
                 piece.create_variant()
@@ -50,15 +59,15 @@ class StockPiece(models.Model):
         products.unlink()
 
     def create_variant(self):
-        product_model = self.env['product.product']
         weight_attr = self.env.ref('stock_ext.product_attribute_weight')
         value_model = self.env['product.attribute.value']
         if self.product_tmpl_id and not self.product_id:
-            attr_value = value_model.search([('attribute_id', '=', weight_attr.id), ('name', '=', self.weight)])
+            attr_value = value_model.search([('attribute_id', '=', weight_attr.id), ('name', '=', "%s |%s|" %
+                                                                                     (self.weight, self.barcode))])
             if attr_value:
                 values = attr_value.ids
             else:
-                values = [(0, 0, {'attribute_id': weight_attr.id, 'name': self.weight})]
+                values = [(0, 0, {'attribute_id': weight_attr.id, 'name': "%s |%s|" % (self.weight, self.barcode)})]
             if not self.product_tmpl_id.attribute_line_ids:
                 self.product_tmpl_id.attribute_line_ids = [
                     (0, 0, {'attribute_id': weight_attr.id, 'value_ids': values})]
@@ -69,12 +78,18 @@ class StockPiece(models.Model):
                     line.value_ids = [(6, 0, line.value_ids.ids + values)]
                 else:
                     line.value_ids = values
-            variant = product_model.search([('product_template_variant_value_ids.name', '=', self.weight),
-                                            ('detailed_type', '=', 'product'),
-                                            ('product_tmpl_id', '=', self.product_tmpl_id.id)])
+            self.variant_process()
+
+    def variant_process(self):
+        product_model = self.env['product.product']
+        variant = product_model.search([('detailed_type', '=', 'product'),
+                                        ('product_tmpl_id', '=', self.product_tmpl_id.id),
+                                        ('product_template_variant_value_ids.name', '=', "%s |%s|" %
+                                         (self.weight, self.barcode))], limit=1)
+        if variant:
             variant.write({'detailed_type': 'product',
                            'standard_price': self.cost_3,
-                           'list_price': self.cost_3 * (self.lot_id.variant or 1),
+                           'list_price': self.price_mxn_untaxed,
                            'taxes_id': self.lot_id.tax_id.ids,
                            'weight': self.weight,
                            'barcode': self.barcode})

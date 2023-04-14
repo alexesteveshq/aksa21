@@ -31,7 +31,16 @@ class SaleOrderLine(models.Model):
     piece_lot_it = fields.Many2one(related='piece_id.lot_id')
     barcode = fields.Char(related='piece_id.barcode')
     weight = fields.Float(related='piece_id.weight')
+    average_price_gram = fields.Float(string='Avg. Price per gram', compute='_compute_average_price_gram')
     discount = fields.Float()
+
+    @api.depends('price_subtotal', 'piece_id', 'piece_id.weight')
+    def _compute_average_price_gram(self):
+        for line in self:
+            if line.piece_id:
+                line.average_price_gram = round(line.price_subtotal / line.piece_id.weight, 2)
+            else:
+                line.average_price_gram = 0
 
     @api.onchange('piece_id')
     def onchange_piece_id(self):

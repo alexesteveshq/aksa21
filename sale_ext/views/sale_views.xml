@@ -11,6 +11,7 @@
             <xpath expr="//field[@name='order_line']//tree//field[@name='product_template_id']" position="after">
                 <field name="piece_lot_it" optional="show"/>
                 <field name="barcode" optional="show"/>
+                <field name="average_price_gram" optional="show"/>
                 <field name="weight" optional="show"/>
             </xpath>
             <xpath expr="//notebook" position="inside">

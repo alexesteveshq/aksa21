@@ -4,11 +4,13 @@
         <xpath expr="//th[@name='th_description']" position="after">
             <th name="th_lot" class="text-start">Lot</th>
             <th name="th_barcode" class="text-start">Barcode</th>
+            <th name="th_avg_price_per_gram" class="text-start">Avg. Price per gram</th>
             <th name="th_weight" class="text-start">Weight</th>
         </xpath>
         <xpath expr="//td[@name='td_name']" position="after">
             <td name="td_lot"><span t-field="line.piece_lot_it"/></td>
             <td name="td_barcode"><span t-field="line.barcode"/></td>
+            <td name="td_avg_price_per_gram"><span t-field="line.average_price_gram"/></td>
             <td name="td_weight"><span t-field="line.weight"/></td>
         </xpath>
         <xpath expr="//t[@t-call='account.document_tax_totals']" position="before">

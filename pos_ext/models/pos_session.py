@@ -13,9 +13,9 @@ class PosSession(models.Model):
 
     def _process_pos_ui_product_product(self, products):
         super(PosSession, self)._process_pos_ui_product_product(products)
+        variants = self.env['piece.variant'].search([])
         for product in products:
-            variant = self.config_id.pricelist_id.variant_ids.filtered(
-                lambda var: var.min_weight <= product['weight'] <= var.max_weight)
-            if variant:
-                price = product['lst_price'] * variant.value
+            variants = variants.filtered(lambda var: var.min_weight <= product['weight'] <= var.max_weight)
+            if variants:
+                price = product['lst_price'] * variants[0].value
                 product['lst_price'] = price - (price * 15/100)

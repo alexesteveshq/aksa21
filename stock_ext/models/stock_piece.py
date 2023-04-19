@@ -143,10 +143,9 @@ class StockPiece(models.Model):
             variants = self.env['piece.variant'].search([])
             variants = variants.filtered(lambda var: var.min_weight <= self.weight <= var.max_weight)
             if variants:
-                price_untaxed = self.cost_3 * (self.lot_id.variant or 1)
-                data.update({'price_usd': str(round((price_untaxed * variants[0].value) -
-                                                    (price_untaxed * variants[0].value * 15/100))),
-                             'price_mxn': str(round((self.price_mxn_untaxed * variants[0].value) -
-                                                    (self.price_mxn_untaxed * variants[0].value * 15/100)))})
+                price = self.price_usd * variants[0].value
+                data.update({'price_usd': str(round(price - (price * 15/100))),
+                             'price_mxn': str(round((self.price_mxn * variants[0].value) -
+                                                    (self.price_mxn * variants[0].value * 15/100)))})
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})

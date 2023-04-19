@@ -3,3 +3,5 @@
 from . import stock
 from . import stock_piece
 from . import product
+from . import piece_variant
+from . import stock_quant

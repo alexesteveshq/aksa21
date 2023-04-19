@@ -131,7 +131,7 @@ class StockPiece(models.Model):
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
             piece.price_mxn_untaxed = piece.cost_3 * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
 
-    def print_sticker(self, print_enabled=True):
+    def print_sticker(self, print_enabled=True, retail=False):
         self.create_variant()
         manager = LabelManager()
         data = {'code': self.barcode or "",
@@ -139,5 +139,14 @@ class StockPiece(models.Model):
                 'weight': self.weight,
                 'price_usd': str(round(self.price_usd)),
                 'price_mxn': str(round(self.price_mxn))}
+        if retail:
+            variants = self.env['piece.variant'].search([])
+            variants = variants.filtered(lambda var: var.min_weight <= self.weight <= var.max_weight)
+            if variants:
+                price_untaxed = self.cost_3 * (self.lot_id.variant or 1)
+                data.update({'price_usd': str(round((price_untaxed * variants[0].value) -
+                                                    (price_untaxed * variants[0].value * 15/100))),
+                             'price_mxn': str(round((self.price_mxn_untaxed * variants[0].value) -
+                                                    (self.price_mxn_untaxed * variants[0].value * 15/100)))})
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})

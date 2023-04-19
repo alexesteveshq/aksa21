@@ -47,14 +47,6 @@ class SaleOrderLine(models.Model):
         if self.piece_id:
             self.product_id = self.piece_id.product_id
 
-    def _get_display_price(self):
-        price = super(SaleOrderLine, self.with_context(piece=self.piece_id))._get_display_price()
-        variant = self.order_id.pricelist_id.variant_ids.filtered(
-            lambda var: var.min_weight <= self.product_id.weight <= var.max_weight)
-        if variant:
-            price = price * variant.value - ((price * variant.value) * 15/100)
-        return price
-
     @api.depends('product_id', 'product_uom', 'product_uom_qty', 'order_id.lot_discount_ids',
                  'order_id.lot_discount_ids.lot_id', 'order_id.lot_discount_ids.value')
     def _compute_discount(self):

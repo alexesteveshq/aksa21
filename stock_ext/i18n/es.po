@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-19 11:22+0000\n"
-"PO-Revision-Date: 2023-04-19 11:22+0000\n"
+"POT-Creation-Date: 2023-04-22 23:01+0000\n"
+"PO-Revision-Date: 2023-04-22 23:01+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -46,6 +46,11 @@ msgstr "Código"
 #: model_terms:ir.ui.view,arch_db:stock_ext.view_production_lot_form
 msgid "Calculate Weight"
 msgstr "Calcular Peso"
+
+#. module: stock_ext
+#: model:ir.model,name:stock_ext.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_lot__purchase_cost
@@ -125,12 +130,6 @@ msgid "List price"
 msgstr ""
 
 #. module: stock_ext
-#: model:ir.actions.act_window,name:stock_ext.stock_quant_action
-#: model:ir.ui.menu,name:stock_ext.menu_stock_quant
-msgid "Locations Management"
-msgstr "Manejo de ubicaciones"
-
-#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__lot_id
 msgid "Lot"
 msgstr "Lote"
@@ -155,24 +154,24 @@ msgstr "Número de lote/de serie"
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_piece_variant__max_weight
 msgid "Max weight"
-msgstr ""
+msgstr "Gramaje máximo"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_piece_variant__min_weight
 msgid "Min weight"
-msgstr ""
+msgstr "Gramaje mínimo"
 
 #. module: stock_ext
 #: model:ir.model,name:stock_ext.model_piece_variant
 #: model_terms:ir.ui.view,arch_db:stock_ext.view_piece_variant_tree
 msgid "Piece Variant"
-msgstr ""
+msgstr "Variante por gramaje"
 
 #. module: stock_ext
 #: model:ir.actions.act_window,name:stock_ext.piece_variant_action
 #: model:ir.ui.menu,name:stock_ext.menu_piece_variant
 msgid "Piece Variants"
-msgstr ""
+msgstr "Variantes por gramaje"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__pieces_ids
@@ -224,6 +223,11 @@ msgid "Product"
 msgstr "Producto"
 
 #. module: stock_ext
+#: model:ir.model,name:stock_ext.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr "Movimientos de producto (Línea de movimientos de existencias)"
+
+#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__detailed_type
 #: model:ir.model.fields,field_description:stock_ext.field_product_template__detailed_type
 msgid "Product Type"
@@ -240,14 +244,19 @@ msgid "Quantity"
 msgstr "Cantidad"
 
 #. module: stock_ext
-#: model:ir.model,name:stock_ext.model_stock_quant
-msgid "Quants"
-msgstr ""
-
-#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__raw_data
 msgid "Raw data"
 msgstr ""
+
+#. module: stock_ext
+#: model_terms:ir.ui.view,arch_db:stock_ext.res_config_settings_view_form
+msgid "Retail"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_res_config_settings__retail_variant_amount
+msgid "Retail variant amount"
+msgstr "Monto de variante retail"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_lot__scale_read
@@ -277,12 +286,17 @@ msgstr ""
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_piece_variant__value
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_lot__variant
 msgid "Variant"
 msgstr "Variante"
+
+#. module: stock_ext
+#: model_terms:ir.ui.view,arch_db:stock_ext.res_config_settings_view_form
+msgid "Variant amount"
+msgstr "Monto de variante"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__weight

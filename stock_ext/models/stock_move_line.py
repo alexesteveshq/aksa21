@@ -3,11 +3,11 @@
 from odoo import fields, models, api
 
 
-class StockQuant(models.Model):
-    _inherit = 'stock.quant'
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
 
     def print_sticker_retail(self):
         piece_model = self.env['stock.piece']
-        for quant in self:
-            piece = piece_model.search([('barcode', '=', quant.product_id.barcode)])
+        for move in self:
+            piece = piece_model.search([('barcode', '=', move.product_id.barcode)])
             piece.print_sticker(retail=True)

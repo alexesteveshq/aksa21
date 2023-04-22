@@ -142,10 +142,13 @@ class StockPiece(models.Model):
         if retail:
             variants = self.env['piece.variant'].search([])
             variants = variants.filtered(lambda var: var.min_weight <= self.weight <= var.max_weight)
+            currency_mxn = self.env['res.currency'].browse(self.env.ref('base.USD').id)
             if variants:
-                price = self.price_usd * variants[0].value
-                data.update({'price_usd': str(round(price - (price * 15/100))),
-                             'price_mxn': str(round((self.price_mxn * variants[0].value) -
-                                                    (self.price_mxn * variants[0].value * 15/100)))})
+                fixed_price = self.env['ir.config_parameter'].sudo().get_param('stock_ext.retail_variant_amount')
+                retail_price = float(fixed_price) * self.weight
+                price = (retail_price + retail_price) * variants[0].value
+                price = price - (price * 15/100)
+                data.update({'price_usd': str(round(price)),
+                             'price_mxn': str(round(price) * currency_mxn.inverse_rate)})
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})

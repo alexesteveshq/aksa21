@@ -149,6 +149,6 @@ class StockPiece(models.Model):
                 price = retail_price - (retail_price * 15/100)
                 price_taxed = price + (price * self.lot_id.tax_id.amount / 100)
                 data.update({'price_usd': str(round(price_taxed)),
-                             'price_mxn': str(round(price_taxed) * currency_mxn.inverse_rate)})
+                             'price_mxn': str(round(price_taxed * currency_mxn.inverse_rate))})
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})

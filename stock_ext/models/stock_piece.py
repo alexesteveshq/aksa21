@@ -145,9 +145,8 @@ class StockPiece(models.Model):
             currency_mxn = self.env['res.currency'].browse(self.env.ref('base.USD').id)
             if variants:
                 fixed_price = self.env['ir.config_parameter'].sudo().get_param('stock_ext.retail_variant_amount')
-                retail_price = float(fixed_price) * self.weight
-                price = (retail_price + retail_price) * variants[0].value
-                price = price - (price * 15/100)
+                retail_price = (float(fixed_price) * self.weight) * variants[0].value
+                price = retail_price - (retail_price * 15/100)
                 data.update({'price_usd': str(round(price)),
                              'price_mxn': str(round(price) * currency_mxn.inverse_rate)})
         label = manager.generate_label_data(data)

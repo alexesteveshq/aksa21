@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-22 23:01+0000\n"
-"PO-Revision-Date: 2023-04-22 23:01+0000\n"
+"POT-Creation-Date: 2023-04-29 10:41+0000\n"
+"PO-Revision-Date: 2023-04-29 10:41+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -38,7 +38,9 @@ msgid "Additional USD"
 msgstr "USD adicional"
 
 #. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_stock_move_line__product_barcode
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__barcode
+#: model:ir.model.fields,field_description:stock_ext.field_stock_return_picking_line__product_barcode
 msgid "Barcode"
 msgstr "Código"
 
@@ -105,6 +107,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock_ext.field_stock_lot__import_cost
 msgid "Import Cost %"
 msgstr "Costo de importación (%)"
+
+#. module: stock_ext
+#: model:ir.model.fields,help:stock_ext.field_stock_move_line__product_barcode
+#: model:ir.model.fields,help:stock_ext.field_stock_return_picking_line__product_barcode
+msgid "International Article Number used for product identification."
+msgstr ""
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_piece_variant____last_update
@@ -211,6 +219,7 @@ msgid "Print enabled"
 msgstr ""
 
 #. module: stock_ext
+#: model:ir.actions.server,name:stock_ext.action_piece_print_sticker
 #: model:ir.actions.server,name:stock_ext.action_print_sticker
 msgid "Print sticker"
 msgstr "Imprimir etiqueta"
@@ -259,6 +268,11 @@ msgid "Retail variant amount"
 msgstr "Monto de variante retail"
 
 #. module: stock_ext
+#: model:ir.model,name:stock_ext.model_stock_return_picking_line
+msgid "Return Picking Line"
+msgstr "Línea de recolección de devolución"
+
+#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_lot__scale_read
 msgid "Scale read"
 msgstr ""
@@ -281,7 +295,7 @@ msgstr "Impuesto"
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__total_cost
 msgid "Total Cost"
-msgstr ""
+msgstr "Costo total"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_piece_variant__value

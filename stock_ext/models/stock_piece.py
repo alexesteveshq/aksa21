@@ -152,3 +152,7 @@ class StockPiece(models.Model):
                              'price_mxn': str(round(round(price_taxed) * currency_mxn.inverse_rate))})
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})
+
+    def print_sticker_wholesale(self):
+        for piece in self:
+            piece.print_sticker()

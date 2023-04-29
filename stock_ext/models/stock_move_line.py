@@ -8,6 +8,12 @@ class StockMoveLine(models.Model):
 
     product_barcode = fields.Char(related='product_id.barcode')
 
+    def _get_aggregated_product_quantities(self, **kwargs):
+        result = super(StockMoveLine, self)._get_aggregated_product_quantities(**kwargs)
+        for key in result.keys():
+            result[key]['barcode'] = result[key]['product'].barcode
+        return result
+
     def print_sticker_retail(self):
         piece_model = self.env['stock.piece']
         for move in self:

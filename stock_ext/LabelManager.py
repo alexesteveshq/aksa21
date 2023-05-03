@@ -6,7 +6,7 @@ class LabelManager:
     @staticmethod
     def generate_label_data(data):
         label = zpl.Label(100, 100)
-        label.origin(1, 3)
+        label.origin(1, 5)
         label.write_barcode(height=60, barcode_type='C', check_digit='Y', orientation='I')
         label.write_text(f'{data["code"]}')
         label.endorigin()

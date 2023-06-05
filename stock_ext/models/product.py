@@ -28,14 +28,18 @@ class ProductProduct(models.Model):
     print_enabled = fields.Boolean(string='Print enabled')
     scale_created = fields.Boolean(string='Scale created')
 
+    def name_get(self):
+        res = []
+        for product in self:
+            name = "%s (%s) |%s|" % (product.categ_id.name, product.weight or '0.0', product.barcode)
+            res += [(product.id, name)]
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
-        categ_model = self.env['product.category']
-        for val in vals_list:
-            categ = categ_model.browse(val['categ_id'])
-            val['name'] = "%s (%s) |%s|" % (categ.name, val['weight'] or '', val['barcode'])
         result = super(ProductProduct, self).create(vals_list)
         for piece in result:
+            piece.name = piece.barcode
             if piece.scale_created:
                 self.env['stock.quant'].create({
                     'product_id': piece.id,

@@ -18,6 +18,7 @@
         'data/ir_actions.xml',
         'views/stock_views.xml',
         'views/piece_variant_views.xml',
+        'views/product_views.xml',
         'wizard/stock_picking_return_views.xml',
         'views/stock_picking_templates.xml',
         'security/ir.model.access.csv',

@@ -8,50 +8,29 @@ class SaleOrder(models.Model):
 
     lot_discount_ids = fields.One2many('lot.discount', 'order_id', string='Lot discount')
 
-    def set_line_pieces(self, lot_ids=[]):
-        pieces = self.env['stock.piece'].search([('lot_id', 'in', lot_ids)])
-        for order in self:
-            for line in order.order_line:
-                piece = line.piece_id
-                if not piece:
-                    piece = pieces.filtered(lambda p: p.product_id == line.product_id)
-                    piece = piece if len(piece) <= 1 else piece[0]
-                if piece:
-                    line.write({'piece_id': piece, 'price_unit': piece.price_mxn_untaxed})
-            discounts = {line.id: line.discount for line in order.order_line}
-            order.action_update_prices()
-            for line in order.order_line:
-                line.discount = discounts[line.id]
-
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    piece_id = fields.Many2one('stock.piece', string='Piece')
-    piece_lot_it = fields.Many2one(related='piece_id.lot_id')
-    barcode = fields.Char(related='piece_id.barcode')
-    weight = fields.Float(related='piece_id.weight')
+    piece_lot_it = fields.Many2one(related='product_id.lot_id')
+    barcode = fields.Char(related='product_id.barcode')
+    weight = fields.Float(related='product_id.weight')
     average_price_gram = fields.Float(string='Avg. Price per gram', compute='_compute_average_price_gram')
     discount = fields.Float()
 
-    @api.depends('price_subtotal', 'piece_id', 'piece_id.weight')
+    @api.depends('price_subtotal', 'product_id', 'product_id.weight')
     def _compute_average_price_gram(self):
         for line in self:
-            if line.piece_id:
-                line.average_price_gram = round(line.price_subtotal / line.piece_id.weight, 2)
+            if line.product_id:
+                line.average_price_gram = round(line.price_subtotal / line.product_id.weight, 2)
             else:
                 line.average_price_gram = 0
-
-    @api.onchange('piece_id')
-    def onchange_piece_id(self):
-        if self.piece_id:
-            self.product_id = self.piece_id.product_id
 
     @api.depends('product_id', 'product_uom', 'product_uom_qty', 'order_id.lot_discount_ids',
                  'order_id.lot_discount_ids.lot_id', 'order_id.lot_discount_ids.value')
     def _compute_discount(self):
         super(SaleOrderLine, self)._compute_discount()
         for line in self:
-            disc_line = line.order_id.lot_discount_ids.filtered(lambda disc: disc.lot_id == line.piece_id.lot_id)
+            disc_line = line.order_id.lot_discount_ids.filtered(lambda disc: disc.lot_id == line.product_id.lot_id)
             if disc_line:
                 line.discount = disc_line[0].value

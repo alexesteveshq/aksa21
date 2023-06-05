@@ -25,6 +25,12 @@ class StockPiece(models.Model):
     price_mxn_untaxed = fields.Float(string='Price MXN untaxed', compute='_compute_price', store=True, readonly=False)
     print_enabled = fields.Boolean(string='Print enabled')
 
+    def update_product_lot(self):
+        for piece in self:
+            if not piece.product_id.lot_id:
+                piece.product_id.lot_id = piece.lot_id
+                self.env.cr.commit()
+
     def create_from_piece(self):
         weight_attr = self.env.ref('stock_ext.product_attribute_weight')
         value_model = self.env['product.attribute.value']

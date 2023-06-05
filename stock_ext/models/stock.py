@@ -14,6 +14,7 @@ class StockLot(models.Model):
     additional_usd = fields.Float(string='Additional USD')
     product_qty = fields.Float(store=True)
     pieces_ids = fields.One2many('stock.piece', 'lot_id', string='Pieces')
+    product_ids = fields.One2many('product.product', 'lot_id', string='Pieces')
     scale_read = fields.Boolean(string='Scale read')
     tax_id = fields.Many2one('account.tax', string='Tax', default=lambda self: self.env.company.account_sale_tax_id)
 

@@ -9,8 +9,7 @@
     'category': 'Inventory',
     'author': 'Alex Esteves',
     'depends': [
-        'account',
-        'stock',
+        'stock_account',
         'web_refresher',
     ],
     'data': [

@@ -31,7 +31,9 @@ class ProductProduct(models.Model):
     def name_get(self):
         res = []
         for product in self:
-            name = "%s (%s) |%s|" % (product.categ_id.name, product.weight or '0.0', product.barcode)
+            name = product.name
+            if product.scale_created:
+                name = "%s (%s) |%s|" % (product.categ_id.name, product.weight or '0.0', product.barcode)
             res += [(product.id, name)]
         return res
 

@@ -70,7 +70,7 @@ class ProductProduct(models.Model):
     def print_sticker(self, print_enabled=True, retail=False):
         manager = LabelManager()
         data = {'code': self.barcode or "",
-                'product': self.categ_id.name or "",
+                'product': self.categ_id.name if self.scale_created else self.name,
                 'weight': self.weight,
                 'price_usd': str(round(self.price_usd)),
                 'price_mxn': str(round(self.price_mxn))}

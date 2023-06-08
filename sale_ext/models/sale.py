@@ -16,12 +16,17 @@ class SaleOrderLine(models.Model):
     barcode = fields.Char(related='product_id.barcode')
     weight = fields.Float(related='product_id.weight')
     average_price_gram = fields.Float(string='Avg. Price per gram', compute='_compute_average_price_gram', store=True)
+    avg_price_calc = fields.Float(string='Avg. Price calc')
     discount = fields.Float()
 
-    @api.depends('price_subtotal', 'product_id', 'product_id.weight')
+    @api.onchange('avg_price_calc')
+    def onchange_avg_price_calc(self):
+        self.price_unit = self.avg_price_calc * self.weight
+
+    @api.depends('product_id', 'product_id.weight')
     def _compute_average_price_gram(self):
         for line in self:
-            if line.product_id:
+            if line.product_id and not line.average_price_gram:
                 line.average_price_gram = round(line.price_subtotal / (line.product_id.weight or 1), 2)
             else:
                 line.average_price_gram = 0

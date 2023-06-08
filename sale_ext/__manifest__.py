@@ -17,6 +17,11 @@
         'data/ir_actions_data.xml',
         'security/ir.model.access.csv',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'sale_ext/static/src/**/*',
+        ],
+    },
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,

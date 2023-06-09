@@ -41,8 +41,8 @@ class ProductProduct(models.Model):
     def create(self, vals_list):
         result = super(ProductProduct, self).create(vals_list)
         for piece in result:
-            piece.name = piece.barcode
             if piece.scale_created:
+                piece.name = piece.barcode
                 self.env['stock.quant'].create({
                     'product_id': piece.id,
                     'quantity': 1,

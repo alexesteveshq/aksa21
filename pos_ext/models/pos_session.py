@@ -8,7 +8,7 @@ class PosSession(models.Model):
 
     def _loader_params_product_product(self):
         result = super(PosSession, self)._loader_params_product_product()
-        result['search_params']['fields'].append('weight')
+        result['search_params']['fields'].extend(['weight', 'retail_variant'])
         return result
 
     def get_pos_ui_product_product_by_params(self, custom_search_params):
@@ -18,8 +18,7 @@ class PosSession(models.Model):
         for product in products:
             variant = variants.filtered(lambda var: var.min_weight <= product['weight'] <= var.max_weight)
             if variant:
-                fixed_price = self.env['ir.config_parameter'].sudo().get_param('stock_ext.retail_variant_amount')
-                price = (float(fixed_price) * product['weight']) * variant.value
+                price = (float(product['retail_variant']) * product['weight']) * variant.value
                 price = price - (price * 15 / 100)
                 product['lst_price'] = price * currency_mxn.inverse_rate
         return products

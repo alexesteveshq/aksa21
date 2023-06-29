@@ -9,3 +9,4 @@ from . import res_config_settings
 from . import stock_picking_return
 from . import stock_quant
 from . import stock_valuation_layer
+from . import stock_picking

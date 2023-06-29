@@ -27,6 +27,7 @@ class ProductProduct(models.Model):
     price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False)
     print_enabled = fields.Boolean(string='Print enabled')
     scale_created = fields.Boolean(string='Scale created')
+    retail_variant = fields.Float(string='Retail variant', default=1)
 
     def name_get(self):
         res = []
@@ -79,8 +80,7 @@ class ProductProduct(models.Model):
             variants = variants.filtered(lambda var: var.min_weight <= self.weight <= var.max_weight)
             currency_mxn = self.env['res.currency'].browse(self.env.ref('base.USD').id)
             if variants:
-                fixed_price = self.env['ir.config_parameter'].sudo().get_param('stock_ext.retail_variant_amount')
-                retail_price = (float(fixed_price) * self.weight) * variants[0].value
+                retail_price = (float(self.retail_variant) * self.weight) * variants[0].value
                 price = retail_price - (retail_price * 15/100)
                 price_taxed = price + (price * self.lot_id.tax_id.amount / 100)
                 data.update({'price_usd': str(round(price_taxed)),

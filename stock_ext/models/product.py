@@ -78,13 +78,13 @@ class ProductProduct(models.Model):
         if retail:
             variants = self.env['piece.variant'].search([])
             variants = variants.filtered(lambda var: var.min_weight <= self.weight <= var.max_weight)
-            currency_mxn = self.env['res.currency'].browse(self.env.ref('base.USD').id)
+            currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
             if variants:
                 retail_price = (float(self.retail_variant) * self.weight) * variants[0].value
                 price = retail_price - (retail_price * 15/100)
                 price_taxed = price + (price * self.lot_id.tax_id.amount / 100)
                 data.update({'price_usd': str(round(price_taxed)),
-                             'price_mxn': str(round(round(price_taxed) * currency_mxn.inverse_rate))})
+                             'price_mxn': str(round(round(price_taxed) * currency_usx.inverse_rate))})
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})
 

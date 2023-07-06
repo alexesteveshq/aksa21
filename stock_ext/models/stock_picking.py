@@ -12,7 +12,7 @@ class StockPicking(models.Model):
     def create(self, vals):
         result = super(StockPicking, self).create(vals)
         for picking in result:
-            picking.move_line_ids.mapped('product_id').write({'retail_variant': picking.retail_variant})
+            picking.mapped('move_ids.product_id').write({'retail_variant': picking.retail_variant})
         return result
 
     def write(self, vals):

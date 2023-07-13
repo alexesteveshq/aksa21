@@ -16,15 +16,20 @@ class ProductProduct(models.Model):
     def _default_piece_barcode(self):
         return self.env['ir.sequence'].next_by_code('stock_ext.stock_piece')
 
-    list_price = fields.Float(string='List price', compute='_compute_price', store=True, readonly=False)
+    weight = fields.Float(tracking=True)
+    list_price = fields.Float(string='List price', compute='_compute_price', store=True, readonly=False,
+                              tracking=True)
     pieces_ids = fields.One2many('stock.piece', 'product_id', string='Pieces')
-    lot_id = fields.Many2one('stock.lot', string='Lot')
-    barcode = fields.Char(default=_default_piece_barcode)
+    lot_id = fields.Many2one('stock.lot', string='Lot', tracking=True)
+    barcode = fields.Char(default=_default_piece_barcode, tracking=True)
     raw_data = fields.Char(string='Raw data')
-    standard_price = fields.Float(compute='_compute_standard_price', store=True, readonly=False)
+    standard_price = fields.Float(compute='_compute_standard_price', store=True, readonly=False,
+                                  tracking=True)
     total_cost = fields.Float(string='Total Cost', compute='_compute_standard_price', store=True)
-    price_usd = fields.Float(string='Price USD', compute='_compute_price', store=True, readonly=False)
-    price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False)
+    price_usd = fields.Float(string='Price USD', compute='_compute_price', store=True, readonly=False,
+                             tracking=True)
+    price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False,
+                             tracking=True)
     print_enabled = fields.Boolean(string='Print enabled')
     scale_created = fields.Boolean(string='Scale created')
     retail_variant = fields.Float(string='Retail variant', default=1)

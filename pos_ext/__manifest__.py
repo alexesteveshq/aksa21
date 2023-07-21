@@ -11,6 +11,14 @@
         'point_of_sale',
         'stock_ext',
     ],
+    'data': [
+        'views/product_views.xml',
+    ],
+    'assets': {
+        'point_of_sale.assets': [
+            'pos_ext/static/src/**/*',
+        ],
+    },
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,

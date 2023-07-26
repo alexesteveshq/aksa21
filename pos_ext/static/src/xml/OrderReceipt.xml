@@ -11,6 +11,9 @@
                 <span class="pos-receipt-right-align">MXN</span>
             </t>
         </xpath>
+        <xpath expr="//div[hasclass('pos-receipt')]" position="attributes">
+            <attribute name="style">padding-right: 25px;</attribute>
+        </xpath>
         <xpath expr="//div[hasclass('pos-receipt-amount')]" position="before">
             <div class="pos-receipt-amount" style="padding-bottom: 20px">
                 SUBTOTAL

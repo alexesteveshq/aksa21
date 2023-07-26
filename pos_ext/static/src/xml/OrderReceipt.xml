@@ -2,6 +2,22 @@
 <templates id="template" xml:space="preserve">
     <t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
         <xpath expr="//span[@t-esc='env.pos.format_currency(receipt.total_discount)']/.." position="replace"/>
+        <xpath expr="//span[@t-esc='env.pos.format_currency(receipt.total_tax)']/.." position="before">
+            Currency
+            <t t-if="receipt.currency.name == 'USX'">
+                <span class="pos-receipt-right-align">USD</span>
+            </t>
+            <t t-else="">
+                <span class="pos-receipt-right-align">MXN</span>
+            </t>
+        </xpath>
+        <xpath expr="//div[hasclass('pos-receipt-amount')]" position="before">
+            <div class="pos-receipt-amount" style="padding-bottom: 20px">
+                SUBTOTAL
+                <span t-esc="env.pos.format_currency(receipt.total_without_tax)" class="pos-receipt-right-align"/>
+                <br/>
+            </div>
+        </xpath>
     </t>
     <t t-name="OrderLinesReceipt" t-inherit="point_of_sale.OrderLinesReceipt" t-inherit-mode="extension" owl="1">
         <xpath expr="//t[@t-esc='line.discount']/.." position="replace"/>

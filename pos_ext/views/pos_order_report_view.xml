@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_report_pos_order_pivot" model="ir.ui.view">
+        <field name="name">report.pos.order.pivot.aksa</field>
+        <field name="model">report.pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_report_pos_order_pivot"/>
+        <field name="arch" type="xml">
+            <field name="product_categ_id" position="replace"/>
+            <field name="product_qty" position="replace"/>
+            <field name="price_total" position="replace"/>
+            <field name="date" position="attributes">
+                <attribute name="type">row</attribute>
+            </field>
+            <field name="order_id" position="after">
+                <field name="quantity_average" type="measure"/>
+                <field name="discount_average" type="measure"/>
+                <field name="average_price" type="measure"/>
+                <field name="price_sub_total" type="measure"/>
+            </field>
+            <field name="average_price" position="attributes">
+                <attribute name="string">Sale average</attribute>
+            </field>
+            <field name="price_sub_total" position="attributes">
+                <attribute name="string">Total sales</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_report_pos_order_search" model="ir.ui.view">
+        <field name="name">report.pos.order.search.aksa</field>
+        <field name="model">report.pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_report_pos_order_search"/>
+        <field name="arch" type="xml">
+            <filter name="order_month" position="after">
+                <filter string="Payment method" name="payment_method" context="{'group_by':'payment_method_id'}"/>
+            </filter>
+            <filter name="order_month" position="after">
+                <filter name="User" position="move"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="point_of_sale.action_report_pos_order_all" model="ir.actions.act_window">
+        <field name="context">{'search_default_payment_method': 1,
+            'search_default_order_month': 1,
+            'search_default_User': 1}</field>
+    </record>
+</odoo>

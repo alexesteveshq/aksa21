@@ -10,6 +10,9 @@
     'depends': [
         'account',
     ],
+    'data': [
+        'data/ir_action_server.xml',
+    ],
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,

@@ -7,7 +7,6 @@
         <field name="arch" type="xml">
             <field name="product_categ_id" position="replace"/>
             <field name="product_qty" position="replace"/>
-            <field name="price_total" position="replace"/>
             <field name="date" position="attributes">
                 <attribute name="type">row</attribute>
             </field>
@@ -15,12 +14,11 @@
                 <field name="quantity_average" type="measure"/>
                 <field name="discount_average" type="measure"/>
                 <field name="average_price" type="measure"/>
-                <field name="price_sub_total" type="measure"/>
             </field>
             <field name="average_price" position="attributes">
                 <attribute name="string">Sale average</attribute>
             </field>
-            <field name="price_sub_total" position="attributes">
+            <field name="price_total" position="attributes">
                 <attribute name="string">Total sales</attribute>
             </field>
         </field>
@@ -36,6 +34,8 @@
             </filter>
             <filter name="order_month" position="after">
                 <filter name="User" position="move"/>
+                <filter string="Current Month" name="current_month"
+                        domain="[('date','&lt;',(context_today()+relativedelta(months=1)).strftime('%%Y-%%m-01')), ('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
             </filter>
         </field>
     </record>

@@ -8,6 +8,19 @@ class SaleOrder(models.Model):
 
     lot_discount_ids = fields.One2many('lot.discount', 'order_id', string='Lot discount')
 
+    def sell_transfered(self, location_id=False, company_id=False, limit=1000):
+        quants = self.env['stock.quant'].search([('location_id', '=', location_id)], limit=limit)
+        company = self.env['res.company'].browse(company_id)
+        if quants and company_id:
+            order = self.env['sale.order'].create(
+                {'name': 'Transfered products',
+                 'partner_id': company.partner_id.id,
+                 'order_line': [(0, 0, {'product_id': quant.product_id.id,
+                                        'product_uom_qty': quant.product_id.qty_available,
+                                        'price_unit': 0})
+                                for quant in quants]})
+            order.action_confirm()
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

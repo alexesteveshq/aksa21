@@ -15,6 +15,7 @@
         'views/sale_views.xml',
         'views/sale_ext_templates.xml',
         'data/ir_actions_data.xml',
+        'data/ir_cron.xml',
         'security/ir.model.access.csv',
     ],
     'assets': {

@@ -23,5 +23,5 @@ class StockMoveLine(models.Model):
     def print_sticker_retail(self):
         prod_model = self.env['product.product']
         for move in self:
-            piece = prod_model.search([('barcode', '=', move.product_id.barcode)])
-            piece.print_sticker(retail=True)
+            piece = prod_model.sudo().search([('barcode', '=', move.product_id.barcode)])
+            piece.sudo().print_sticker(retail=True)

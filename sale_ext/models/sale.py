@@ -13,15 +13,15 @@ class SaleOrder(models.Model):
     def create(self, vals):
         result = super(SaleOrder, self).create(vals)
         for order in result:
-            order.mapped('order_line.product_id').filtered(lambda prod: not prod.retail_variant).write(
-                {'retail_variant': order.retail_variant})
+            if order.retail_variant:
+                order.mapped('order_line.product_id').write({'retail_variant': order.retail_variant})
         return result
 
     def write(self, vals):
         res = super(SaleOrder, self).write(vals)
         if vals and 'retail_variant' in vals and vals['retail_variant']:
             for order in self:
-                order.order_line.mapped('product_id').write({'retail_variant': purchase.retail_variant})
+                order.order_line.mapped('product_id').write({'retail_variant': order.retail_variant})
         return res
 
     def sell_transfered(self, location_id=False, company_id=False, limit=1000):

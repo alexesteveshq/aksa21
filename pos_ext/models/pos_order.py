@@ -6,12 +6,22 @@ from odoo import fields, models, api, _
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    line_qty = fields.Integer(string='Line qty', compute='_compute_line_qty', store=True)
+    sale_qty = fields.Integer(string='Sale qty', compute='_compute_sale_qty', store=True)
+    bank_paid_amount = fields.Float(string='Bank paid amount', compute='_payment_method_paid', store=True)
+    cash_paid_amount = fields.Float(string='Cash paid amount', compute='_payment_method_paid', store=True)
 
-    @api.depends('lines')
-    def _compute_line_qty(self):
+    @api.depends('payment_ids', 'payment_ids.amount')
+    def _payment_method_paid(self):
         for order in self:
-            order.line_qty = len(order.lines)
+            order.bank_paid_amount = sum(order.mapped('payment_ids').filtered(
+                lambda pay: pay.payment_method_id.journal_id.code == 'BNK1').mapped('amount'))
+            order.cash_paid_amount = sum(order.mapped('payment_ids').filtered(
+                lambda pay: pay.payment_method_id.journal_id.code == 'CSH1').mapped('amount'))
+
+    @api.depends('lines', 'lines.qty')
+    def _compute_sale_qty(self):
+        for order in self:
+            order.sale_qty = abs(sum(order.mapped('lines.qty')))
 
     def update_pos(self, company_id=False, backup_company_id=False, store_name=False):
         journal_model = self.env['account.journal']
@@ -59,7 +69,7 @@ class PosOrder(models.Model):
         for asset in assets:
             if asset.journal_id.code in journals.mapped('code'):
                 journal = journals.filtered(lambda jn: jn.code == asset.journal_id.code)
-                move_model.create({
+                move = move_model.create({
                     'company_id': company.id,
                     'journal_id': journal.id,
                     'date': asset.date,
@@ -68,3 +78,5 @@ class PosOrder(models.Model):
                         lambda acc: acc.code == line.account_id.code).id,
                                          'debit': line.debit,
                                          'credit': line.credit}) for line in asset.line_ids]})
+                pos_orders.filtered(lambda order: order.session_move_id == asset).write(
+                    {'session_move_id': move.id})

@@ -158,8 +158,8 @@ msgstr "Total de ventas"
 #. odoo-javascript
 #: code:addons/pos_ext/static/src/js/PreventAdd.js:0
 #, python-format
-msgid "This product is not available anymore"
-msgstr "Este producto ya no esta disponible"
+msgid "This product is not available"
+msgstr "Este producto no esta disponible"
 
 #. module: pos_ext
 #. odoo-javascript

@@ -10,15 +10,16 @@ odoo.define('pos_ext.prevent_add', function(require) {
 	const PosExt = (Order) => class PosExt extends Order {
 		async add_product(product, options){
 		    const avlProduct = await this.pos.env.services.rpc({
-                model: 'product.product',
+                model: 'stock.quant',
                 method: 'search_read',
-                args: [[['barcode', '=', product.barcode]]],
-                fields: ['qty_available'],
+                args: [[['product_id.barcode', '=', product.barcode], ['quantity', '>=', 1],
+                 ['company_id', '=', product.pos.company.id]]],
+                fields: ['id'],
             })
-		    if (avlProduct[0].qty_available === 0){
+		    if (!avlProduct.length){
 		        Gui.showPopup('ErrorPopup', {
                     title: _t('Error'),
-                    body: _t('This product is not available anymore')
+                    body: _t('This product is not available')
                 });
                 return
 		    }

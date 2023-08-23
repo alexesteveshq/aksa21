@@ -93,7 +93,7 @@ odoo.define('pos_multi_pricelist_app.multi_pricelist', function(require) {
 	                   (! item.date_end || moment.utc(item.date_end).isSameOrAfter(date));
 	        });
 
-	        var price = self.lst_price;
+	        var price = self.retail_price;
 			var pricelist_currency = pricelist.currency_id[0];
 			if(my_pos.config.currency_id[0] != pricelist_currency)
 			{

@@ -8,17 +8,12 @@ class PosSession(models.Model):
 
     def _loader_params_product_product(self):
         result = super(PosSession, self)._loader_params_product_product()
-        result['search_params']['fields'].extend(['weight', 'retail_variant'])
+        result['search_params']['fields'].extend(['weight', 'retail_price'])
         return result
 
     def get_pos_ui_product_product_by_params(self, custom_search_params):
         products = super(PosSession, self).get_pos_ui_product_product_by_params(custom_search_params)
-        variants = self.env['piece.variant'].search([])
-        currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
         for product in products:
-            variant = variants.filtered(lambda var: var.min_weight <= product['weight'] <= var.max_weight)
-            if variant:
-                price = (float(product['retail_variant']) * product['weight']) * variant.value
-                price = price - (price * 15 / 100)
-                product['lst_price'] = price * currency_usx.inverse_rate
+            if product['retail_price']:
+                product['lst_price'] = product['retail_price']
         return products

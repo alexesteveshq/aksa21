@@ -33,10 +33,11 @@ class ProductProduct(models.Model):
     print_enabled = fields.Boolean(string='Print enabled')
     scale_created = fields.Boolean(string='Scale created')
     retail_variant = fields.Float(string='Retail variant', default=1)
-    retail_price = fields.Float(string='Retail price (untaxed)', compute='_compute_retail_price', store=True)
+    retail_price_untaxed = fields.Float(string='Retail price (untaxed)',
+                                        compute='_compute_retail_price_untaxed', store=True)
 
-    @api.depends('retail_variant', 'weight')
-    def _compute_retail_price(self):
+    @api.depends('retail_variant', 'weight', 'lst_price')
+    def _compute_retail_price_untaxed(self):
         variants = self.env['piece.variant'].search([])
         currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
         for product in self:
@@ -44,9 +45,9 @@ class ProductProduct(models.Model):
             if variant:
                 price = (float(product.retail_variant) * product.weight) * variant.value
                 price = price - (price * 15 / 100)
-                product.retail_price = price * currency_usx.inverse_rate
+                product.retail_price_untaxed = price * currency_usx.inverse_rate
             else:
-                product.retail_price = product.lst_price
+                product.retail_price_untaxed = product.lst_price
 
     def name_get(self):
         res = []
@@ -94,9 +95,9 @@ class ProductProduct(models.Model):
                 'weight': self.weight,
                 'price_usd': str(round(self.price_usd)),
                 'price_mxn': str(round(self.price_mxn))}
-        if retail and self.retail_price:
+        if retail and self.retail_price_untaxed:
             currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
-            price_taxed = self.retail_price + (self.retail_price * self.lot_id.tax_id.amount / 100)
+            price_taxed = self.retail_price_untaxed + (self.retail_price_untaxed * self.taxes_id[0].amount / 100)
             data.update({'price_usd': str(round(round(price_taxed) / currency_usx.inverse_rate)),
                          'price_mxn': str(round(price_taxed))})
         label = manager.generate_label_data(data)

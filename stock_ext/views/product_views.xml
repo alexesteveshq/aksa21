@@ -8,7 +8,7 @@
                 <field name="lot_id"/>
                 <field name="raw_data"/>
                 <field name="retail_variant"/>
-                <field name="retail_price"/>
+                <field name="retail_price_untaxed"/>
                 <field name="price_usd"/>
                 <field name="price_mxn"/>
             </xpath>

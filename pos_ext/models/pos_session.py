@@ -17,3 +17,14 @@ class PosSession(models.Model):
             if product['retail_price_untaxed']:
                 product['lst_price'] = product['retail_price_untaxed']
         return products
+
+    def find_product_by_barcode(self, barcode):
+        result = super(PosSession, self).find_product_by_barcode(barcode)
+        if 'product_id' not in result:
+            product = self.env['product.product'].search([
+                ('barcode', '=', barcode),
+                ('sale_ok', '=', True),
+            ])
+            if product:
+                return {'product_id': [product.id]}
+        return result

@@ -216,23 +216,14 @@ odoo.define('pos_multi_pricelist_app.multi_pricelist', function(require) {
 			}
 			for (var i = 0; i < self.pos.currencies.length; i++) {
 				if (json.new_currency != undefined){
-					if(self.pos.currencies[i].id == json.new_currency.id){
+					if(self.pos.currencies[i].id == self.pricelist.currency_id[0]){
 						n_crncy= self.pos.currencies[i];
 						break;
 					}
 				}
 			}
-			var have = config_currencies.includes(json.new_currency);
-
-			if(have)
-			{
-				this.new_currency = n_crncy;
-				this.pos.currency = n_crncy;
-			}
-			else{
-				this.pricelist = this.pos.default_pricelist;
-				this.new_currency = this.pos.currency;
-			}	
+			this.new_currency = n_crncy;
+			this.pos.currency = n_crncy;
 		}
     }
 	Registries.Model.extend(Order, PosOrder);

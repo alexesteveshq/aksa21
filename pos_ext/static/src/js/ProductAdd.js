@@ -23,6 +23,7 @@ odoo.define('pos_ext.prevent_add', function(require) {
                 });
                 return
 		    }
+		    arguments[0]['display_name'] = arguments[0]['display_name'] +" ["+  arguments[0]['barcode'] +"]"
             super.add_product(...arguments);
 		}
     }

@@ -24,7 +24,7 @@ class ProductProduct(models.Model):
     barcode = fields.Char(default=_default_piece_barcode, tracking=True)
     raw_data = fields.Char(string='Raw data')
     standard_price = fields.Float(compute='_compute_standard_price', store=True, readonly=False,
-                                  tracking=True)
+                                  tracking=True, company_dependent=True,)
     total_cost = fields.Float(string='Total Cost', compute='_compute_standard_price', store=True)
     price_usd = fields.Float(string='Price USD', compute='_compute_price', store=True, readonly=False,
                              tracking=True)

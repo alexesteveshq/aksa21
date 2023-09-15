@@ -42,7 +42,7 @@ class ProductProduct(models.Model):
         currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
         for product in self:
             variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
-            if variant:
+            if variant and product.retail_variant:
                 price = (float(product.retail_variant) * product.weight) * variant.value
                 price = price - (price * 15 / 100)
                 product.retail_price_untaxed = price * currency_usx.inverse_rate

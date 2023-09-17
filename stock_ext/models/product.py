@@ -31,6 +31,7 @@ class ProductProduct(models.Model):
     price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False,
                              tracking=True)
     print_enabled = fields.Boolean(string='Print enabled')
+    print_queue = fields.Integer(string='Print queue')
     scale_created = fields.Boolean(string='Scale created')
     retail_variant = fields.Float(string='Retail variant', default=1)
     retail_price_untaxed = fields.Float(string='Retail price (untaxed)',
@@ -101,7 +102,9 @@ class ProductProduct(models.Model):
             data.update({'price_usd': str(round(round(price_taxed) / currency_usx.inverse_rate)),
                          'price_mxn': str(round(price_taxed))})
         label = manager.generate_label_data(data)
-        self.write({'raw_data': label.dumpZPL(), 'print_enabled': print_enabled})
+        self.write({'raw_data': label.dumpZPL(),
+                    'print_enabled': print_enabled,
+                    'print_queue': int(self.qty_available)})
 
     def print_sticker_wholesale(self):
         for piece in self:

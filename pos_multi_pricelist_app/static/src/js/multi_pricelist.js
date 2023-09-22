@@ -169,14 +169,12 @@ odoo.define('pos_multi_pricelist_app.multi_pricelist', function(require) {
 		constructor(obj, options) {
 			super(...arguments);
 			var self = this;
-			if (!options.json) {
-				for (var i = 0; i < self.pos.currencies.length; i++) {
-					if(self.pos.currencies[i].id == this.pos.default_pricelist.currency_id[0]){
-						self.pos.currency = self.pos.currencies[i];
-						break;
-					}
-				}
-			}
+            for (var i = 0; i < self.pos.currencies.length; i++) {
+                if(self.pos.currencies[i].id == self.pricelist.currency_id[0]){
+                    self.pos.currency = self.pos.currencies[i];
+                    break;
+                }
+            }
 		}
 
 		set_pricelist (pricelist) {

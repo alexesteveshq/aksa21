@@ -80,3 +80,13 @@ class PosOrder(models.Model):
                                          'credit': line.credit}) for line in asset.line_ids]})
                 pos_orders.filtered(lambda order: order.session_move_id == asset).write(
                     {'session_move_id': move.id})
+
+
+class ReportSaleDetails(models.AbstractModel):
+    _inherit = 'report.point_of_sale.report_saledetails'
+
+    @api.model
+    def get_sale_details(self, date_start=False, date_stop=False, config_ids=False, session_ids=False):
+        result = super(ReportSaleDetails, self.with_context(no_convert=True)).get_sale_details(
+            date_start, date_stop, config_ids, session_ids)
+        return result

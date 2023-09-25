@@ -89,4 +89,7 @@ class ReportSaleDetails(models.AbstractModel):
     def get_sale_details(self, date_start=False, date_stop=False, config_ids=False, session_ids=False):
         result = super(ReportSaleDetails, self.with_context(no_convert=True)).get_sale_details(
             date_start, date_stop, config_ids, session_ids)
+        product_model = self.env['product.product']
+        for prod in result['products']:
+            prod['product_name'] = product_model.browse(prod['product_id']).display_name
         return result

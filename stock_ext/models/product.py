@@ -19,13 +19,13 @@ class ProductProduct(models.Model):
     weight = fields.Float(tracking=True)
     list_price = fields.Float(string='List price', compute='_compute_price', store=True, readonly=False,
                               tracking=True)
-    pieces_ids = fields.One2many('stock.piece', 'product_id', string='Pieces')
     lot_id = fields.Many2one('stock.lot', string='Lot', tracking=True)
     barcode = fields.Char(default=_default_piece_barcode, tracking=True)
     raw_data = fields.Char(string='Raw data')
     standard_price = fields.Float(compute='_compute_standard_price', store=True, readonly=False,
                                   tracking=True, company_dependent=True,)
     total_cost = fields.Float(string='Total Cost', compute='_compute_standard_price', store=True)
+    cost_usd = fields.Float(string='Cost USD')
     price_usd = fields.Float(string='Price USD', compute='_compute_price', store=True, readonly=False,
                              tracking=True)
     price_mxn = fields.Float(string='Price MXN', compute='_compute_price', store=True, readonly=False,
@@ -36,6 +36,12 @@ class ProductProduct(models.Model):
     retail_variant = fields.Float(string='Retail variant', default=1)
     retail_price_untaxed = fields.Float(string='Retail price (untaxed)',
                                         compute='_compute_retail_price_untaxed', store=True)
+
+    @api.onchange('cost_usd')
+    def _onchange_cost_usd(self):
+        if self.cost_usd:
+            currency_mxn = self.env['res.currency'].browse(self.env.ref('base.USD').id)
+            self.standard_price = self.cost_usd * currency_mxn.inverse_rate
 
     @api.depends('retail_variant', 'weight', 'lst_price')
     def _compute_retail_price_untaxed(self):
@@ -73,21 +79,24 @@ class ProductProduct(models.Model):
 
     @api.depends('lot_id', 'lot_id.cost_2', 'lot_id.additional_usd', 'weight')
     def _compute_standard_price(self):
+        currency_mxn = self.env['res.currency'].browse(self.env.ref('base.USD').id)
         for piece in self:
-            piece.standard_price = (piece.lot_id.cost_2 + piece.lot_id.additional_usd) * piece.weight
+            piece.standard_price = ((piece.lot_id.cost_2 + piece.lot_id.additional_usd) *
+                                    piece.weight * currency_mxn.inverse_rate)
+            piece.cost_usd = (piece.lot_id.cost_2 + piece.lot_id.additional_usd) * piece.weight
             piece.total_cost = piece.lot_id.cost_2 * piece.weight
 
-    @api.depends('lot_id', 'standard_price', 'lot_id.tax_id', 'lot_id.variant')
+    @api.depends('lot_id', 'cost_usd', 'lot_id.tax_id', 'lot_id.variant')
     def _compute_price(self):
         currency_model = self.env['res.currency']
         for piece in self:
-            price_untaxed = (piece.standard_price * (piece.lot_id.variant or 1))
+            price_untaxed = (piece.cost_usd * (piece.lot_id.variant or 1))
             price = price_untaxed + (price_untaxed * piece.lot_id.tax_id.amount / 100)
             currency_mxn = currency_model.browse(self.env.ref('base.USD').id)
             price_mxn = price * currency_mxn.inverse_rate
             piece.price_usd = piece.lot_id.purchase_cost if not price else price
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
-            piece.list_price = piece.standard_price * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
+            piece.list_price = piece.cost_usd * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
 
     def print_sticker(self, print_enabled=True, retail=False):
         manager = LabelManager()

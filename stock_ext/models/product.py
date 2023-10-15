@@ -22,6 +22,7 @@ class ProductProduct(models.Model):
     lot_id = fields.Many2one('stock.lot', string='Lot', tracking=True)
     barcode = fields.Char(default=_default_piece_barcode, tracking=True)
     raw_data = fields.Char(string='Raw data')
+    product_label_id = fields.Many2one('stock.product.label', string='Product label')
     standard_price = fields.Float(compute='_compute_standard_price', store=True, readonly=False,
                                   tracking=True, company_dependent=True,)
     total_cost = fields.Float(string='Total Cost', compute='_compute_standard_price', store=True)
@@ -33,9 +34,10 @@ class ProductProduct(models.Model):
     print_enabled = fields.Boolean(string='Print enabled')
     print_queue = fields.Integer(string='Print queue')
     scale_created = fields.Boolean(string='Scale created')
-    retail_variant = fields.Float(string='Retail variant', default=1)
-    retail_price_untaxed = fields.Float(string='Retail price (untaxed)',
-                                        compute='_compute_retail_price_untaxed', store=True)
+
+    @api.onchange('product_label_id')
+    def onchange_product_label_id(self):
+        self.name = self.product_label_id.name
 
     @api.onchange('cost_usd')
     def _onchange_cost_usd(self):
@@ -43,25 +45,12 @@ class ProductProduct(models.Model):
             currency_mxn = self.env['res.currency'].browse(self.env.ref('base.USD').id)
             self.standard_price = self.cost_usd * currency_mxn.inverse_rate
 
-    @api.depends('retail_variant', 'weight', 'lst_price')
-    def _compute_retail_price_untaxed(self):
-        variants = self.env['piece.variant'].search([])
-        currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
-        for product in self:
-            variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
-            if variant and product.retail_variant:
-                price = (float(product.retail_variant) * product.weight) * variant.value
-                price = price - (price * 15 / 100)
-                product.retail_price_untaxed = price * currency_usx.inverse_rate
-            else:
-                product.retail_price_untaxed = product.lst_price
-
     def name_get(self):
         res = []
         for product in self:
             name = product.name
             if product.scale_created:
-                name = "%s (%s) |%s|" % (product.categ_id.name, product.weight or '0.0', product.barcode)
+                name = "%s (%s) |%s|" % (product.name, product.weight or '0.0', product.barcode)
             res += [(product.id, name)]
         return res
 
@@ -71,6 +60,7 @@ class ProductProduct(models.Model):
         for piece in result:
             if piece.scale_created:
                 piece.name = piece.barcode
+                piece.category_id = self.env.ref('stock_ext.product_category_piece')
                 self.env['stock.quant'].create({
                     'product_id': piece.id,
                     'quantity': 1,
@@ -98,18 +88,13 @@ class ProductProduct(models.Model):
             piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
             piece.list_price = piece.cost_usd * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
 
-    def print_sticker(self, print_enabled=True, retail=False):
+    def print_sticker(self, print_enabled=True):
         manager = LabelManager()
         data = {'code': self.barcode or "",
                 'product': self.categ_id.name if self.scale_created else self.name,
                 'weight': self.weight,
                 'price_usd': str(round(self.price_usd)),
                 'price_mxn': str(round(self.price_mxn))}
-        if retail and self.retail_price_untaxed:
-            currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
-            price_taxed = self.retail_price_untaxed + (self.retail_price_untaxed * self.taxes_id[0].amount / 100)
-            data.update({'price_usd': str(round(round(price_taxed) / currency_usx.inverse_rate)),
-                         'price_mxn': str(round(price_taxed))})
         label = manager.generate_label_data(data)
         self.write({'raw_data': label.dumpZPL(),
                     'print_enabled': print_enabled,

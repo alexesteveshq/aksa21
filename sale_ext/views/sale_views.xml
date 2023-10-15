@@ -5,9 +5,6 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <field name="payment_term_id" position="after">
-                <field name="retail_variant"/>
-            </field>
             <xpath expr="//field[@name='order_line']//tree//field[@name='product_template_id']" position="after">
                 <field name="piece_lot_it" optional="show"/>
                 <field name="barcode" optional="show"/>

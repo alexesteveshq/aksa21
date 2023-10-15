@@ -7,36 +7,6 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     lot_discount_ids = fields.One2many('lot.discount', 'order_id', string='Lot discount')
-    retail_variant = fields.Float(string='Retail variant')
-
-    @api.model_create_multi
-    def create(self, vals):
-        result = super(SaleOrder, self).create(vals)
-        for order in result:
-            if order.retail_variant:
-                order.mapped('order_line.product_id').write({'retail_variant': order.retail_variant})
-        return result
-
-    def write(self, vals):
-        res = super(SaleOrder, self).write(vals)
-        if vals and 'retail_variant' in vals and vals['retail_variant']:
-            for order in self:
-                order.order_line.mapped('product_id').write({'retail_variant': order.retail_variant})
-        return res
-
-    def sell_transfered(self, location_id=False, company_id=False, limit=1000):
-        quants = self.env['stock.quant'].search([('location_id', '=', location_id)], limit=limit)
-        company = self.env['res.company'].browse(company_id)
-        if quants and company_id:
-            order = self.env['sale.order'].create(
-                {'name': 'Transfered products',
-                 'partner_id': company.partner_id.id,
-                 'order_line': [
-                     (0, 0, {'product_id': quant.product_id.id,
-                             'product_uom_qty': quant.available_quantity,
-                             'avg_price_calc': 4 if quant.product_id.retail_variant == 6.95 else 2.75})
-                     for quant in quants]})
-            order.mapped('order_line').onchange_avg_price_calc()
 
 
 class SaleOrderLine(models.Model):

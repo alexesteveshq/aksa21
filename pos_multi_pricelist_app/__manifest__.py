@@ -2,7 +2,7 @@
 {
     'name': 'Allow Multi Currencies Pricelist in POS',
     "author": "Edge Technologies",
-    'version': '16.0',
+    'version': '16.0.1',
     'live_test_url': "https://youtu.be/YoVeJpDWzw0",
     "images": ['static/description/main_screenshot.png'],
     'summary': "POS multi pricelist pos multi currency pricelist multi currency pricelist on pos different currency pricelist point of sale multi pricelist point of sale multi currency price-list multi currency pricelist on pos pricelist pos multi currencies pricelist.",

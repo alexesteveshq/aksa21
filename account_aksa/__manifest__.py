@@ -8,10 +8,10 @@
     'category': 'Account',
     'author': 'Alex Esteves',
     'depends': [
-        'account',
+        'stock_account',
     ],
     'data': [
-        'data/ir_action_server.xml',
+        'views/product_category_views.xml',
     ],
     'license': 'AGPL-3',
     'installable': True,

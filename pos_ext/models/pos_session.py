@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, _
-from odoo.tools import float_is_zero
 from odoo.exceptions import UserError
 
 
@@ -32,16 +31,9 @@ class PosSession(models.Model):
         return result
 
     def _create_non_reconciliable_move_lines(self, data):
-        # Create account.move.line records for
-        #   - sales
-        #   - taxes
-        #   - stock expense
-        #   - non-cash split receivables (not for automatic reconciliation)
-        #   - non-cash combine receivables (not for automatic reconciliation)
         taxes = data.get('taxes')
         sales = data.get('sales')
         stock_expense = data.get('stock_expense')
-        rounding_difference = data.get('rounding_difference')
         MoveLine = data.get('MoveLine')
 
         tax_vals = [self._get_tax_vals(key, amounts['amount'], amounts['amount_converted'], amounts['base_amount_converted']) for key, amounts in taxes.items()]
@@ -53,11 +45,6 @@ class PosSession(models.Model):
                 'Please set corresponding tax account in each repartition line of the following taxes: \n%s'
             ) % ', '.join(tax_names_no_account)
             raise UserError(error_message)
-        rounding_vals = []
-
-        if not float_is_zero(rounding_difference['amount'], precision_rounding=self.currency_id.rounding) or not float_is_zero(rounding_difference['amount_converted'], precision_rounding=self.currency_id.rounding):
-            rounding_vals = [self._get_rounding_difference_vals(rounding_difference['amount'], rounding_difference['amount_converted'])]
-
         MoveLine.create(tax_vals)
         move_line_ids = MoveLine.create([self._get_sale_vals(key, amounts['amount'], amounts['amount_converted']) for key, amounts in sales.items()])
         for key, ml_id in zip(sales.keys(), move_line_ids.ids):

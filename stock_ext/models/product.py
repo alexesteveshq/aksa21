@@ -74,8 +74,9 @@ class ProductProduct(models.Model):
     @api.depends('lot_id', 'lot_id.cost_2', 'lot_id.additional_usd', 'weight')
     def _compute_standard_price(self):
         for piece in self:
-            piece.standard_price = (piece.lot_id.cost_2 + piece.lot_id.additional_usd) * piece.weight
-            piece.total_cost = piece.lot_id.cost_2 * piece.weight
+            if not self._context.get('import_file'):
+                piece.standard_price = (piece.lot_id.cost_2 + piece.lot_id.additional_usd) * piece.weight
+                piece.total_cost = piece.lot_id.cost_2 * piece.weight
 
     @api.depends('lot_id', 'standard_price', 'lot_id.tax_id', 'lot_id.variant')
     def _compute_price(self):

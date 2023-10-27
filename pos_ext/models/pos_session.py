@@ -31,6 +31,8 @@ class PosSession(models.Model):
         return result
 
     def _create_non_reconciliable_move_lines(self, data):
+        if not self.picking_ids:
+            return super(PosSession, self)._create_non_reconciliable_move_lines(data)
         taxes = data.get('taxes')
         sales = data.get('sales')
         stock_expense = data.get('stock_expense')

@@ -12,6 +12,7 @@
     ],
     'data': [
         'data/ir_actions.xml',
+        'views/purchase_views.xml',
     ],
     'license': 'AGPL-3',
     'installable': True,

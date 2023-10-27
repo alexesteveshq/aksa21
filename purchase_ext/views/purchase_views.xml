@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_line_tree_view" model="ir.ui.view">
+        <field name="name">purchase.order.line.tree</field>
+        <field name="model">purchase.order.line</field>
+        <field name="arch" type="xml">
+            <tree create="true" edit="true">
+                <field name="product_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="purchase_order_line_action" model="ir.actions.act_window">
+        <field name="name">Purchase order lines</field>
+        <field name="res_model">purchase.order.line</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_purchase_order_line"
+              action="purchase_order_line_action"
+              parent="purchase.menu_procurement_management"/>
+</odoo>

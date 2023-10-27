@@ -42,13 +42,14 @@ class ProductProduct(models.Model):
         variants = self.env['piece.variant'].search([])
         currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
         for product in self:
-            variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
-            if variant and product.retail_variant:
-                price = (float(product.retail_variant) * product.weight) * variant.value
-                price = price - (price * 15 / 100)
-                product.retail_price_untaxed = price * currency_usx.inverse_rate
-            else:
-                product.retail_price_untaxed = product.lst_price
+            if not self._context.get('import_file'):
+                variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
+                if variant and product.retail_variant:
+                    price = (float(product.retail_variant) * product.weight) * variant.value
+                    price = price - (price * 15 / 100)
+                    product.retail_price_untaxed = price * currency_usx.inverse_rate
+                else:
+                    product.retail_price_untaxed = product.lst_price
 
     def name_get(self):
         res = []
@@ -82,13 +83,14 @@ class ProductProduct(models.Model):
     def _compute_price(self):
         currency_model = self.env['res.currency']
         for piece in self:
-            price_untaxed = (piece.standard_price * (piece.lot_id.variant or 1))
-            price = price_untaxed + (price_untaxed * piece.lot_id.tax_id.amount / 100)
-            currency_mxn = currency_model.browse(self.env.ref('base.USD').id)
-            price_mxn = price * currency_mxn.inverse_rate
-            piece.price_usd = piece.lot_id.purchase_cost if not price else price
-            piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
-            piece.list_price = piece.standard_price * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
+            if not self._context.get('import_file'):
+                price_untaxed = (piece.standard_price * (piece.lot_id.variant or 1))
+                price = price_untaxed + (price_untaxed * piece.lot_id.tax_id.amount / 100)
+                currency_mxn = currency_model.browse(self.env.ref('base.USD').id)
+                price_mxn = price * currency_mxn.inverse_rate
+                piece.price_usd = piece.lot_id.purchase_cost if not price else price
+                piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
+                piece.list_price = piece.standard_price * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
 
     def print_sticker(self, print_enabled=True, retail=False):
         manager = LabelManager()

@@ -10,6 +10,6 @@ class StockPicking(models.Model):
 
     def button_validate(self):
         res = super(StockPicking, self).button_validate()
-        if res:
+        if res and self.retail_variant:
             for line in self.move_ids_without_package:
                 line.product_id.retail_variant = self.retail_variant

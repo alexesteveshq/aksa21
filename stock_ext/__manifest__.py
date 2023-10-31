@@ -19,6 +19,7 @@
         'views/piece_variant_views.xml',
         'views/product_views.xml',
         'wizard/stock_picking_return_views.xml',
+        'wizard/stock_move_transfer_views.xml',
         'views/stock_picking_templates.xml',
         'security/ir.model.access.csv',
         'views/stock_pieces_views.xml',

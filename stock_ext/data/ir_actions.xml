@@ -53,4 +53,13 @@
         <field name="state">code</field>
         <field name="code">records.print_sticker_wholesale()</field>
     </record>
+
+    <record id="action_stock_move_transfer" model="ir.actions.act_window">
+        <field name="name">Create transfer</field>
+        <field name="res_model">stock.move.transfer</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="stock.model_stock_move"/>
+        <field name="binding_view_types">list</field>
+    </record>
 </odoo>

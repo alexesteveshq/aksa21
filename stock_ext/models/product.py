@@ -100,7 +100,7 @@ class ProductProduct(models.Model):
                 'price_usd': str(round(self.price_usd)),
                 'price_mxn': str(round(self.price_mxn))}
         if self.retail_price_untaxed:
-            currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
+            currency_usx = self.env['res.currency'].search([('name', '=', 'USR')])
             price_taxed = self.retail_price_untaxed + (self.retail_price_untaxed * self.taxes_id[0].amount / 100)
             data.update({'price_usd': str(round(round(price_taxed) / currency_usx.inverse_rate)),
                          'price_mxn': str(round(price_taxed))})

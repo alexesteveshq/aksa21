@@ -31,7 +31,8 @@ class PosSession(models.Model):
         return result
 
     def _create_non_reconciliable_move_lines(self, data):
-        tax_account = self.env['account.account'].search([('code', '=', '210.01.01')])
+        tax_account = self.env['account.account'].search(
+            [('code', '=', '210.01.01'), ('company_id', '=', self.env.company.id)])
         if not self.picking_ids or not tax_account:
             return super(PosSession, self)._create_non_reconciliable_move_lines(data)
         taxes = data.get('taxes')
@@ -52,9 +53,8 @@ class PosSession(models.Model):
         move_line_ids = MoveLine.create([self._get_sale_vals(key, amounts['amount'], amounts['amount_converted']) for key, amounts in sales.items()])
         for key, ml_id in zip(sales.keys(), move_line_ids.ids):
             sales[key]['move_line_id'] = ml_id
-        tax = self.picking_ids[0].product_id.taxes_id
         for key, amounts in stock_expense.items():
-            tax_amount = (amounts['amount'] * tax.amount) / 100
+            tax_amount = (amounts['amount'] * tax_account.tax_ids[0].amount) / 100
             amount_untaxed = amounts['amount'] - tax_amount
             MoveLine.create(self._get_stock_expense_vals(key, amount_untaxed, amount_untaxed))
             MoveLine.create(self._get_stock_expense_vals(tax_account, tax_amount, tax_amount))

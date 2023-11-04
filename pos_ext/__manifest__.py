@@ -10,6 +10,7 @@
     'depends': [
         'point_of_sale',
         'stock_ext',
+        'pos_multi_pricelist_app',
     ],
     'data': [
         'views/product_views.xml',

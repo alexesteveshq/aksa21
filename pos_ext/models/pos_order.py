@@ -81,6 +81,27 @@ class PosOrder(models.Model):
                 pos_orders.filtered(lambda order: order.session_move_id == asset).write(
                     {'session_move_id': move.id})
 
+    @api.model
+    def _order_fields(self, ui_order):
+        result = super(PosOrder, self)._order_fields(ui_order)
+        currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
+        if 'lines' in result:
+            for line in result['lines']:
+                line[2]['price_unit'] = line[2]['price_unit'] * currency_mxr.rate
+                line[2]['price_subtotal'] = line[2]['price_subtotal'] * currency_mxr.rate
+                line[2]['price_subtotal_incl'] = line[2]['price_subtotal_incl'] * currency_mxr.rate
+            result['amount_paid'] = result['amount_paid'] * currency_mxr.rate
+            result['amount_total'] = result['amount_total'] * currency_mxr.rate
+            result['amount_tax'] = result['amount_tax'] * currency_mxr.rate
+        return result
+
+    def _process_payment_lines(self, pos_order, order, pos_session, draft):
+        currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
+        if 'statement_ids' in pos_order:
+            for stmt in pos_order['statement_ids']:
+                stmt[2]['amount'] = stmt[2]['amount'] * currency_mxr.rate
+        super(PosOrder, self)._process_payment_lines(pos_order, order, pos_session, draft)
+
 
 class ReportSaleDetails(models.AbstractModel):
     _inherit = 'report.point_of_sale.report_saledetails'

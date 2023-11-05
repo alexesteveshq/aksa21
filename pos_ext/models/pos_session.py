@@ -39,7 +39,6 @@ class PosSession(models.Model):
         sales = data.get('sales')
         stock_expense = data.get('stock_expense')
         MoveLine = data.get('MoveLine')
-
         tax_vals = [self._get_tax_vals(key, amounts['amount'], amounts['amount_converted'], amounts['base_amount_converted']) for key, amounts in taxes.items()]
         # Check if all taxes lines have account_id assigned. If not, there are repartition lines of the tax that have no account_id.
         tax_names_no_account = [line['name'] for line in tax_vals if line['account_id'] == False]
@@ -54,7 +53,7 @@ class PosSession(models.Model):
         for key, ml_id in zip(sales.keys(), move_line_ids.ids):
             sales[key]['move_line_id'] = ml_id
         for key, amounts in stock_expense.items():
-            tax_amount = (amounts['amount'] * tax_account.tax_ids[0].amount) / 100
+            tax_amount = (amounts['amount'] * self.env.company.account_sale_tax_id.amount) / 100
             amount_untaxed = amounts['amount'] - tax_amount
             MoveLine.create(self._get_stock_expense_vals(key, amount_untaxed, amount_untaxed))
             MoveLine.create(self._get_stock_expense_vals(tax_account, tax_amount, tax_amount))

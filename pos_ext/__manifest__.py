@@ -15,7 +15,6 @@
     'data': [
         'views/product_views.xml',
         'views/pos_order_report_view.xml',
-        'data/ir_cron_data.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

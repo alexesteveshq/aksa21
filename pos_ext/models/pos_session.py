@@ -53,8 +53,8 @@ class PosSession(models.Model):
         for key, ml_id in zip(sales.keys(), move_line_ids.ids):
             sales[key]['move_line_id'] = ml_id
         for key, amounts in stock_expense.items():
-            tax_amount = (amounts['amount'] * self.env.company.account_sale_tax_id.amount) / 100
-            amount_untaxed = amounts['amount'] - tax_amount
-            MoveLine.create(self._get_stock_expense_vals(key, amount_untaxed, amount_untaxed))
+            untaxed_amount = amounts['amount'] / 1.16
+            tax_amount = (untaxed_amount * self.env.company.account_sale_tax_id.amount) / 100
+            MoveLine.create(self._get_stock_expense_vals(key, untaxed_amount, untaxed_amount))
             MoveLine.create(self._get_stock_expense_vals(tax_account, tax_amount, tax_amount))
         return data

@@ -17,7 +17,6 @@
                 <field name="sale_avg" type="measure"/>
                 <field name="cash_total" type="measure"/>
                 <field name="bank_total" type="measure"/>
-                <field name="sale_total" type="measure"/>
             </field>
         </field>
     </record>

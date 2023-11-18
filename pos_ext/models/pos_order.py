@@ -3,6 +3,12 @@
 from odoo import fields, models, api, _
 
 
+class PosOrderLine(models.Model):
+    _inherit = 'pos.order.line'
+
+    product_category_id = fields.Many2one(related='product_id.categ_id', store=True, index=True)
+
+
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 

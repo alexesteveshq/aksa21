@@ -16,11 +16,12 @@ class PosOrderReport(models.Model):
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         result = super(PosOrderReport, self).read_group(domain, fields, groupby, offset, limit, orderby, lazy)
         for value in result:
-            if 'quantity_average' in value and 'order_id' in value and isinstance(value['order_id'], int):
+            if ('quantity_average' in value and 'order_id' in value and
+                    isinstance(value['order_id'], int) and value['quantity_average']):
                 value['quantity_average'] = round(value['quantity_average'] / value['order_id'], 2)
-            if 'discount_average' in value:
+            if 'discount_average' in value and value['discount_average']:
                 value['discount_average'] = round(value['discount_average'], 2)
-            if 'sale_avg' in value:
+            if 'sale_avg' in value and value['sale_avg']:
                 value['sale_avg'] = round(value['sale_avg'], 2)
         return result
 

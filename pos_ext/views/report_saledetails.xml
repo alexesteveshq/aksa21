@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saledetails" inherit_id="point_of_sale.report_saledetails">
+        <xpath expr="//thead[1]//th[1]" position="before">
+            <th>Date</th>
+            <th>Salesperson</th>
+            <th>Customer</th>
+        </xpath>
+        <xpath expr="//tbody[1]//td[1]" position="before">
+            <td t-esc="line['date']"/>
+            <td t-esc="line['cashier']"/>
+            <td t-esc="line['partner']"/>
+        </xpath>
+    </template>
+</odoo>

@@ -58,7 +58,23 @@ class ReportSaleDetails(models.AbstractModel):
     def get_sale_details(self, date_start=False, date_stop=False, config_ids=False, session_ids=False):
         result = super(ReportSaleDetails, self.with_context(no_convert=True)).get_sale_details(
             date_start, date_stop, config_ids, session_ids)
-        product_model = self.env['product.product']
-        for prod in result['products']:
-            prod['product_name'] = product_model.browse(prod['product_id']).display_name
+        lines = self.env['pos.session'].browse(session_ids).mapped('order_ids.lines').sorted('order_id')
+        order_payments = self.env["pos.payment"].search(
+            [('pos_order_id', 'in', lines.mapped('order_id').ids)])
+        payments, products = [], []
+        for line in lines:
+            values = {'date': line.order_id.date_order,
+                      'partner': line.order_id.partner_id.name or "",
+                      'cashier': line.order_id.cashier,
+                      'code': line.product_id.code,
+                      'discount': line.discount,
+                      'price_unit': round(line.price_unit, 2),
+                      'product_id': line.product_id.id,
+                      'product_name': line.product_id.display_name,
+                      'quantity': line.qty,
+                      'uom': line.product_uom_id.name}
+            products.append(values)
+        for pay in order_payments:
+            payments.append({'name': pay.payment_method_id.name, 'total': round(pay.amount_currency, 2)})
+        result.update({'products': products, 'payments': payments})
         return result

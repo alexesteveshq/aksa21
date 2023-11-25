@@ -74,7 +74,9 @@ class ReportSaleDetails(models.AbstractModel):
                       'quantity': line.qty,
                       'uom': line.product_uom_id.name}
             products.append(values)
-        for pay in order_payments:
-            payments.append({'name': pay.payment_method_id.name, 'total': round(pay.amount_currency, 2)})
+        for method in order_payments.mapped('payment_method_id'):
+            payment_total = round(sum(order_payments.filtered(
+                lambda mth: mth.payment_method_id == method).mapped('amount_currency')), 2)
+            payments.append({'name': method.name, 'total': payment_total})
         result.update({'products': products, 'payments': payments})
         return result

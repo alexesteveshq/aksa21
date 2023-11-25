@@ -75,8 +75,11 @@ class ReportSaleDetails(models.AbstractModel):
                       'uom': line.product_uom_id.name}
             products.append(values)
         for method in order_payments.mapped('payment_method_id'):
-            payment_total = round(sum(order_payments.filtered(
-                lambda mth: mth.payment_method_id == method).mapped('amount_currency')), 2)
-            payments.append({'name': method.name, 'total': payment_total})
+            mth_payments = order_payments.filtered(lambda mth: mth.payment_method_id == method)
+            if method.currency_id == self.env.company.currency_id:
+                pay_total = sum(mth_payments.mapped('amount'))
+            else:
+                pay_total = sum(mth_payments.mapped('amount_currency'))
+            payments.append({'name': method.name, 'total': round(pay_total, 2)})
         result.update({'products': products, 'payments': payments})
         return result

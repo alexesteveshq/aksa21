@@ -68,7 +68,7 @@ class ReportSaleDetails(models.AbstractModel):
                       'cashier': line.order_id.cashier,
                       'code': line.product_id.code,
                       'discount': line.discount,
-                      'price_unit': round(line.price_unit, 2),
+                      'price_unit': round(line.price_subtotal, 2),
                       'product_id': line.product_id.id,
                       'product_name': line.product_id.display_name,
                       'quantity': line.qty,

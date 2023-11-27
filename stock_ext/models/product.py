@@ -33,19 +33,22 @@ class ProductProduct(models.Model):
     print_enabled = fields.Boolean(string='Print enabled')
     print_queue = fields.Integer(string='Print queue')
     scale_created = fields.Boolean(string='Scale created')
+    gram_retail_calculation = fields.Boolean(string='Gram retail calculation', default=True)
     retail_variant = fields.Float(string='Retail variant', default=1)
     retail_price_untaxed = fields.Float(string='Retail price (untaxed)',
                                         compute='_compute_retail_price_untaxed', store=True)
 
-    @api.depends('retail_variant', 'weight', 'lst_price')
+    @api.depends('retail_variant', 'weight', 'lst_price', 'gram_retail_calculation')
     def _compute_retail_price_untaxed(self):
         variants = self.env['piece.variant'].search([])
         currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
         for product in self:
             if not self._context.get('import_file'):
                 variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
-                if variant and product.retail_variant:
-                    price = (float(product.retail_variant) * product.weight) * variant.value
+                if product.retail_variant:
+                    price = float(product.retail_variant) * product.weight
+                    if variant and product.gram_retail_calculation:
+                        price = price * variant.value
                     price = price - (price * 15 / 100)
                     product.retail_price_untaxed = price * currency_usx.inverse_rate
                 else:

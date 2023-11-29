@@ -6,8 +6,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='sale_ok']/.." position="after">
                 <span class="d-inline-block">
-                    <field name="gram_retail_calculation"/>
-                    <label for="gram_retail_calculation"/>
+                    <field name="cost_retail_calculation"/>
+                    <label for="cost_retail_calculation"/>
                 </span>
             </xpath>
             <xpath expr="//field[@name='barcode']" position="after">

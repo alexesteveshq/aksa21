@@ -33,22 +33,22 @@ class ProductProduct(models.Model):
     print_enabled = fields.Boolean(string='Print enabled')
     print_queue = fields.Integer(string='Print queue')
     scale_created = fields.Boolean(string='Scale created')
-    gram_retail_calculation = fields.Boolean(string='Gram retail calculation', default=True)
+    cost_retail_calculation = fields.Boolean(string='Cost retail calculation')
     retail_variant = fields.Float(string='Retail variant', default=1)
     retail_price_untaxed = fields.Float(string='Retail price (untaxed)',
                                         compute='_compute_retail_price_untaxed', store=True)
 
-    @api.depends('retail_variant', 'weight', 'lst_price', 'gram_retail_calculation')
+    @api.depends('retail_variant', 'weight', 'lst_price', 'cost_retail_calculation')
     def _compute_retail_price_untaxed(self):
         variants = self.env['piece.variant'].search([])
         currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
         for product in self:
             if not self._context.get('import_file'):
                 variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
-                if product.retail_variant:
-                    price = float(product.retail_variant) * product.weight
-                    if variant and product.gram_retail_calculation:
-                        price = price * variant.value
+                if product.cost_retail_calculation and product.retail_variant:
+                    product.retail_price_untaxed = product.standard_price * float(product.retail_variant)
+                elif variant and product.retail_variant:
+                    price = (float(product.retail_variant) * product.weight) * variant.value
                     price = price - (price * 15 / 100)
                     product.retail_price_untaxed = price * currency_usx.inverse_rate
                 else:
@@ -78,7 +78,7 @@ class ProductProduct(models.Model):
     @api.depends('lot_id', 'lot_id.cost_2', 'lot_id.additional_usd', 'weight')
     def _compute_standard_price(self):
         for piece in self:
-            if not self._context.get('import_file'):
+            if not self._context.get('import_file') and not piece.cost_retail_calculation:
                 piece.standard_price = (piece.lot_id.cost_2 + piece.lot_id.additional_usd) * piece.weight
                 piece.total_cost = piece.lot_id.cost_2 * piece.weight
 

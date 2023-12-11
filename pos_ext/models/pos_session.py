@@ -16,7 +16,11 @@ class PosSession(models.Model):
         products = super(PosSession, self).get_pos_ui_product_product_by_params(custom_search_params)
         for product in products:
             if product['retail_price_untaxed']:
-                product['lst_price'] = product['retail_price_untaxed']
+                if product['weight']:
+                    product['lst_price'] = product['retail_price_untaxed']
+                else:
+                    currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
+                    product['lst_price'] = product['retail_price_untaxed'] * currency_mxr.inverse_rate
         return products
 
     def find_product_by_barcode(self, barcode):

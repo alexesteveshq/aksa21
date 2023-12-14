@@ -54,15 +54,6 @@ class ProductProduct(models.Model):
                 else:
                     product.retail_price_untaxed = product.lst_price
 
-    def name_get(self):
-        res = []
-        for product in self:
-            name = product.name
-            if product.scale_created:
-                name = "%s (%s) |%s|" % (product.categ_id.name, product.weight or '0.0', product.barcode)
-            res += [(product.id, name)]
-        return res
-
     @api.model_create_multi
     def create(self, vals_list):
         result = super(ProductProduct, self).create(vals_list)

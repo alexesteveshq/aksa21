@@ -48,6 +48,7 @@ class SaleOrderLine(models.Model):
     average_price_gram = fields.Float(string='Avg. Price per gram', compute='_compute_average_price_gram', store=True)
     avg_price_calc = fields.Float(string='Avg. Price calc')
     discount = fields.Float()
+    name = fields.Text(copy=False)
 
     @api.onchange('avg_price_calc')
     def onchange_avg_price_calc(self):

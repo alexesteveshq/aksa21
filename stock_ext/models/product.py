@@ -46,7 +46,10 @@ class ProductProduct(models.Model):
             if not self._context.get('import_file'):
                 variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
                 if product.cost_retail_calculation and product.retail_variant:
-                    product.retail_price_untaxed = product.standard_price * float(product.retail_variant)
+                    currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
+                    price = product.standard_price * float(product.retail_variant)
+                    price_currency = price * currency_mxr.inverse_rate
+                    product.retail_price_untaxed = price_currency
                 elif variant and product.retail_variant:
                     price = (float(product.retail_variant) * product.weight) * variant.value
                     price = price - (price * 15 / 100)
@@ -94,12 +97,8 @@ class ProductProduct(models.Model):
                 'price_usd': str(round(self.price_usd)),
                 'price_mxn': str(round(self.price_mxn))}
         if self.retail_price_untaxed:
-            if self.cost_retail_calculation:
-                currency_usx = self.env['res.currency'].search([('name', '=', 'USR')])
-                currency_mxr = self.env['res.currency'].search([('name', '=', 'MXN')])
-            else:
-                currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
-                currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
+            currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
+            currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
             price_taxed = self.retail_price_untaxed + (self.retail_price_untaxed * self.taxes_id[0].amount / 100)
             data.update({'price_usd': str(round(round(price_taxed) / currency_usx.inverse_rate)),
                          'price_mxn': str(round(price_taxed * currency_mxr.rate))})

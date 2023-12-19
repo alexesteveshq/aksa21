@@ -55,7 +55,7 @@ class ProductProduct(models.Model):
                     price = (float(product.retail_variant) * product.weight) * variant.value
                     price = price - (price * 15 / 100)
                     product.retail_price_untaxed = price * currency_usx.inverse_rate
-                else:
+                elif product.cost_retail_calculation:
                     product.retail_price_untaxed = product.lst_price * currency_mxr.inverse_rate
 
     @api.model_create_multi

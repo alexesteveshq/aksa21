@@ -33,9 +33,10 @@ class ProductProduct(models.Model):
     print_enabled = fields.Boolean(string='Print enabled')
     print_queue = fields.Integer(string='Print queue')
     scale_created = fields.Boolean(string='Scale created')
-    cost_retail_calculation = fields.Boolean(string='Cost retail calculation')
-    retail_variant = fields.Float(string='Retail variant', default=1)
-    retail_price_untaxed = fields.Float(string='Retail price (untaxed)',
+    cost_retail_calculation = fields.Boolean(string='Cost retail calculation', tracking=True)
+    force_sticker_update = fields.Boolean(string='Force sticker update', tracking=True)
+    retail_variant = fields.Float(string='Retail variant', default=1, tracking=True)
+    retail_price_untaxed = fields.Float(string='Retail price (untaxed)', tracking=True,
                                         compute='_compute_retail_price_untaxed', store=True)
 
     @api.depends('retail_variant', 'weight', 'lst_price', 'cost_retail_calculation')
@@ -45,8 +46,8 @@ class ProductProduct(models.Model):
         for product in self:
             if not self._context.get('import_file'):
                 variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
+                currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
                 if product.cost_retail_calculation and product.retail_variant:
-                    currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
                     price = product.standard_price * float(product.retail_variant)
                     price_currency = price * currency_mxr.inverse_rate
                     product.retail_price_untaxed = price_currency
@@ -55,7 +56,7 @@ class ProductProduct(models.Model):
                     price = price - (price * 15 / 100)
                     product.retail_price_untaxed = price * currency_usx.inverse_rate
                 else:
-                    product.retail_price_untaxed = product.lst_price
+                    product.retail_price_untaxed = product.lst_price * currency_mxr.inverse_rate
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -90,7 +91,7 @@ class ProductProduct(models.Model):
                 piece.list_price = piece.standard_price * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
 
     def print_sticker(self, print_enabled=True):
-        if not self.raw_data:
+        if not self.raw_data or self.force_sticker_update:
             manager = LabelManager()
             data = {'code': self.barcode or "",
                     'product': self.name,
@@ -107,7 +108,6 @@ class ProductProduct(models.Model):
             self.write({'raw_data': label.dumpZPL()})
         self.write({'print_enabled': print_enabled,
                     'print_queue': int(self.qty_available)})
-
 
     def print_sticker_wholesale(self):
         for piece in self:

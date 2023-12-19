@@ -9,6 +9,10 @@
                     <field name="cost_retail_calculation"/>
                     <label for="cost_retail_calculation"/>
                 </span>
+                <span class="d-inline-block">
+                    <field name="force_sticker_update"/>
+                    <label for="force_sticker_update"/>
+                </span>
             </xpath>
             <xpath expr="//field[@name='barcode']" position="after">
                 <field name="lot_id"/>

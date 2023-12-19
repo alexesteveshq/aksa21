@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-31 20:32+0000\n"
-"PO-Revision-Date: 2023-10-31 20:32+0000\n"
+"POT-Creation-Date: 2023-12-19 21:40+0000\n"
+"PO-Revision-Date: 2023-12-19 21:40+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -88,6 +88,11 @@ msgid "Cost 3"
 msgstr "Costo 3"
 
 #. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_product_product__cost_retail_calculation
+msgid "Cost retail calculation"
+msgstr "Calcular costo retail"
+
+#. module: stock_ext
 #: model_terms:ir.ui.view,arch_db:stock_ext.stock_move_transfer_wizard_form
 msgid "Create"
 msgstr "Crear"
@@ -133,6 +138,11 @@ msgstr "Ubicación de destino"
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__display_name
 msgid "Display Name"
 msgstr ""
+
+#. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_product_product__force_sticker_update
+msgid "Force sticker update"
+msgstr "Forzar actualización de etiqueta"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_piece_variant__id
@@ -337,7 +347,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__raw_data
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__raw_data
 msgid "Raw data"
-msgstr ""
+msgstr "Código de impresión"
 
 #. module: stock_ext
 #: model_terms:ir.ui.view,arch_db:stock_ext.res_config_settings_view_form
@@ -347,13 +357,13 @@ msgstr ""
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__retail_price_untaxed
 msgid "Retail price (untaxed)"
-msgstr ""
+msgstr "Precio de retail (sin impuestos)"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__retail_variant
 #: model:ir.model.fields,field_description:stock_ext.field_stock_picking__retail_variant
 msgid "Retail variant"
-msgstr ""
+msgstr "Variante de retail"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_res_config_settings__retail_variant_amount

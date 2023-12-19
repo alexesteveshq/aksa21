@@ -41,6 +41,8 @@ class PosOrder(models.Model):
             result['amount_paid'] = result['amount_paid'] * currency_mxr.rate
             result['amount_total'] = result['amount_total'] * currency_mxr.rate
             result['amount_tax'] = result['amount_tax'] * currency_mxr.rate
+        if 'seller_id' in ui_order:
+            result['seller_id'] = ui_order['seller_id']
         return result
 
     def _process_payment_lines(self, pos_order, order, pos_session, draft):

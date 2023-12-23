@@ -7,6 +7,7 @@
     'description': 'Point of sale seller features',
     'category': 'Point of Sale',
     'author': 'Alex Esteves',
+    'version': '1.0',
     'depends': [
         'point_of_sale',
     ],
@@ -22,4 +23,5 @@
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,
+    'post_init_hook': 'set_sellers',
 }

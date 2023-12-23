@@ -1,0 +1,13 @@
+.sellers-wrapper{
+    background: #efeded;
+    font-size: 16px;
+    padding: 1.2rem 1rem;
+    border-bottom: solid 1px #C9CCD2;
+    border-top-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sellers-label{
+    padding-left: 15px;
+}

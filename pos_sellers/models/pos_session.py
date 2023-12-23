@@ -11,8 +11,8 @@ class PosSession(models.Model):
 
     def load_pos_data(self):
         result = super(PosSession, self).load_pos_data()
+        result['sellers'] = []
         if self.payment_seller_ids:
-            result['sellers'] = []
             for seller in self.payment_seller_ids:
                 result['sellers'].append({'id': seller.id, 'name': seller.name})
         return result

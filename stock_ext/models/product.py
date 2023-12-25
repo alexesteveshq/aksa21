@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api
 from ..LabelManager import LabelManager
+import re
 
 
 class ProductTemplate(models.Model):
@@ -89,6 +90,14 @@ class ProductProduct(models.Model):
                 piece.price_usd = piece.lot_id.purchase_cost if not price else price
                 piece.price_mxn = piece.lot_id.purchase_cost if not price else price_mxn
                 piece.list_price = piece.standard_price * (piece.lot_id.variant or 1) * currency_mxn.inverse_rate
+
+    def update_price_from_sticker(self):
+        for product in self.filtered(lambda prod: prod.raw_data):
+            pattern_mxn = re.compile(r'MXN\s*([\d.]+)')
+            matches_mxn = pattern_mxn.search(product.raw_data)
+            if matches_mxn:
+                mxn_value = matches_mxn.group(1)
+                product.retail_price_untaxed = round(float(mxn_value) / 1.16, 2)
 
     def print_sticker(self, print_enabled=True):
         if not self.raw_data or self.force_sticker_update:

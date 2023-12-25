@@ -67,7 +67,7 @@ class ReportSaleDetails(models.AbstractModel):
         for line in lines:
             values = {'date': line.order_id.date_order,
                       'partner': line.order_id.partner_id.name or "",
-                      'cashier': line.order_id.cashier,
+                      'cashier': line.order_id.seller_id.name or "",
                       'code': line.product_id.code,
                       'discount': line.discount,
                       'price_unit': round(line.price_subtotal, 2),

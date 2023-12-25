@@ -11,6 +11,7 @@
         'point_of_sale',
         'stock_ext',
         'pos_multi_pricelist_app',
+        'pos_sellers',
     ],
     'data': [
         'views/product_views.xml',

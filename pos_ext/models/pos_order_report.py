@@ -11,6 +11,7 @@ class PosOrderReport(models.Model):
     sale_avg = fields.Float(string='Sale average', group_operator="avg")
     cash_total = fields.Float(string='Cash total')
     bank_total = fields.Float(string='Bank total')
+    seller_id = fields.Many2one('res.partner', string='Seller')
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -49,6 +50,7 @@ class PosOrderReport(models.Model):
                 pt.categ_id AS product_categ_id,
                 p.product_tmpl_id,
                 ps.config_id,
+                s.seller_id AS seller_id,
                 pt.pos_categ_id,
                 s.pricelist_id,
                 s.session_id,

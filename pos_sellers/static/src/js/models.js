@@ -11,6 +11,11 @@ const PosSellerOrder = (Order) => class PosSellerOrder extends Order {
         json.seller_id = this.seller_id;
         return json;
     }
+    export_for_printing(){
+        var receipt = super.export_for_printing();
+        receipt['seller_name'] = this.seller_name
+        return receipt
+    }
 }
 
 Registries.Model.extend(Order, PosSellerOrder);

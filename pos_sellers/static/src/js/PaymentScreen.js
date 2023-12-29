@@ -16,6 +16,7 @@ odoo.define('pos_ext.PaymentScreen', function(require) {
 
         setSeller(seller) {
             this.currentOrder.seller_id = seller.detail.id;
+            this.currentOrder.seller_name = seller.detail.name;
         }
 	}
 	Registries.Component.extend(PaymentScreen, PosExtPaymentScreen);

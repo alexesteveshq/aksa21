@@ -60,7 +60,10 @@ class ReportSaleDetails(models.AbstractModel):
     def get_sale_details(self, date_start=False, date_stop=False, config_ids=False, session_ids=False):
         result = super(ReportSaleDetails, self.with_context(no_convert=True)).get_sale_details(
             date_start, date_stop, config_ids, session_ids)
-        lines = self.env['pos.session'].browse(session_ids).mapped('order_ids.lines').sorted('order_id')
+        lines = self.env['pos.order'].search(
+            ['|', ('session_id', 'in', session_ids or []),
+             '&', ('date_order', '>=', date_start),
+             ('date_order', '<=', date_stop)]).mapped('lines').sorted('order_id')
         order_payments = self.env["pos.payment"].search(
             [('pos_order_id', 'in', lines.mapped('order_id').ids)])
         payments, products = [], []

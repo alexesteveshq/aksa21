@@ -9,7 +9,7 @@
     'author': 'Alex Esteves',
     'depends': [
         'website',
-        'crm',
+        'website_crm_partner_assign',
     ],
     'data': [
         'views/snippet.xml',

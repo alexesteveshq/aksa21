@@ -33,10 +33,10 @@ class DynamicForm(WebsiteForm):
         if model_name == 'crm.lead':
             data = json.loads(res.data.decode('utf-8'))
             report_values = self.get_report_data(kwargs, data['id'])
-            content, type_report = request.env["ir.actions.report"]._render_qweb_pdf(
+            content, type_report = request.env["ir.actions.report"].sudo()._render_qweb_pdf(
                 'dynamic_forms.dynamic_form_report_view', [data['id']],
                 data={'data': report_values})
-            att = request.env['ir.attachment'].create({
+            att = request.env['ir.attachment'].sudo().create({
                 'name': 'Dynamic form report',
                 'type': 'binary',
                 'mimetype': 'application/pdf',

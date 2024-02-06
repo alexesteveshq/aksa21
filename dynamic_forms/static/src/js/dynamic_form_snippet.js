@@ -123,8 +123,9 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             $(radio_img_field).each(function() {
                 $(this).find("input:not(:checked)").closest('.radio').hide()
                 var input_name = $(this).find("input").attr('name')
-                var html_body = $(this).find("input:checked").parent().html()
-                form_values[input_name] = html_body
+                var html_body = $(this).find("input:checked").parent().find('.radio-img-container').html()
+                form_values[input_name] = $(this).find("input:checked").val()
+                form_values["#html_"+input_name] = html_body
             })
         },
         send: async function (e) {

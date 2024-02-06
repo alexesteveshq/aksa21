@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="website.form_field_formula">
+        <t t-call="website.form_field">
+            <textarea
+                    class="form-control s_website_form_input"
+                    t-att-name="field.name"
+                    t-att-required="field.required || field.modelRequired || None"
+                    t-att-placeholder="field.placeholder"
+                    t-att-id="field.id"
+                    t-att-rows="field.rows || 3"
+                    t-esc="field.value"
+            />
+        </t>
+    </t>
+    <t t-name="dynamic_forms.form_radio_img">
+        <t t-set="recordId" t-value="field.id + record_index"/>
+        <div t-attf-class="radio col-12 #{field.formatInfo.multiPosition === 'horizontal' and 'col-lg-4 col-md-6' or ''}">
+            <div class="form-check">
+                <label>
+                    <input
+                            type="radio"
+                            class="s_website_form_input form-check-input d-none"
+                            t-att-id="recordId"
+                            t-att-name="field.name"
+                            t-att-checked="record.selected and 'checked' or None"
+                            t-att-value="record.id"
+                            t-att-required="field.required || field.modelRequired || None"
+                    />
+                    <label class="form-check-label s_website_form_check_label" t-att-for="recordId" style="padding-bottom: 20px">
+                        <t t-esc="record.display_name"/>
+                    </label>
+                    <div class="radio-img-container" contenteditable="true">
+                        <img t-att-src="record.img_src ? record.img_src : '/web/image/web.image_placeholder'" data-mimetype="image/png" width="200"
+                             data-original-src="/web/static/img/placeholder.png" class="radio-img-item"/>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </t>
+    <t t-name="dynamic_forms.form_field_many2one" t-inherit="website.form_field_many2one" t-inherit-mode="extension" owl="1">
+        <xpath expr="//option" position="attributes">
+            <attribute name="t-att-state_id">record.state_id !== undefined ? record.state_id[0] : ''</attribute>
+            <attribute name="t-att-comment">record.comment !== undefined ? record.comment : undefined</attribute>
+            <attribute name="t-att-display_name">record.display_name !== undefined ? record.display_name : undefined</attribute>
+        </xpath>
+        <xpath expr="//select/.." position="inside">
+            <div class="partner-info-wrapper" t-if="field.name == 'partner_assigned_id'">
+                <div class="partner-title"/>
+                <div class="partner-info"/>
+            </div>
+        </xpath>
+    </t>
+    <t t-name="website.form_field_img_select">
+        <t t-set="field.isCheck" t-value="true"/>
+        <t t-call="website.form_field">
+            <t t-if="!field.records">
+                <input
+                        class="s_website_form_input"
+                        t-att-name="field.name"
+                        t-att-value="undefined"
+                        t-att-required="field.required || field.modelRequired || None"
+                        placeholder="No matching record !"
+                        disabled=""
+                />
+            </t>
+            <div class="row s_col_no_resize s_col_no_bgcolor s_website_form_multiple" t-att-data-name="field.name"
+                 t-att-data-display="field.formatInfo.multiPosition">
+                <t t-foreach="field.records" t-as="record">
+                    <t t-call="dynamic_forms.form_radio_img"/>
+                </t>
+            </div>
+        </t>
+    </t>
+    <t t-name="website.s_website_form_end_message_download_report">
+        <div class="s_website_form_end_message d-none">
+            <div class="oe_structure">
+                <section class="s_text_block pt64 pb64 o_colored_level o_cc o_cc2" data-snippet="s_text_block">
+                    <div class="container" style="text-align: center;">
+                        <h2 class="text-center">
+                            <span class="fa fa-check-circle"/>
+                                Your information has been submitted successfully
+                        </h2>
+                        <p class="text-center">
+                            Our team will message you back as soon as possible.<br/>
+                            In the meantime we invite you to visit our <a href="/">website</a>.<br/>
+                        </p>
+                        <a href="#" class="download-report" download="dynamic_form_report">Click here to download your report</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </t>
+    <t t-name="website.form_field_html_editor">
+        <t t-call="website.form_field">
+            <section class="s_text_block pt40 pb40 o_colored_level section_text_block"
+                     data-snippet="s_text_block">
+                <input style="display: none;"
+                          class="form-control s_website_form_input"
+                          t-att-name="'#html_' + field.id"
+                          t-att-required="field.required || field.modelRequired || None"
+                          t-att-id="field.id"
+                />
+                <div class="container s_allow_columns" t-att-id="field.id">
+                    <p class="o_default_snippet_text" contenteditable="true"><br/></p>
+                </div>
+            </section>
+        </t>
+    </t>
+</templates>

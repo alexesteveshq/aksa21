@@ -1,0 +1,38 @@
+<odoo>
+    <template id="dynamic_from_report_layout">
+        <div t-attf-class="header text-center o_company_#{o.company_id.id}_layout" t-att-style="report_header_style">
+            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 100px;" alt="Logo"/>
+        </div>
+        <div t-attf-class="article">
+            <div class="page">
+                <div><t t-out="0"/></div>
+            </div>
+        </div>
+        <div t-attf-class="footer o_standard_footer o_company_#{o.company_id.id}_layout">
+            <div class="text-left" style="color: black;">
+                <div t-if="report_type == 'pdf'" class="text-muted">
+                    <div t-esc="o.company_id.website"/>
+                    <div t-esc="o.company_id.email"/>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="dynamic_form_report_view">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="dynamic_forms.dynamic_from_report_layout">
+                    <div class="page">
+                        <div style="font-size: 20px;">
+                            <t t-foreach="data.items()" t-as="item" t-key="item_index">
+                                <div t-attf-style="{{ 'background: #ebf3ff; padding: 10px; border: 3px solid #F6F6F6; page-break-inside: avoid;' if item_index % 2 else 'background: white; padding: 10px; border: 3px solid #F6F6F6; page-break-inside: avoid;' }}">
+                                    <div t-if="'#html_' not in item[0]" t-esc="item[0]" style="font-weight: bolder; margin-bottom: 10px"/>
+                                    <div t-raw="item[1]"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+   <template id="s_dynamic_form" name="Dynamic Form">
+        <section class="s_dynamic_form pt16 pb16" data-vcss="001" data-snippet="s_dynamic_form">
+            <div class="container">
+                <form action="/website/form/" method="post" enctype="multipart/form-data"
+                      class="o_mark_required" data-mark="*" data-pre-fill="true" data-model_name="crm.lead">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="s_website_form_rows row s_col_no_bgcolor">
+                        <div class="dynamic_form_content">
+                        </div>
+                        <div class="s_website_form_submit">
+                            <span id="s_website_form_result"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="loading-dynamic active">
+                <img t-attf-src="/dynamic_forms/static/src/img/loading.gif"/>
+            </div>
+            <div class="s_website_form_rows dynamic_form_controls">
+                <div class="s_website_form_prev control-opt active" data-name="Previous">
+                    <a href="#" role="button" class="btn btn-primary btn-lg">Previous</a>
+                </div>
+                <div class="s_website_form_submit control-opt" data-name="Submit Button">
+                    <a href="#" role="button" class="btn btn-primary btn-lg s_website_form_send">Submit</a>
+                    <span id="s_website_form_result"></span>
+                </div>
+                <div class="s_website_form_next control-opt active" data-name="Next">
+                    <a href="#" role="button" class="btn btn-primary btn-lg">Next</a>
+                </div>
+            </div>
+        </section>
+   </template>
+   <template id="external_snippets" inherit_id="website.snippets" name="new snippets">
+      <xpath expr="//div[@id='snippet_effect']//t[@t-snippet][last()]" position="after">
+           <t t-snippet="dynamic_forms.s_dynamic_form" t-thumbnail="/dynamic_forms/static/src/img/snippets_thumbs/s_website_form.svg"/>
+       </xpath>
+   </template>
+</odoo>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="dynamic_form_report" model="ir.actions.report">
+        <field name="name">Dynamic form lead</field>
+        <field name="model">crm.lead</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dynamic_forms.dynamic_form_report_view</field>
+        <field name="report_file">dynamic_forms.dynamic_form_report_view</field>
+        <field name="print_report_name">'Dynamic form lead'</field>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

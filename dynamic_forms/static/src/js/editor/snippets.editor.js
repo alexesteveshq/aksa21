@@ -12,9 +12,40 @@ odoo.define('dynamic_forms.snippet.editor', function (require) {
                 }
             });
         },
+        clone: async function(recordUndo) {
+            this.trigger_up('snippet_will_be_cloned', {
+                $target: this.$target
+            });
+            var $clone = this.$target.clone(false);
+            this.$target.after($clone);
+            if (recordUndo) {
+                this.options.wysiwyg.odooEditor.historyStep(true);
+            }
+            if (!['html_editor', 'img_select'].includes(this.$target.attr('data-type'))){
+                await new Promise(resolve=>{
+                    this.trigger_up('call_for_each_child_snippet', {
+                        $snippet: $clone,
+                        callback: function(editor, $snippet) {
+                            for (var i in editor.styles) {
+                                editor.styles[i].onClone({
+                                    isCurrent: ($snippet.is($clone)),
+                                });
+                            }
+                        },
+                        onSuccess: resolve,
+                    });
+                }
+                );
+            }
+            this.trigger_up('snippet_cloned', {
+                $target: $clone,
+                $origin: this.$target
+            });
+            $clone.trigger('content_changed');
+        },
         removeSnippet: async function (shouldRecordUndo = true) {
             if (this.$target.attr('data-snippet') === 's_text_block' &&
-             this.$target.closest('.s_website_form_field') > 0){
+             this.$target.closest('.s_website_form_field').length > 0){
                 this.$target = this.$target.closest('.s_website_form_field')
             }
             if (this.$target.closest('.partner-field-wrapper').length > 0){

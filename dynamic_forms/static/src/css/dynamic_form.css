@@ -8,7 +8,10 @@
     display: none;
 }
 .s_dynamic_form_section.active{
-    display: block;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    min-height: auto;
 }
 .s_dynamic_form_section .s_text_block{
     padding: 40px;

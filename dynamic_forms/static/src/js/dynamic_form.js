@@ -58,7 +58,7 @@ options.registry.DynamicFormEditor = options.registry.WebsiteFormEditor.extend({
         var section = document.createElement('div');
         section.innerHTML = "<div class='s_website_form_label'></div>";
         section.setAttribute('data-name', "Section");
-        section.className = 's_dynamic_form_section active';
+        section.className = 's_dynamic_form_section  s_website_form_rows row active';
         return section
     },
 });

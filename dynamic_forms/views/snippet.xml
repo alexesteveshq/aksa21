@@ -5,7 +5,6 @@
             <div class="container">
                 <form action="/website/form/" method="post" enctype="multipart/form-data"
                       class="o_mark_required" data-mark="*" data-pre-fill="true" data-model_name="crm.lead">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="s_website_form_rows row s_col_no_bgcolor">
                         <div class="dynamic_form_content">
                         </div>

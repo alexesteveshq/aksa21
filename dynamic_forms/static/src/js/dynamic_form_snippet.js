@@ -240,7 +240,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                             self.$target[0].classList.add('d-none');
                             self.$target[0].parentElement.querySelector('.s_website_form_end_message').classList.remove('d-none');
                             self.$target.closest('.s_dynamic_form').find('.dynamic_form_controls').hide()
-                            self.$target.closest('.s_dynamic_form').find('.download-report').attr('href', '/web/image/' + result_data.report)
+                            self.$target.closest('.s_dynamic_form').find('.download-report').attr('href', result_data.report)
                             break;
                         }
                         default: {

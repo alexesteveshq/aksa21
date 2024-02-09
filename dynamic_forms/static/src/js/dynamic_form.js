@@ -8,6 +8,9 @@ const qweb = core.qweb;
 const _t = core._t;
 
 options.registry.DynamicFormEditor = options.registry.WebsiteFormEditor.extend({
+    events: _.extend({}, options.Class.prototype.events || {}, {
+        'click .toggle-edit-message': '_toggleMessageClick',
+    }),
     start: function() {
         this._super.apply(this, arguments)
         this.toggleElements()
@@ -18,6 +21,14 @@ options.registry.DynamicFormEditor = options.registry.WebsiteFormEditor.extend({
                 $snippet: $(section),
             });
             this.$target.find('.s_dynamic_form_section .section_text_block').attr('contenteditable', 'true');
+        }
+    },
+     _toggleMessageClick: function(){
+        this.showEndMessage = !this.showEndMessage;
+        if (this.showEndMessage){
+            this.$message.addClass('d-block-msg')
+        }else{
+            this.$message.removeClass('d-block-msg')
         }
     },
     toggleElements: function(){

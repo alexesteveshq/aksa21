@@ -73,7 +73,7 @@
         </t>
     </t>
     <t t-name="website.s_website_form_end_message_download_report">
-        <div class="s_website_form_end_message d-none">
+        <div class="s_website_form_end_message">
             <div class="oe_structure">
                 <section class="s_text_block pt64 pb64 o_colored_level o_cc o_cc2" data-snippet="s_text_block">
                     <div class="container" style="text-align: center;">

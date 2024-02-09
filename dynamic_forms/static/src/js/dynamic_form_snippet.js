@@ -47,17 +47,17 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                 formula.after("<input name="+formula.attr('name')+" class='formula_calc' disabled>");
             }
         },
-        matchFormulaVariable: function(variable){
-            var value = undefined
+         matchFormulaVariable: function(variable){
+            var result = 0
             $('.s_website_form_input').each(function() {
                 var inputName = $(this).attr('name');
                 var convertedName = inputName.replace(/\s+/g, '_').toLowerCase();
                 if (convertedName === variable){
                     value = $('input[name="' + inputName + '"]').val();
-                    return
+                    result = value !== '' ? value : 0
                 }
             });
-            return value
+            return result
         },
         _calculateFormulas: function(self){
             var formulas = self.$el.find('[data-type="formula"] textarea')

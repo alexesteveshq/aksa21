@@ -16,7 +16,10 @@ class DynamicForm(WebsiteForm):
             if key not in excluded_fields:
                 if key in lead._fields:
                     field_name = lead._fields[key].string
-                    report_values[field_name] = value if 'name' not in lead[key]._fields else lead[key].name
+                    if hasattr(lead[key], 'name'):
+                        report_values[field_name] = lead[key].name
+                    else:
+                        report_values[field_name] = value
                 else:
                     report_values[key] = value
         return report_values

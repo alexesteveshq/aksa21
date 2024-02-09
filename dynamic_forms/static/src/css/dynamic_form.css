@@ -7,6 +7,12 @@
 .s_dynamic_form .s_website_form_dnone{
     display: none;
 }
+form.d-form-none{
+    display: none !important;
+}
+.s_website_form_end_message.d-block-msg{
+    display: block !important
+}
 .s_dynamic_form_section.active{
     display: flex;
     flex-direction: row;

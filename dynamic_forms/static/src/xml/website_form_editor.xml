@@ -41,7 +41,7 @@
     <t t-name="dynamic_forms.form_field_many2one" t-inherit="website.form_field_many2one" t-inherit-mode="extension" owl="1">
         <xpath expr="//option" position="attributes">
             <attribute name="t-att-state_id">record.state_id !== undefined ? record.state_id[0] : ''</attribute>
-            <attribute name="t-att-comment">record.comment !== undefined ? record.comment : undefined</attribute>
+            <attribute name="t-att-website_short_description">record.website_short_description !== undefined ? record.website_short_description : undefined</attribute>
             <attribute name="t-att-display_name">record.display_name !== undefined ? record.display_name : undefined</attribute>
         </xpath>
         <xpath expr="//select/.." position="inside">
@@ -73,7 +73,7 @@
         </t>
     </t>
     <t t-name="website.s_website_form_end_message_download_report">
-        <div class="s_website_form_end_message">
+        <div class="s_website_form_end_message d-none">
             <div class="oe_structure">
                 <section class="s_text_block pt64 pb64 o_colored_level o_cc o_cc2" data-snippet="s_text_block">
                     <div class="container" style="text-align: center;">

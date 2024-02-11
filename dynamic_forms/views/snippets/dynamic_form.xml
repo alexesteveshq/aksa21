@@ -56,6 +56,8 @@
     <xpath expr="//div[@data-js='WebsiteFieldEditor']" position="inside">
         <we-checkbox string="Hide in report" data-name="report_hide" data-no-preview="true"
                  data-select-class="s_website_form_report_hide"/>
+        <we-checkbox string="Use for name" data-name="concat_name" data-no-preview="true"
+                 data-select-class="s_website_form_concat_name"/>
     </xpath>
     </template>
 </odoo>

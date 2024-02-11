@@ -22,8 +22,8 @@ form.d-form-none{
 .s_dynamic_form_section .s_text_block{
     padding: 40px;
 }
-div[data-type="html_editor"] .s_website_form_label{
-    display: none !important;
+.s_website_form_end_message.d-block-msg + form{
+    display: none;
 }
 .control-opt.active{
     display: block;

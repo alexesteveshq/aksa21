@@ -54,15 +54,14 @@ odoo.define('dynamic_forms.snippet.editor', function (require) {
             this._super.apply(this, arguments);
         },
     });
-
     snippetEditor.SnippetsMenu.include({
         _activateSnippet: async function($snippet, previewMode, ifInactiveOptions) {
-            return this._super.apply(this, arguments).then(() => {
-                var SectionHtmlEditor = $(this.lastElement).closest('.section_text_block')
-                if (SectionHtmlEditor.length > 0){
-                    SectionHtmlEditor.attr('contenteditable', true);
-                }
-            })
+            const superPromise = this._super(...arguments);
+            var SectionHtmlEditor = $(this.lastElement).closest('.section_text_block')
+            if (SectionHtmlEditor.length > 0){
+                SectionHtmlEditor.attr('contenteditable', true);
+            }
+            return superPromise
         },
     });
 

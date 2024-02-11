@@ -15,7 +15,6 @@
         'views/snippet.xml',
         'views/snippets/dynamic_form.xml',
         'views/dynamic_form_report_templates.xml',
-        'views/partner_info_template.xml',
         'views/dynamic_form_reports.xml',
     ],
     'assets': {

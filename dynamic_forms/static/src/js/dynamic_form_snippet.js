@@ -19,7 +19,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             this.$controls.find('.s_website_form_send').on("click", function(ev){self.send(ev)});
             this.$target.find("[data-type='integer'] input").on("change", function(){self._calculateFormulas(self)});
             this.$target.find("[data-type='float'] input").on("change", function(){self._calculateFormulas(self)});
-            this.$target.find("select[name='state_id']").on("change", function(ev){self._togglePartners(ev)});
+            this.$target.find("select[name='state_partner_id']").on("change", function(ev){self._togglePartners(ev)});
             this.$target.find("select[name='partner_assigned_id']").on("change", function(ev){self._togglePartnerDescription(ev)});
         },
         start: function() {
@@ -103,9 +103,10 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
         },
         _togglePartnerDescription: function(ev){
             var option = $(ev.target).find('option:selected')
-            if (option.attr("comment") !== 'false' && option.text() !== ''){
-                $('.partner-title').html("<a href=/partner/info/"+option.val()+">"+option.text()+"</a>")
-                $('.partner-info').html(option.attr("comment"))
+            if (option.attr("website_short_description") !== 'false' && option.text() !== ''){
+                var url = option.text().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + "-" + option.val()
+                $('.partner-title').html("<a href=/partners/"+url+">"+option.text()+"</a>")
+                $('.partner-info').html(option.attr("website_short_description"))
                 $('.partner-info-wrapper').addClass('active')
             }else{
                 $('.partner-info-wrapper').removeClass('active')
@@ -144,6 +145,20 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                 return false;
             }
             this.form_fields = this.$target.serializeArray();
+            $(this.$target.find('.s_website_form_concat_name')).each(function() {
+                var inputValue = $(this).find('input').val();
+                self.form_fields.forEach(item => {
+                    if (item['name'] === 'name') {
+                        item['value'] = item['value'] + " " + inputValue
+                    }
+                });
+            })
+
+            var revenue = this.$target.find('.formula_calc')
+            if (revenue.length > 0 && !this.form_fields.find(item => item.name === 'expected_revenue')){
+                this.form_fields.push({name: 'expected_revenue', value: $(revenue[0]).val()})
+            }
+
             $.each(this.$target.find('input[type=file]:not([disabled])'), (outer_index, input) => {
                 $.each($(input).prop('files'), function (index, file) {
                     self.form_fields.push({
@@ -266,6 +281,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             select.find("option[state_id="+$(ev.target).val()+"]").show()
             select.find("option[state_id!="+$(ev.target).val()+"]").hide()
             select.val("")
+            $('.partner-title').html("")
             $('.partner-info').html("")
         },
         _nextSection: function(self) {

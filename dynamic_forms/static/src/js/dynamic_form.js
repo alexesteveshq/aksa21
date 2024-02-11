@@ -50,8 +50,7 @@ options.registry.DynamicFormEditor = options.registry.WebsiteFormEditor.extend({
                 this.$message = $(qweb.render('website.s_website_form_end_message_download_report'));
                 this.$message.find('.download-report').on("click", function(){self.downloadReport(self)});
             }
-            this.$target.after(this.$message.clone());
-            this.$target.closest('.s_dynamic_form').prepend(this.$message)
+            this.$target.before(this.$message);
         } else {
             this.showEndMessage = false;
             this.$message.remove();
@@ -62,6 +61,8 @@ options.registry.DynamicFormEditor = options.registry.WebsiteFormEditor.extend({
         this.$target[0].querySelectorAll('#editable_select').forEach(el => {
             $(el).prev().show()
             el.remove()});
+        this.$message.removeClass('d-block-msg')
+        this.$target.parent().find('.loading-dynamic').addClass("active")
         this.$target.parent().parent().find('.loading-dynamic').addClass("active")
         this.$target.find('.control-opt').addClass('active')
     },
@@ -117,17 +118,23 @@ options.registry.WebsiteFieldEditor.include({
     _rerenderXML: async function(callback) {
         var self = this;
         return this._super.apply(this, arguments).then(() => {
+            if (this.$target.attr('data-type') === 'formula'){
+                var input = this.$el.children("[data-select-textarea-value]").find('input').hide()
+                var textarea = $('<textarea autocomplete="chrome-off" placeholder="" class="text-start" style="height: 100px;"></textarea>');
+                textarea.val(input.val())
+                input.after(textarea);
+                textarea.on('input', function() {
+                    input.val($(this).val());
+                    input.trigger('input');
+                });
+            }
             if (this.$target.attr('data-type') === 'html_editor'){
-                var visibility = this.$el.children("we-select").find('[data-set-visibility]').closest('we-select')
-                var report_hide = this.$el.children("we-button[data-name='report_hide']")
-                this.$el.children(':gt(0)').not($(visibility)).not($(report_hide)
-                ).not("[data-name='hidden_condition_opt']"
-                ).not("[data-attribute-name*='visibility']").remove()
+                this.$el.children('[data-attribute-name="placeholder"], [data-name="required_opt"], [data-name="concat_name"]').remove()
             }
         });
     },
     _fetchFieldRecords: async function(field) {
-        if (field.name === 'state_id'){
+        if (field.name === 'state_partner_id'){
             if (field.records) {
                 return field.records;
             }
@@ -142,14 +149,14 @@ options.registry.WebsiteFieldEditor.include({
             const partners = await this._rpc({
                 model: field.relation,
                 method: 'search_read',
-                args: [[['is_published', '=', true]], ['display_name', 'state_id', 'comment']],
+                args: [[['is_published', '=', true]], ['display_name', 'state_id', 'website_short_description']],
             });
             if (field.records) {
                 field.records.forEach(item => {
                     const match = partners.find(obj => obj.id === item.id);
                     if (match) {
                         item.state_id = match.state_id;
-                        item.comment = match.comment;
+                        item.website_short_description = match.website_short_description;
                     }
                 });
                 return field.records
@@ -177,7 +184,7 @@ options.registry.WebsiteFieldEditor.include({
         if (field.type === 'partner'){
             var self = this
             var elems = []
-            var data = [{value: 'state_id',
+            var data = [{value: 'state_partner_id',
                  domain: [['id', 'in', [13, 14, 15, 33, 659, 47]]]},
                 {value: 'partner_assigned_id',
                  domain: [['is_published', '=', true]]}]
@@ -189,6 +196,10 @@ options.registry.WebsiteFieldEditor.include({
                 this.$target.before(this._renderField(result[0]))
                 this.$target.prev().addBack().wrapAll("<div class='partner-field-wrapper' data-name='Partner'></div>")
             })
+        }else if(field.type === 'html_editor' && this.$target.find('.s_allow_columns').length > 0){
+            var new_html = this._renderField(field)
+            $(new_html).find('.s_allow_columns').replaceWith(this.$target.find('.s_allow_columns')[0])
+            this._replaceFieldElement(new_html)
         }else{
             await this._super(...arguments);
         }

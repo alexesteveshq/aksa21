@@ -153,10 +153,28 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                     }
                 });
             })
+            $(this.$target.find("[data-type='many2one']")).each(function() {
+                var inputLabel = $(this).find('.s_website_form_label_content').text();
+                var inputName = $(this).find('select').attr('name');
+                self.form_fields.forEach(item => {
+                    if (item['name'] === inputName) {
+                        item['name'] += inputLabel
+                    }
+                });
+            })
+            $(this.$target.find('.s_website_form_concat_name')).each(function() {
+                var inputValue = $(this).find('input').val();
+                self.form_fields.forEach(item => {
+                    if (item['name'] === 'name') {
+                        item['value'] = item['value'] + " " + inputValue
+                    }
+                });
+            })
 
-            var revenue = this.$target.find('.formula_calc')
+            var revenue = $(this.$target.find('.s_website_form_expected_revenue'))
             if (revenue.length > 0 && !this.form_fields.find(item => item.name === 'expected_revenue')){
-                this.form_fields.push({name: 'expected_revenue', value: $(revenue[0]).val()})
+                var inputValue = revenue.find('.formula_calc').val();
+                this.form_fields.push({name: 'expected_revenue', value: inputValue})
             }
 
             $.each(this.$target.find('input[type=file]:not([disabled])'), (outer_index, input) => {

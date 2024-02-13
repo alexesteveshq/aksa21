@@ -58,6 +58,8 @@
                  data-select-class="s_website_form_report_hide"/>
         <we-checkbox string="Use for name" data-name="concat_name" data-no-preview="true"
                  data-select-class="s_website_form_concat_name"/>
+        <we-checkbox string="Expected revenue" data-name="expected_revenue" data-no-preview="true"
+                 data-select-class="s_website_form_expected_revenue"/>
     </xpath>
     </template>
 </odoo>

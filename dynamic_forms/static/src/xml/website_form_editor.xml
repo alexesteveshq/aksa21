@@ -85,7 +85,7 @@
                             Our team will message you back as soon as possible.<br/>
                             In the meantime we invite you to visit our <a href="/">website</a>.<br/>
                         </p>
-                        <a href="#" class="download-report" download="dynamic_form_report">Click here to download your report</a>
+                        <a href="#" class="download-report" target="_blank">Click here to download your report</a>
                     </div>
                 </section>
             </div>

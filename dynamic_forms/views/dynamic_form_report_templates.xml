@@ -5,8 +5,9 @@
                 <t t-call="web.internal_layout">
                     <div class="page">
                         <div style="font-size: 20px;" t-if="o.dynamic_form_data">
-                            <t t-foreach="o.dynamic_form_data.items()" t-as="item" t-key="item_index">
-                                <div t-attf-style="{{ 'background: #ebf3ff; padding: 10px; border: 3px solid #F6F6F6; page-break-inside: avoid;' if item_index % 2 else 'background: white; padding: 10px; border: 3px solid #F6F6F6; page-break-inside: avoid;' }}">
+                            <t t-set="form_data" t-value="json.loads(o.dynamic_form_data)"/>
+                            <t t-foreach="form_data.items()" t-as="item" t-key="item_index">
+                                <div style="background: white; padding: 10px; border: 3px solid #F6F6F6; page-break-inside: avoid;">
                                     <div t-if="'#html_' not in item[0]" t-esc="item[0]" style="font-weight: bolder; margin-bottom: 10px"/>
                                     <div t-raw="item[1]"/>
                                 </div>

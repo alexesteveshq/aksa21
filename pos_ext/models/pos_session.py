@@ -30,6 +30,16 @@ class PosSession(models.Model):
                 return {'product_id': [product.id]}
         return result
 
+    def _prepare_line(self, order_line):
+        res = super(PosSession, self)._prepare_line(order_line)
+        exch_rate = self.env['res.currency.rate'].search([
+            ('name', '=', order_line.order_id.date_order.date()),
+            ('currency_id.name', '=', 'USC')])
+        if exch_rate and order_line.currency_id.name != 'MXR':
+            res['amount'] = (res['amount'] / 18) * exch_rate.inverse_company_rate
+            res['taxes'][0]['amount'] = (res['taxes'][0]['amount'] / 18) * exch_rate.inverse_company_rate
+        return res
+
     def _create_non_reconciliable_move_lines(self, data):
         tax_account = self.env['account.account'].search(
             [('code', '=', '210.01.01'), ('company_id', '=', self.env.company.id)])
@@ -40,6 +50,7 @@ class PosSession(models.Model):
         stock_expense = data.get('stock_expense')
         MoveLine = data.get('MoveLine')
         tax_vals = [self._get_tax_vals(key, amounts['amount'], amounts['amount_converted'], amounts['base_amount_converted']) for key, amounts in taxes.items()]
+        sale_vals = [self._get_sale_vals(key, amounts['amount'], amounts['amount_converted']) for key, amounts in sales.items()]
         # Check if all taxes lines have account_id assigned. If not, there are repartition lines of the tax that have no account_id.
         tax_names_no_account = [line['name'] for line in tax_vals if line['account_id'] == False]
         if len(tax_names_no_account) > 0:
@@ -49,7 +60,7 @@ class PosSession(models.Model):
             ) % ', '.join(tax_names_no_account)
             raise UserError(error_message)
         MoveLine.create(tax_vals)
-        move_line_ids = MoveLine.create([self._get_sale_vals(key, amounts['amount'], amounts['amount_converted']) for key, amounts in sales.items()])
+        move_line_ids = MoveLine.create(sale_vals)
         for key, ml_id in zip(sales.keys(), move_line_ids.ids):
             sales[key]['move_line_id'] = ml_id
         for key, amounts in stock_expense.items():

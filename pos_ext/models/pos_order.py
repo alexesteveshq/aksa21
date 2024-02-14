@@ -16,6 +16,18 @@ class PosOrder(models.Model):
     bank_paid_amount = fields.Float(string='Bank paid amount', compute='_payment_method_paid', store=True)
     cash_paid_amount = fields.Float(string='Cash paid amount', compute='_payment_method_paid', store=True)
 
+    # def _prepare_invoice_vals(self):
+    #     vals = super(PosOrder, self)._prepare_invoice_vals()
+    #     exch_rate = self.env['res.currency.rate'].search([
+    #         ('name', '=', self.date_order.date()),
+    #         ('currency_id.name', '=', 'USC')])
+    #     order_currency = self.env['res.currency'].browse(vals['currency_id'])
+    #     if vals and 'invoice_line_ids' in vals and exch_rate and order_currency.name != 'MXR':
+    #         vals['invoice_line_ids'] = [
+    #             (0, None, {**line[2], 'price_unit': (line[2]['price_unit'] / 18) * exch_rate.inverse_company_rate})
+    #             for line in vals['invoice_line_ids']]
+    #     return vals
+
     @api.depends('payment_ids', 'payment_ids.amount')
     def _payment_method_paid(self):
         for order in self:

@@ -11,10 +11,11 @@ class AccountMove(models.Model):
         for line in res:
             if 'analytic_distribution' in line:
                 product = self.env['product.product'].browse(line['product_id'])
-                total_tax = (line['amount_currency'] * product.taxes_id.amount) / 100
+                tax = product.taxes_id.filtered(lambda tax: tax.company_id == self.env.company)
+                total_tax = (line['amount_currency'] * (0 if not tax else tax[0].amount)) / 100
                 untaxed_amount = line['amount_currency'] - total_tax
                 res.append({
-                    'name': product.taxes_id.name,
+                    'name': tax.name,
                     'move_id': line['move_id'],
                     'partner_id': line['partner_id'],
                     'product_id': line['product_id'],

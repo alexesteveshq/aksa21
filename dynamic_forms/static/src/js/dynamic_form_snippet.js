@@ -17,8 +17,8 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             this.$controls.find('.s_website_form_prev').on("click", function(){self._prevSection(self)});
             this.$controls.find('.s_website_form_next').on("click", function(){self._nextSection(self)});
             this.$controls.find('.s_website_form_send').on("click", function(ev){self.send(ev)});
-            this.$target.find("[data-type='integer'] input").on("change", function(){self._calculateFormulas(self)});
-            this.$target.find("[data-type='float'] input").on("change", function(){self._calculateFormulas(self)});
+            this.$target.find("[data-type='integer'] input").on("change", function(ev){self._calculateFormulas(ev)});
+            this.$target.find("[data-type='float'] input").on("change", function(ev){self._calculateFormulas(ev)});
             this.$target.find("select[name='state_partner_id']").on("change", function(ev){self._togglePartners(ev)});
             this.$target.find("select[name='partner_assigned_id']").on("change", function(ev){self._togglePartnerDescription(ev)});
         },
@@ -31,6 +31,26 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                 this.$target.find("select[name='state_id']").change()
                 this.$target.find("select[name='partner_assigned_id']").change()
             })
+        },
+        _updateFieldsVisibility() {
+            let anyFieldVisibilityUpdated = false;
+            for (const [fieldEl,visibilityFunction] of this._visibilityFunctionByFieldEl.entries()) {
+                const wasVisible = !fieldEl.closest(".s_website_form_field").classList.contains("d-none");
+                const isVisible = !!visibilityFunction();
+                if ($(fieldEl).hasClass('s_website_form_field_valid_if')){
+                    this._updateFieldVisibility(fieldEl, true);
+                    anyFieldVisibilityUpdated = false
+                    $(fieldEl).find('input').toggleClass('invalid', isVisible)
+                    $(fieldEl).find('input').prop('disabled', isVisible)
+                    $(fieldEl).find('input').change()
+                }else{
+                    this._updateFieldVisibility(fieldEl, isVisible);
+                    anyFieldVisibilityUpdated |= wasVisible !== isVisible;
+                }
+            }
+            if (anyFieldVisibilityUpdated) {
+                this._updateFieldsVisibility();
+            }
         },
         _toggleElements: function(){
             this.$target.find('[data-type="img_select"] .radio').show()
@@ -53,15 +73,21 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                 var inputName = $(this).attr('name');
                 var convertedName = inputName.replace(/\s+/g, '_').toLowerCase();
                 if (convertedName === variable){
-                    value = $('input[name="' + inputName + '"]').val();
-                    result = value !== '' ? value : 0
+                    if ($(this).hasClass('invalid')){
+                        result = 0
+                        $('input[name="' + inputName + '"]').val(0);
+                    }else{
+                        value = $('input[name="' + inputName + '"]').val();
+                        result = value !== '' ? value : 0
+                    }
                 }
             });
             return result
         },
-        _calculateFormulas: function(self){
-            var formulas = self.$el.find('[data-type="formula"] textarea')
+        _calculateFormulas: function(ev){
+            var formulas = this.$el.find('[data-type="formula"] textarea')
             var inputId = false
+            var self = this
             formulas.each(function() {
               expr = $(this).val().replace(/#{([a-z0-9_]+)}/ig, function(match, variable) {
                   var inputValue = self.matchFormulaVariable(variable)
@@ -105,6 +131,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             var option = $(ev.target).find('option:selected')
             if (option.attr("website_short_description") !== 'false' && option.text() !== ''){
                 var url = option.text().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + "-" + option.val()
+                $('.partner-img-logo').attr("src", "/web/image?model=res.partner&field=avatar_128&id="+option.val())
                 $('.partner-title').html("<a href=/partners/"+url+">"+option.text()+"</a>")
                 $('.partner-info').html(option.attr("website_short_description"))
                 $('.partner-info-wrapper').addClass('active')

@@ -46,8 +46,11 @@
         </xpath>
         <xpath expr="//select/.." position="inside">
             <div class="partner-info-wrapper" t-if="field.name == 'partner_assigned_id'">
-                <div class="partner-title"/>
-                <div class="partner-info"/>
+                <div class="field-partner-info">
+                    <img class="partner-img-logo" src="#"/>
+                    <div class="partner-title"/>
+                    <div class="partner-info"/>
+                </div>
             </div>
         </xpath>
     </t>

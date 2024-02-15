@@ -48,7 +48,6 @@ options.registry.DynamicFormEditor = options.registry.WebsiteFormEditor.extend({
         if (value === 'message') {
             if (!this.$message.length) {
                 this.$message = $(qweb.render('website.s_website_form_end_message_download_report'));
-                this.$message.find('.download-report').on("click", function(){self.downloadReport(self)});
             }
             this.$target.before(this.$message);
         } else {
@@ -129,7 +128,13 @@ options.registry.WebsiteFieldEditor.include({
                 });
             }
             if (this.$target.attr('data-type') === 'html_editor'){
-                this.$el.children('[data-attribute-name="placeholder"], [data-name="required_opt"], [data-name="concat_name"]').remove()
+                this.$el.children('[data-attribute-name="placeholder"], [data-name="required_opt"]').remove()
+            }
+            if (this.$target.attr('data-type') !== 'char'){
+                this.$el.children('[data-name="concat_name"]').remove()
+            }
+            if (this.$target.attr('data-type') !== 'formula'){
+                this.$el.children('[data-name="expected_revenue"]').remove()
             }
         });
     },
@@ -203,6 +208,13 @@ options.registry.WebsiteFieldEditor.include({
         }else{
             await this._super(...arguments);
         }
+    },
+    _setActiveProperties(field) {
+        this._super.apply(this, arguments)
+        const classList = this.$target[0].classList;
+        field.hide_in_report = classList.contains('s_website_form_report_hide');
+        field.use_for_name = classList.contains('s_website_form_concat_name');
+        field.expected_revenue = classList.contains('s_website_form_expected_revenue');
     },
     _getListItems: function() {
         const select = this._getSelect();

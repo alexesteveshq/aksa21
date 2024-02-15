@@ -50,7 +50,7 @@
     <xpath expr="//we-select[@data-name='type_opt']" position="inside">
         <we-button data-custom-field="formula">Formula</we-button>
         <we-button data-custom-field="img_select">Image Selection</we-button>
-        <we-button data-custom-field="partner">Customer</we-button>
+        <we-button data-custom-field="partner">Partner Selection</we-button>
         <we-button data-custom-field="html_editor">HTML editor</we-button>
     </xpath>
     <xpath expr="//we-button[@data-set-visibility='visible']/.." position="inside">

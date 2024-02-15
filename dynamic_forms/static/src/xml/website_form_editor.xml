@@ -110,4 +110,9 @@
             </section>
         </t>
     </t>
+    <t t-name="dynamic_forms.form_field" t-inherit="website.form_field" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[1]" position="attributes">
+            <attribute name="t-attf-class">s_website_form_field mb-3 #{field.formatInfo.col or 'col-12'} #{field.custom and 's_website_form_custom' or ''} #{(field.required and 's_website_form_required' or '') or (field.modelRequired and 's_website_form_model_required' or '')} #{field.hidden and 's_website_form_field_hidden' or ''} #{field.dnone and 's_website_form_dnone' or ''} #{field.hide_in_report and 's_website_form_report_hide' or ''} #{field.use_for_name and 's_website_form_concat_name' or ''} #{field.expected_revenue and 's_website_form_expected_revenue' or ''}</attribute>
+        </xpath>
+    </t>
 </templates>

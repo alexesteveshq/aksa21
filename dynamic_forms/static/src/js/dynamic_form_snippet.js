@@ -28,8 +28,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             return this._super(...arguments).then(() => {
                 this._toggleElements()
                 this._toggleFormulaFields()
-                this.$target.find("select[name='state_id']").change()
-                this.$target.find("select[name='partner_assigned_id']").change()
+                this.$target.find("select[name='partner_assigned_id']").val("")
             })
         },
         _updateFieldsVisibility() {
@@ -180,23 +179,18 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                     }
                 });
             })
-            $(this.$target.find("[data-type='many2one']")).each(function() {
-                var inputLabel = $(this).find('.s_website_form_label_content').text();
-                var inputName = $(this).find('select').attr('name');
-                self.form_fields.forEach(item => {
-                    if (item['name'] === inputName) {
-                        item['name'] += inputLabel
+            $(this.$target.find("[data-type='many2one']")).each(
+                function() {
+                    var inputLabel = $(this).find('.s_website_form_label_content').text();
+                    var inputName = $(this).find('select').attr('name');
+                    if (['state_partner_id', 'partner_assigned_id'].includes(inputName)){
+                        self.form_fields.forEach(item => {
+                            if (item['name'] === inputName) {
+                                item['name'] += inputLabel
+                            }
+                        });
                     }
-                });
-            })
-            $(this.$target.find('.s_website_form_concat_name')).each(function() {
-                var inputValue = $(this).find('input').val();
-                self.form_fields.forEach(item => {
-                    if (item['name'] === 'name') {
-                        item['value'] = item['value'] + " " + inputValue
-                    }
-                });
-            })
+                })
 
             var revenue = $(this.$target.find('.s_website_form_expected_revenue'))
             if (revenue.length > 0 && !this.form_fields.find(item => item.name === 'expected_revenue')){

@@ -17,8 +17,9 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             this.$controls.find('.s_website_form_prev').on("click", function(){self._prevSection(self)});
             this.$controls.find('.s_website_form_next').on("click", function(){self._nextSection(self)});
             this.$controls.find('.s_website_form_send').on("click", function(ev){self.send(ev)});
-            this.$target.find("[data-type='integer'] input").on("change", function(ev){self._calculateFormulas(ev)});
-            this.$target.find("[data-type='float'] input").on("change", function(ev){self._calculateFormulas(ev)});
+            this.$target.find("[data-type='integer'] input, [data-type='float'] input").on(
+                "change", function(){self._calculateFormulas()});
+            this.$target.find("[data-type='integer'], [data-type='float']").on("DOMSubtreeModified", function(ev){self._setNumberValue(ev)});
             this.$target.find("select[name='state_partner_id']").on("change", function(ev){self._togglePartners(ev)});
             this.$target.find("select[name='partner_assigned_id']").on("change", function(ev){self._togglePartnerDescription(ev)});
         },
@@ -60,10 +61,16 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             this._toggleControls()
         },
         _toggleFormulaFields: function(){
-            var formula = this.$target.find("[data-type='formula'] textarea")
-            if(formula.length > 0){
-                formula.attr("disabled", true).hide()
-                formula.after("<input name="+formula.attr('name')+" class='formula_calc' disabled>");
+            var formulas = this.$target.find("[data-type='formula'] textarea")
+            formulas.each(function() {
+                $(this).attr("disabled", true).hide()
+                $(this).after("<input name='"+$(this).attr('name')+"' class='formula_calc' disabled>");
+            })
+        },
+        _setNumberValue: function(ev){
+            if ($(ev.target).closest('.s_website_form_field').hasClass('s_website_form_field_hidden_if') &&
+                $(ev.target).closest('.s_website_form_field').hasClass('d-none')){
+                $(ev.target).val("").change()
             }
         },
          matchFormulaVariable: function(variable){
@@ -97,7 +104,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                    if ((typeof result !== 'number' || !isFinite(result)) && expr !== "") {
                       inputId = $(this).attr('id')
                    }else{
-                      $(this).next().val(result)
+                      $(this).next().val(Math.trunc(result * 100) / 100)
                    }
                 } catch (error) {
                    inputId = $(this).attr('id')
@@ -131,7 +138,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             if (option.attr("website_short_description") !== 'false' && option.text() !== ''){
                 var url = option.text().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + "-" + option.val()
                 $('.partner-img-logo').attr("src", "/web/image?model=res.partner&field=avatar_128&id="+option.val())
-                $('.partner-title').html("<a href=/partners/"+url+">"+option.text()+"</a>")
+                $('.partner-title').html("<a href=/partners/"+url+" target='_blank'>"+option.text()+"</a>")
                 $('.partner-info').html(option.attr("website_short_description"))
                 $('.partner-info-wrapper').addClass('active')
             }else{
@@ -158,7 +165,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
         send: async function (e) {
             e.preventDefault();
             const $button = this.$target.closest('.s_dynamic_form').find('.s_website_form_send, .o_website_form_send');
-            this.$target.find('.formula_calc').removeAttr('disabled')
+            this.$target.find('.formula_calc').removeAttr('disabled').prev().attr('disabled', 'disabled');
             $button.addClass('disabled')
                    .attr('disabled', 'disabled');
             this.restoreBtnLoading = dom.addButtonLoadingEffect($button[0]);
@@ -179,24 +186,23 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                     }
                 });
             })
-            $(this.$target.find("[data-type='many2one']")).each(
-                function() {
-                    var inputLabel = $(this).find('.s_website_form_label_content').text();
-                    var inputName = $(this).find('select').attr('name');
-                    if (['state_partner_id', 'partner_assigned_id'].includes(inputName)){
-                        self.form_fields.forEach(item => {
-                            if (item['name'] === inputName) {
-                                item['name'] += inputLabel
-                            }
-                        });
-                    }
-                })
-
             var revenue = $(this.$target.find('.s_website_form_expected_revenue'))
             if (revenue.length > 0 && !this.form_fields.find(item => item.name === 'expected_revenue')){
                 var inputValue = revenue.find('.formula_calc').val();
                 this.form_fields.push({name: 'expected_revenue', value: inputValue})
             }
+
+            $(this.$target.find(".s_website_form_field")).each(function() {
+                var inputLabel = $(this).find('.s_website_form_label_content').text();
+                var inputName = $(this).find('[name]').attr('name');
+                if (inputLabel !== inputName){
+                    self.form_fields.forEach(item => {
+                        if (item['name'] === inputName) {
+                            item['name'] += inputLabel
+                        }
+                    });
+                }
+            })
 
             $.each(this.$target.find('input[type=file]:not([disabled])'), (outer_index, input) => {
                 $.each($(input).prop('files'), function (index, file) {

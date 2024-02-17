@@ -20,7 +20,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             this.$target.find("[data-type='integer'] input, [data-type='float'] input").on(
                 "change", function(){self._calculateFormulas()});
             this.$target.find("[data-type='integer'], [data-type='float']").on("DOMSubtreeModified", function(ev){self._setNumberValue(ev)});
-            this.$target.find("[data-type='formula']").on("DOMSubtreeModified", function(ev){self._checkCondition(ev)});
+            this.$target.find("[data-type='formula']").on("DOMSubtreeModified", function(){self._checkCondition()});
             this.$target.find("select[name='state_partner_id']").on("change", function(ev){self._togglePartners(ev)});
             this.$target.find("select[name='partner_assigned_id']").on("change", function(ev){self._togglePartnerDescription(ev)});
         },
@@ -30,12 +30,12 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             return this._super(...arguments).then(() => {
                 this._toggleElements()
                 this._toggleFormulaFields()
-                this._calculateFormulas()
+                this._checkCondition()
                 this.$target.find("select[name='partner_assigned_id']").val("")
             })
         },
-        _checkCondition(ev) {
-            var field = $(ev.target).closest('.s_website_form_field')
+        _checkCondition() {
+            var field = $('.s_website_form_field')
             if (field.hasClass('s_website_form_field_valid_if') && field.hasClass('d-none')){
                 field.find('.formula_calc').val(0)
             }else if(field.hasClass('s_website_form_field_valid_if')){
@@ -81,11 +81,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             return result
         },
         _calculateFormulas: function(only_validate=false){
-            if (only_validate){
-                var formulas = this.$el.find('[data-type="formula"].s_website_form_field_valid_if textarea')
-            }else{
-                var formulas = this.$el.find('[data-type="formula"]:not(.s_website_form_field_valid_if) textarea')
-            }
+            var formulas = this.$el.find('[data-type="formula"] textarea')
             var inputId = false
             var self = this
             formulas.each(function() {

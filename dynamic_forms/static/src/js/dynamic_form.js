@@ -135,6 +135,7 @@ options.registry.WebsiteFieldEditor.include({
             }
             if (this.$target.attr('data-type') !== 'formula'){
                 this.$el.children('[data-name="expected_revenue"]').remove()
+                this.$el.find('[data-select-class="s_website_form_field_hidden_if s_website_form_field_valid_if"]').remove()
             }
         });
     },
@@ -214,6 +215,7 @@ options.registry.WebsiteFieldEditor.include({
         const classList = this.$target[0].classList;
         field.hide_in_report = classList.contains('s_website_form_report_hide');
         field.use_for_name = classList.contains('s_website_form_concat_name');
+        field.validate = classList.contains('s_website_form_field_valid_if');
         field.expected_revenue = classList.contains('s_website_form_expected_revenue');
     },
     _getListItems: function() {

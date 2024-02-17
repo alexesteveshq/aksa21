@@ -54,7 +54,7 @@
         <we-button data-custom-field="html_editor">HTML editor</we-button>
     </xpath>
     <xpath expr="//we-button[@data-set-visibility='visible']/.." position="inside">
-        <we-button data-set-visibility="conditional" data-select-class="s_website_form_field_hidden_if s_website_form_field_valid_if d-none">Invalid if</we-button>
+        <we-button data-set-visibility="conditional" data-select-class="s_website_form_field_hidden_if s_website_form_field_valid_if">Valid if</we-button>
     </xpath>
     <xpath expr="//div[@data-js='WebsiteFieldEditor']" position="inside">
         <we-checkbox string="Hide in report" data-name="report_hide" data-no-preview="true"

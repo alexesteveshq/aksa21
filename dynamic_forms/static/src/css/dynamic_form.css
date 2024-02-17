@@ -10,6 +10,9 @@
 form.d-form-none{
     display: none !important;
 }
+.s_website_form_field_valid_if{
+    display: block !important;
+}
 .s_website_form_end_message.d-block-msg{
     display: block !important
 }

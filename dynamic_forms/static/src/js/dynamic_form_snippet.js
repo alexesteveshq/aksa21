@@ -20,6 +20,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             this.$target.find("[data-type='integer'] input, [data-type='float'] input").on(
                 "change", function(){self._calculateFormulas()});
             this.$target.find("[data-type='integer'], [data-type='float']").on("DOMSubtreeModified", function(ev){self._setNumberValue(ev)});
+            this.$target.find("[data-type='formula']").on("DOMSubtreeModified", function(ev){self._checkCondition(ev)});
             this.$target.find("select[name='state_partner_id']").on("change", function(ev){self._togglePartners(ev)});
             this.$target.find("select[name='partner_assigned_id']").on("change", function(ev){self._togglePartnerDescription(ev)});
         },
@@ -29,27 +30,16 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             return this._super(...arguments).then(() => {
                 this._toggleElements()
                 this._toggleFormulaFields()
+                this._calculateFormulas()
                 this.$target.find("select[name='partner_assigned_id']").val("")
             })
         },
-        _updateFieldsVisibility() {
-            let anyFieldVisibilityUpdated = false;
-            for (const [fieldEl,visibilityFunction] of this._visibilityFunctionByFieldEl.entries()) {
-                const wasVisible = !fieldEl.closest(".s_website_form_field").classList.contains("d-none");
-                const isVisible = !!visibilityFunction();
-                if ($(fieldEl).hasClass('s_website_form_field_valid_if')){
-                    this._updateFieldVisibility(fieldEl, true);
-                    anyFieldVisibilityUpdated = false
-                    $(fieldEl).find('input').toggleClass('invalid', isVisible)
-                    $(fieldEl).find('input').prop('disabled', isVisible)
-                    $(fieldEl).find('input').change()
-                }else{
-                    this._updateFieldVisibility(fieldEl, isVisible);
-                    anyFieldVisibilityUpdated |= wasVisible !== isVisible;
-                }
-            }
-            if (anyFieldVisibilityUpdated) {
-                this._updateFieldsVisibility();
+        _checkCondition(ev) {
+            var field = $(ev.target).closest('.s_website_form_field')
+            if (field.hasClass('s_website_form_field_valid_if') && field.hasClass('d-none')){
+                field.find('.formula_calc').val(0)
+            }else if(field.hasClass('s_website_form_field_valid_if')){
+                this._calculateFormulas(true)
             }
         },
         _toggleElements: function(){
@@ -79,7 +69,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                 var inputName = $(this).attr('name');
                 var convertedName = inputName.replace(/\s+/g, '_').toLowerCase();
                 if (convertedName === variable){
-                    if ($(this).hasClass('invalid')){
+                    if ($(this).hasClass('valid')){
                         result = 0
                         $('input[name="' + inputName + '"]').val(0);
                     }else{
@@ -90,8 +80,12 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             });
             return result
         },
-        _calculateFormulas: function(ev){
-            var formulas = this.$el.find('[data-type="formula"] textarea')
+        _calculateFormulas: function(only_validate=false){
+            if (only_validate){
+                var formulas = this.$el.find('[data-type="formula"].s_website_form_field_valid_if textarea')
+            }else{
+                var formulas = this.$el.find('[data-type="formula"]:not(.s_website_form_field_valid_if) textarea')
+            }
             var inputId = false
             var self = this
             formulas.each(function() {
@@ -113,6 +107,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             return inputId
         },
         _toggleControls: function() {
+            $('html, body').scrollTop(0);
             var current = this.$target.find('.s_dynamic_form_section.active')
             var prev = this.$controls.find('.s_website_form_prev')
             var next = this.$controls.find('.s_website_form_next')
@@ -165,9 +160,8 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
         send: async function (e) {
             e.preventDefault();
             const $button = this.$target.closest('.s_dynamic_form').find('.s_website_form_send, .o_website_form_send');
-            this.$target.find('.formula_calc').removeAttr('disabled').prev().attr('disabled', 'disabled');
-            $button.addClass('disabled')
-                   .attr('disabled', 'disabled');
+            this.$target.find('[data-type="formula"]:not(.d-none) .formula_calc').removeAttr('disabled').prev().attr('disabled', 'disabled');
+            $button.addClass('disabled').attr('disabled', 'disabled');
             this.restoreBtnLoading = dom.addButtonLoadingEffect($button[0]);
 
             var self = this;
@@ -186,7 +180,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                     }
                 });
             })
-            var revenue = $(this.$target.find('.s_website_form_expected_revenue'))
+            var revenue = $(this.$target.find('.s_website_form_expected_revenue:not(.d-none)'))
             if (revenue.length > 0 && !this.form_fields.find(item => item.name === 'expected_revenue')){
                 var inputValue = revenue.find('.formula_calc').val();
                 this.form_fields.push({name: 'expected_revenue', value: inputValue})

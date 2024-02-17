@@ -41,7 +41,7 @@ class DynamicForm(WebsiteForm):
         res = super(DynamicForm, self).website_form(model_name, **kwargs)
         if model_name == 'crm.lead':
             data = json.loads(res.data.decode('utf-8'))
-            lead = request.env['crm.lead'].browse(data['id'])
+            lead = request.env['crm.lead'].sudo().browse(data['id'])
             lead.expected_revenue = float(kwargs.get('expected_revenue', 0))
             self.get_report_data(kwargs, lead)
             res.data = json.dumps({'id': data['id'],

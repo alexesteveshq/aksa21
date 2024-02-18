@@ -170,7 +170,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             })
             var revenue = $(this.$target.find('.s_website_form_expected_revenue:not(.d-none)'))
             if (revenue.length > 0 && !this.form_fields.find(item => item.name === 'expected_revenue')){
-                var inputValue = revenue.find('.formula_calc').val();
+                var inputValue = revenue.last().find('.formula_calc').val();
                 this.form_fields.push({name: 'expected_revenue', value: inputValue})
             }
 

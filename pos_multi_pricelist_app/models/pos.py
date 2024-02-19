@@ -222,9 +222,6 @@ class POSOrder(models.Model):
         for payments in pos_order['statement_ids']:
             if not float_is_zero(payments[2]['amount'], precision_digits=prec_acc):
                 order.add_payment(self._payment_fields(order, payments[2]))
-
-        order.amount_paid = sum(order.payment_ids.mapped('amount'))
-
         currency_id = False
         amt_currncy = 0.0
         price_subtotal_comp_curr = pos_order['amount_return']

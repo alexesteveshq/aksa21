@@ -11,7 +11,10 @@
         'stock_account',
     ],
     'data': [
+        'data/ir_actions.xml',
         'views/product_category_views.xml',
+        'wizard/update_rate_wizard_views.xml',
+        'security/ir.model.access.csv',
     ],
     'license': 'AGPL-3',
     'installable': True,

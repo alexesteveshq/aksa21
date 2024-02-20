@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_update_currency_rates_wizard" model="ir.actions.act_window">
+        <field name="name">Update rates</field>
+        <field name="res_model">currency.update.rate</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="account.model_res_currency"/>
+        <field name="binding_view_types">form</field>
+    </record>
+</odoo>

@@ -7,6 +7,7 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
     const ajax = require('web.ajax');
     require("website.s_website_form");
     const concurrency = require('web.concurrency');
+    const qweb = core.qweb;
 
     publicWidget.registry.DynamicForm = publicWidget.registry.s_website_form.extend({
         selector: '.s_dynamic_form form',
@@ -311,8 +312,29 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             $('.partner-title').html("")
             $('.partner-info').html("")
         },
+        check_error_fields: function (error_fields) {
+            var form = this.$target
+            this.$target = this.$target.find('.s_dynamic_form_section.active')
+            var result = this._super(...arguments)
+            this.$target = form
+            return result
+        },
+        _validateStep: function(){
+            var result = this.$('#s_website_form_result, #o_website_form_result')
+            if (!this.check_error_fields({})) {
+                result.replaceWith(qweb.render('website.s_website_form_status_error', {
+                    message: 'Please fill in the form correctly.',
+                }))
+                return false;
+            }
+            result.html("")
+            return true
+        },
         _nextSection: function(self) {
-            var current = self.$target.find('.s_dynamic_form_section.active')
+            if (!this._validateStep()){
+                return false
+            }
+            var current = this.$target.find('.s_dynamic_form_section.active')
             var nextElem = current.next()
             var editable = self.$target.closest('.o_editable')
             if (nextElem.hasClass('s_dynamic_form_section') && editable.length === 0){

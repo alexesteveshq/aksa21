@@ -37,7 +37,8 @@ class PosSession(models.Model):
             ('currency_id.name', '=', 'USC')])
         if exch_rate and order_line.currency_id.name != 'MXR':
             res['amount'] = (res['amount'] / 18) * exch_rate.inverse_company_rate
-            res['taxes'][0]['amount'] = (res['taxes'][0]['amount'] / 18) * exch_rate.inverse_company_rate
+            if 'taxes' in res and res['taxes']:
+                res['taxes'][0]['amount'] = (res['taxes'][0]['amount'] / 18) * exch_rate.inverse_company_rate
         return res
 
     def _create_non_reconciliable_move_lines(self, data):

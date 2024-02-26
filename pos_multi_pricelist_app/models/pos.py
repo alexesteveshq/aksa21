@@ -200,51 +200,6 @@ class POSOrder(models.Model):
             'tip_amount': ui_order.get('tip_amount', 0),
         }
 
-    def _process_payment_lines(self, pos_order, order, pos_session, draft):
-        """Create account.bank.statement.lines from the dictionary given to the parent function.
-
-        If the payment_line is an updated version of an existing one, the existing payment_line will first be
-        removed before making a new one.
-        :param pos_order: dictionary representing the order.
-        :type pos_order: dict.
-        :param order: Order object the payment lines should belong to.
-        :type order: pos.order
-        :param pos_session: PoS session the order was created in.
-        :type pos_session: pos.session
-        :param draft: Indicate that the pos_order is not validated yet.
-        :type draft: bool.
-        """
-        prec_acc = order.pricelist_id.currency_id.decimal_places
-        pricelist_id = self.env['product.pricelist'].browse(pos_order.get('pricelist_id'))
-        order_bank_statement_lines= self.env['pos.payment'].search([('pos_order_id', '=', order.id)])
-        order_bank_statement_lines.unlink()
-        payment_date = fields.Date.today()
-        for payments in pos_order['statement_ids']:
-            if not float_is_zero(payments[2]['amount'], precision_digits=prec_acc):
-                order.add_payment(self._payment_fields(order, payments[2]))
-        currency_id = False
-        amt_currncy = 0.0
-        price_subtotal_comp_curr = pos_order['amount_return']
-        if pos_session.currency_id.id != pricelist_id.currency_id.id:
-            price_subtotal_comp_curr = pricelist_id.currency_id._convert(pos_order['amount_return'], pos_session.currency_id, pos_session.company_id, payment_date)
-            currency_id = order.pricelist_id.currency_id.id
-            amt_currncy = -pos_order['amount_return']
-        if not draft and not float_is_zero(pos_order['amount_return'], prec_acc):
-            cash_payment_method = pos_session.payment_method_ids.filtered('is_cash_count')[:1]
-            if not cash_payment_method:
-                raise UserError(_("No cash statement found for this session. Unable to record returned cash."))
-            return_payment_vals = {
-                'name': _('return'),
-                'pos_order_id': order.id,
-                'amount_currency': amt_currncy,
-                'currency': currency_id,
-                'amount': -price_subtotal_comp_curr,
-                'payment_date': fields.Datetime.now(),
-                'payment_method_id': cash_payment_method.id,
-                'is_change': True,
-            }
-            order.add_payment(return_payment_vals)
-
 
 class POSConfig(models.Model):
     

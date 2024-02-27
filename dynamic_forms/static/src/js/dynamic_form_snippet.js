@@ -130,13 +130,6 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             }
         },
         _addHtmlContent: function(form_values, input){
-            var html_field =$("[name='" + input.name + "']").closest(
-            "[data-type='html_editor']:not(.s_website_form_report_hide)")
-            $(html_field).each(function() {
-                var input_name = $(this).find("input").attr('name')
-                var html_body = $(this).find(".s_allow_columns").html()
-                form_values[input_name] = html_body
-            })
             var radio_img_field = $("[name='" + input.name + "']").closest("[data-type='img_select']")
             $(radio_img_field).each(function() {
                 $(this).find("input:not(:checked)").closest('.radio').hide()
@@ -180,7 +173,15 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                 var inputName = $(this).find('[name]').attr('name');
                 if (inputLabel !== inputName){
                     self.form_fields.forEach(item => {
-                        if (item['name'] === inputName) {
+                        if (item['name'].includes('#html_')){
+                            var html_field =$("[name='" + item['name'] + "']").closest(
+                            "[data-type='html_editor']:not(.s_website_form_report_hide)")
+                            $(html_field).each(function() {
+                                var html_body = $(this).find(".s_allow_columns").html()
+                                item['name'] += '|' + $(this).find('.s_website_form_label_content').text()
+                                item['value'] = html_body
+                            })
+                        }else if (item['name'] === inputName) {
                             item['name'] += inputLabel
                         }
                     });

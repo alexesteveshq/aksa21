@@ -4,6 +4,7 @@ from odoo.addons.website.controllers.form import WebsiteForm
 from odoo.http import request, route
 from odoo import http
 import json
+import re
 
 
 class DynamicForm(WebsiteForm):
@@ -18,6 +19,10 @@ class DynamicForm(WebsiteForm):
                     report_values[key.replace(field, '')] = lead[field].name
                 elif field:
                     report_values[key.replace(field, '')] = value
+                elif '#html_' in key:
+                    pattern = r'#html_[^|]+\|'
+                    string = re.sub(pattern, '', key)
+                    report_values[string] = value
                 else:
                     report_values[key] = value
         lead.dynamic_form_data = json.dumps(report_values)
@@ -37,7 +42,7 @@ class DynamicForm(WebsiteForm):
         pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', u'%s' % len(pdf))]
         return request.make_response(pdf, headers=pdfhttpheaders)
 
-    @route('/website/form/<string:model_name>', type='http', auth="none", methods=['POST'], website=True, csrf=False)
+    @route('/website/form/<string:model_name>', type='http', auth="public", methods=['POST'], website=True, csrf=False)
     def website_form(self, model_name, **kwargs):
         request.params = {key: value for key, value in request.params.items()
                           if "#html_" not in key and key not in ["expected_revenue"]}
@@ -46,13 +51,12 @@ class DynamicForm(WebsiteForm):
             field = self.find_lead_field(key) or key
             new_params[field] = param
         request.params = new_params
-        request.session.no_auth = True
         res = super(DynamicForm, self).website_form(model_name, **kwargs)
         if model_name == 'crm.lead':
             data = json.loads(res.data.decode('utf-8'))
             lead = request.env['crm.lead'].sudo().browse(data['id'])
             lead.expected_revenue = float(kwargs.get('expected_revenue', 0))
             self.get_report_data(kwargs, lead)
-            #res.data = json.dumps({'id': data['id'],'report': "/report/pdf/dynamic_forms.dynamic_form_report_view/%s" % data['id']}).encode('utf-8')
-            res.data = json.dumps({'id': data['id'],'report': "/dynamic_forms/print_report/%s" % data['id']}).encode('utf-8')
+            res.data = json.dumps(
+                {'id': data['id'], 'report': "/dynamic_forms/print_report/%s" % data['id']}).encode('utf-8')
         return res

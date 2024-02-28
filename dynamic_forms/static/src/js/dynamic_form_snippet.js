@@ -74,26 +74,28 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
             return result
         },
         _calculateFormulas: function(only_validate=false){
-            var formulas = this.$el.find('[data-type="formula"] textarea')
-            var inputId = false
-            var self = this
-            formulas.each(function() {
-              expr = $(this).val().replace(/#{([a-z0-9_]+)}/ig, function(match, variable) {
-                  var inputValue = self.matchFormulaVariable(variable)
-                  return inputValue;
+            if (this.$target.attr('contenteditable') === undefined){
+                var formulas = this.$el.find('[data-type="formula"] textarea')
+                var inputId = false
+                var self = this
+                formulas.each(function() {
+                  expr = $(this).val().replace(/#{([a-z0-9_]+)}/ig, function(match, variable) {
+                      var inputValue = self.matchFormulaVariable(variable)
+                      return inputValue;
+                    });
+                    try {
+                       var result = eval(expr);
+                       if ((typeof result !== 'number' || !isFinite(result)) && expr !== "") {
+                          inputId = $(this).attr('id')
+                       }else{
+                          $(this).next().val(Math.trunc(result * 100) / 100)
+                       }
+                    } catch (error) {
+                       inputId = $(this).attr('id')
+                    }
                 });
-                try {
-                   var result = eval(expr);
-                   if ((typeof result !== 'number' || !isFinite(result)) && expr !== "") {
-                      inputId = $(this).attr('id')
-                   }else{
-                      $(this).next().val(Math.trunc(result * 100) / 100)
-                   }
-                } catch (error) {
-                   inputId = $(this).attr('id')
-                }
-            });
-            return inputId
+                return inputId
+            }
         },
         _toggleControls: function() {
             $('html, body').scrollTop(0);

@@ -21,7 +21,6 @@ class PosSession(models.Model):
                 })
                 if order._is_pos_order_paid():
                     order.action_pos_order_paid()
-                    order._create_order_picking()
                     order._compute_total_cost_in_real_time()
         return super(PosSession, self).post_closing_cash_details(counted_cash)
 

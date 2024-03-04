@@ -1,11 +1,29 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, _
+from odoo.tools import float_is_zero
 from odoo.exceptions import UserError
 
 
 class PosSession(models.Model):
     _inherit = 'pos.session'
+
+    def post_closing_cash_details(self, counted_cash):
+        draft_orders = self.order_ids.filtered(lambda order: order.state == 'draft')
+        for order in draft_orders:
+            difference = order.amount_total - order.amount_paid
+            payment_method = order.session_id.payment_method_ids.sorted(lambda pm: pm.is_cash_count, reverse=True)[:1]
+            if not float_is_zero(difference, precision_rounding=order.currency_id.rounding):
+                order.add_payment({
+                    'pos_order_id': order.id,
+                    'amount': order._get_rounded_amount(difference),
+                    'payment_method_id': payment_method.id,
+                })
+                if order._is_pos_order_paid():
+                    order.action_pos_order_paid()
+                    order._create_order_picking()
+                    order._compute_total_cost_in_real_time()
+        return super(PosSession, self).post_closing_cash_details(counted_cash)
 
     def _loader_params_product_product(self):
         result = super(PosSession, self)._loader_params_product_product()

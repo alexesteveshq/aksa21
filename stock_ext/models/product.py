@@ -39,6 +39,8 @@ class ProductProduct(models.Model):
     retail_variant = fields.Float(string='Retail variant', default=1, tracking=True)
     retail_price_untaxed = fields.Float(string='Retail price (untaxed)', tracking=True,
                                         compute='_compute_retail_price_untaxed', store=True)
+    retail_price_untaxed_usd = fields.Float(string='Retail price USD (untaxed)', tracking=True,
+                                            compute='_compute_retail_price_untaxed_usd', store=True)
 
     @api.depends('retail_variant', 'weight', 'lst_price', 'cost_retail_calculation')
     def _compute_retail_price_untaxed(self):
@@ -58,6 +60,12 @@ class ProductProduct(models.Model):
                     product.retail_price_untaxed = price * currency_usx.inverse_rate
                 elif product.cost_retail_calculation:
                     product.retail_price_untaxed = product.lst_price * currency_mxr.inverse_rate
+
+    @api.depends('retail_price_untaxed')
+    def _compute_retail_price_untaxed_usd(self):
+        currency_usd = self.env['res.currency'].search([('name', '=', 'USR')])
+        for product in self:
+            product.retail_price_untaxed_usd = product.retail_price_untaxed / currency_usd.inverse_rate
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -95,9 +103,14 @@ class ProductProduct(models.Model):
         for product in self.filtered(lambda prod: prod.raw_data):
             pattern_mxn = re.compile(r'MXN\s*([\d.]+)')
             matches_mxn = pattern_mxn.search(product.raw_data)
+            pattern_usd = re.compile(r'USD\s*([\d.]+)')
+            matches_usd = pattern_usd.search(product.raw_data)
             if matches_mxn:
                 mxn_value = matches_mxn.group(1)
-                product.retail_price_untaxed = round(float(mxn_value) / 1.16, 2)
+                product.retail_price_untaxed = float(mxn_value) / 1.16
+            if matches_usd:
+                usd_value = matches_usd.group(1)
+                product.retail_price_untaxed_usd = float(usd_value) / 1.16
 
     def print_sticker(self, print_enabled=True):
         if not self.raw_data or self.force_sticker_update:
@@ -107,12 +120,9 @@ class ProductProduct(models.Model):
                     'weight': self.weight,
                     'price_usd': str(round(self.price_usd)),
                     'price_mxn': str(round(self.price_mxn))}
-            if self.retail_price_untaxed:
-                currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
-                currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
-                price_taxed = self.retail_price_untaxed + (self.retail_price_untaxed * self.taxes_id[0].amount / 100)
-                data.update({'price_usd': str(round(round(price_taxed) / currency_usx.inverse_rate)),
-                             'price_mxn': str(round(price_taxed * currency_mxr.rate))})
+            currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
+            data.update({'price_usd': str(round(self.retail_price_untaxed_usd * 1.16)),
+                         'price_mxn': str(round((self.retail_price_untaxed_usd * 1.16) * currency_mxr.rate))})
             label = manager.generate_label_data(data)
             self.write({'raw_data': label.dumpZPL()})
         self.write({'print_enabled': print_enabled,

@@ -11,6 +11,7 @@ class PosOrderReport(models.Model):
     sale_avg = fields.Float(string='Sale average', group_operator="avg")
     cash_total = fields.Float(string='Cash total')
     bank_total = fields.Float(string='Bank total')
+    price_total_currency = fields.Float(string='Price total currency')
     seller_id = fields.Many2one('res.partner', string='Seller')
 
     @api.model
@@ -61,6 +62,7 @@ class PosOrderReport(models.Model):
                 s.cash_paid_amount / s.sale_qty AS cash_total,
                 s.bank_paid_amount / s.sale_qty AS bank_total,
                 SUM(l.price_subtotal_incl) AS price_total,
+                SUM(l.amount_currency) AS price_total_currency,
                 SUM(l.price_subtotal_incl) AS sale_avg
         """
 

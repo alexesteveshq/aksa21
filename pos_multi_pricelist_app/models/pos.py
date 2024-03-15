@@ -140,7 +140,7 @@ class POSOrder(models.Model):
         return {
             'amount_currency': price_unit_foreign_curr,
             'currency': currency_id,
-            'amount': price_unit_comp_curr or 0.0,
+            'amount': price_unit_foreign_curr or price_unit_comp_curr,
             'payment_date': ui_paymentline['name'],
             'payment_method_id': ui_paymentline['payment_method_id'],
             'card_type': ui_paymentline.get('card_type'),
@@ -155,30 +155,6 @@ class POSOrder(models.Model):
         amount_total = []
         amt_total = ui_order['amount_total']
         amt_paid = ui_order['amount_paid']
-
-        if ui_order['lines']:
-            pos_session = self.env['pos.session'].browse(ui_order.get('pos_session_id'))
-            pricelist_id = self.env['product.pricelist'].browse(ui_order.get('pricelist_id'))
-            payment_date = fields.Date.today()
-            if pos_session.currency_id.id != pricelist_id.currency_id.id:
-                for line in ui_order['lines']:
-                    price_unit_foreign_curr = line[2].get('price_unit') or 0.0
-                    price_unit_comp_curr = pricelist_id.currency_id._convert(price_unit_foreign_curr, pos_session.currency_id, pos_session.company_id, payment_date)
-                    price_subtotal_foreign_curr = line[2].get('price_subtotal') or 0.0
-                    price_subtotal_comp_curr = pricelist_id.currency_id._convert(price_subtotal_foreign_curr, pos_session.currency_id, pos_session.company_id, payment_date)
-                    price_subtotal_incl_foreign_curr = line[2].get('price_subtotal_incl') or 0.0
-                    price_subtotal_incl_comp_curr = pricelist_id.currency_id._convert(price_subtotal_incl_foreign_curr, pos_session.currency_id, pos_session.company_id, payment_date)
-                    line[2].update({
-                        'price_unit':price_unit_comp_curr,
-                        'price_subtotal':price_subtotal_comp_curr,
-                        'price_subtotal_incl':price_subtotal_incl_comp_curr,
-                        })
-                    amount_total.append(price_subtotal_incl_comp_curr)
-                amount_total_foreign_curr = ui_order.get('amount_total')
-                amount_total_comp_curr = pricelist_id.currency_id._convert(amount_total_foreign_curr, pos_session.currency_id, pos_session.company_id, payment_date)
-                ui_order.update({'amount_total': sum(amount_total)})
-                amt_total = sum(amount_total)
-                amt_paid =  sum(amount_total)
         process_line = partial(self.env['pos.order.line']._order_line_fields, session_id=ui_order['pos_session_id'])
         return {
             'user_id':      ui_order['user_id'] or False,
@@ -213,12 +189,3 @@ class POSConfig(models.Model):
 
         if self.invoice_journal_id.currency_id and self.invoice_journal_id.currency_id != self.currency_id:
             raise ValidationError(_("The invoice journal must be in the same currency as the Sales Journal or the company currency if that is not set."))
-
-        if any(
-            self.payment_method_ids\
-                .filtered(lambda pm: pm.is_cash_count)\
-                .mapped(lambda pm: self.currency_id not in (self.company_id.currency_id | pm.journal_id.currency_id))
-        ):
-            raise ValidationError(_("All payment methods must be in the same currency as the Sales Journal or the company currency if that is not set."))
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

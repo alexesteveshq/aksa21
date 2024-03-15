@@ -17,6 +17,7 @@
                 <field name="sale_avg" type="measure"/>
                 <field name="cash_total" type="measure"/>
                 <field name="bank_total" type="measure"/>
+                <field name="price_total_currency" optional="show" sum="Sum of Total"/>
             </field>
         </field>
     </record>

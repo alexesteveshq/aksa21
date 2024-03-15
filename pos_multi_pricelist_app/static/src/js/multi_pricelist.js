@@ -93,7 +93,7 @@ odoo.define('pos_multi_pricelist_app.multi_pricelist', function(require) {
 	                   (! item.date_end || moment.utc(item.date_end).isSameOrAfter(date));
 	        });
 
-	        var price = self.retail_price_untaxed;
+	        var price = self.retail_price_untaxed_usd;
 			var pricelist_currency = pricelist.currency_id[0];
 			if(my_pos.config.currency_id[0] != pricelist_currency)
 			{
@@ -103,7 +103,7 @@ odoo.define('pos_multi_pricelist_app.multi_pricelist', function(require) {
 				}
 				price =  new_rate;
 			}
-			
+
 	        _.find(pricelist_items, function (rule) {
 	            if (rule.min_quantity && quantity < rule.min_quantity) {
 	                return false;
@@ -113,7 +113,7 @@ odoo.define('pos_multi_pricelist_app.multi_pricelist', function(require) {
 					price = self.get_price(rule.base_pricelist, quantity);
 					_.each(self.pos.currencies, function (line) {
 						if (line.id == rule.currency_id[0]){
-							get_rates[line.id] = line.rate;	
+							get_rates[line.id] = line.rate;
 						}
 						if (line.id == rule.base_pricelist.currency_id[0]){
 							get_rates[line.id] = line.rate;

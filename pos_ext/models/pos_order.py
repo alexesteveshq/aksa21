@@ -22,9 +22,19 @@ class PosOrderLine(models.Model):
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
+    amount_currency = fields.Float(string='Amount currency')
     sale_qty = fields.Integer(string='Sale qty', compute='_compute_sale_qty', store=True)
     bank_paid_amount = fields.Float(string='Bank paid amount', compute='_payment_method_paid', store=True)
     cash_paid_amount = fields.Float(string='Cash paid amount', compute='_payment_method_paid', store=True)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        result = super(PosOrder, self).create(vals_list)
+        currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
+        for order in result:
+            converted_amount = order.pricelist_id.currency_id._convert(
+                order.amount_total, currency_mxr, order.company_id, fields.Date.today())
+            order.amount_currency = converted_amount
 
     @api.depends('payment_ids', 'payment_ids.amount')
     def _payment_method_paid(self):

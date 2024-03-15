@@ -17,6 +17,7 @@ class PosOrderLine(models.Model):
             converted_amount = line.order_id.pricelist_id.currency_id._convert(
                 line.price_subtotal_incl, currency_mxr, line.order_id.company_id, fields.Date.today())
             line.amount_currency = converted_amount
+        return result
 
 
 class PosOrder(models.Model):
@@ -35,6 +36,7 @@ class PosOrder(models.Model):
             converted_amount = order.pricelist_id.currency_id._convert(
                 order.amount_total, currency_mxr, order.company_id, fields.Date.today())
             order.amount_currency = converted_amount
+        return result
 
     @api.depends('payment_ids', 'payment_ids.amount')
     def _payment_method_paid(self):

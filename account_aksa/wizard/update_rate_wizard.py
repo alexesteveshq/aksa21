@@ -22,4 +22,4 @@ class UpdateRate(models.TransientModel):
                 rate_model.sudo().create({'name': self.date,
                                           'currency_id': currency.id,
                                           'company_id': company.id,
-                                          'inverse_company_rate': self.rate})
+                                          'company_rate': self.rate})

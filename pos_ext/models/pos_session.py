@@ -39,11 +39,21 @@ class PosSession(models.Model):
     def _prepare_line(self, order_line):
         result = super(PosSession, self)._prepare_line(order_line)
         untaxed_amount = order_line.amount_currency / 1.16
+        tax = order_line.amount_currency - untaxed_amount
+        if order_line.order_id.pricelist_id.currency_id.name == 'USX':
+            rate = self.env['res.currency.rate'].search([('name', '=', order_line.order_id.date_order),
+                                                         ('currency_id.name', '=', 'USC'),
+                                                         ('company_id', '=', order_line.order_id.company_id.id)],
+                                                        limit=1)
+            if rate:
+                rate_amount = (order_line.price_subtotal_incl * rate.rate)
+                untaxed_amount = rate_amount / 1.16
+                tax = rate_amount - untaxed_amount
         if 'amount' in result:
             result['amount'] = untaxed_amount
             result['amount_currency'] = untaxed_amount
         if 'taxes' in result and result['taxes']:
-            result['taxes'][0]['amount'] = (order_line.amount_currency - untaxed_amount) * -1
+            result['taxes'][0]['amount'] = tax * -1
             result['taxes'][0]['base'] = untaxed_amount * -1
         return result
 

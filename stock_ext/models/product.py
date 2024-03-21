@@ -120,9 +120,12 @@ class ProductProduct(models.Model):
                     'weight': self.weight,
                     'price_usd': str(round(self.price_usd)),
                     'price_mxn': str(round(self.price_mxn))}
-            currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
-            data.update({'price_usd': str(round(self.retail_price_untaxed_usd * 1.16)),
-                         'price_mxn': str(round((self.retail_price_untaxed_usd * 1.16) * currency_mxr.rate))})
+            if self.retail_price_untaxed:
+                currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
+                currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
+                price_taxed = self.retail_price_untaxed + (self.retail_price_untaxed * self.taxes_id[0].amount / 100)
+                data.update({'price_usd': str(round(round(price_taxed) / currency_usx.inverse_rate)),
+                             'price_mxn': str(round(price_taxed * currency_mxr.rate))})
             label = manager.generate_label_data(data)
             self.write({'raw_data': label.dumpZPL()})
         self.write({'print_enabled': print_enabled,

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-19 21:40+0000\n"
-"PO-Revision-Date: 2023-12-19 21:40+0000\n"
+"POT-Creation-Date: 2024-03-25 22:37+0000\n"
+"PO-Revision-Date: 2024-03-25 22:37+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -360,6 +360,11 @@ msgid "Retail price (untaxed)"
 msgstr "Precio de retail (sin impuestos)"
 
 #. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_product_product__retail_price_untaxed_usd
+msgid "Retail price USD (untaxed)"
+msgstr ""
+
+#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__retail_variant
 #: model:ir.model.fields,field_description:stock_ext.field_stock_picking__retail_variant
 msgid "Retail variant"
@@ -411,6 +416,13 @@ msgid "Tax"
 msgstr "Impuesto"
 
 #. module: stock_ext
+#. odoo-python
+#: code:addons/stock_ext/models/stock_move.py:0
+#, python-format
+msgid "The product %s is repeated"
+msgstr "El producto %s esta repetido"
+
+#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__total_cost
 #: model:ir.model.fields,field_description:stock_ext.field_stock_piece__total_cost
 msgid "Total Cost"
@@ -429,6 +441,11 @@ msgstr ""
 #. module: stock_ext
 #: model:ir.actions.server,name:stock_ext.action_update_piece_lot
 msgid "Update piece lot"
+msgstr ""
+
+#. module: stock_ext
+#: model:ir.actions.server,name:stock_ext.action_update_price_from_sticker
+msgid "Update price from sticker"
 msgstr ""
 
 #. module: stock_ext

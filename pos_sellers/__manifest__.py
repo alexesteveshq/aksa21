@@ -14,6 +14,7 @@
     'data': [
         'views/res_config_settings_views.xml',
         'views/pos_order_views.xml',
+        'data/ir_actions.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 
 class StockMove(models.Model):
@@ -24,4 +25,6 @@ class StockMoveLine(models.Model):
         prod_model = self.env['product.product']
         for move in self:
             piece = prod_model.sudo().search([('barcode', '=', move.product_id.barcode)])
+            if len(piece) > 1:
+                raise ValidationError(_("The product %s is repeated" % piece.barcode))
             piece.sudo().print_sticker()

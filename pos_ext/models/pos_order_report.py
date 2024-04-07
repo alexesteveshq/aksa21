@@ -9,8 +9,6 @@ class PosOrderReport(models.Model):
     quantity_average = fields.Float(string='Quantity average')
     discount_average = fields.Float(string='Discount average', readonly=True, group_operator="avg")
     sale_avg = fields.Float(string='Sale average', group_operator="avg")
-    cash_total = fields.Float(string='Cash total')
-    bank_total = fields.Float(string='Bank total')
     price_total_currency = fields.Float(string='Price total currency')
     seller_id = fields.Many2one('res.partner', string='Seller')
 
@@ -59,8 +57,6 @@ class PosOrderReport(models.Model):
                 SUM(l.price_subtotal - COALESCE(l.total_cost,0) / CASE COALESCE(s.currency_rate, 0) WHEN 0 THEN 1.0 ELSE s.currency_rate END) AS margin,
                 SUM(l.qty) AS quantity_average,
                 AVG(l.discount) FILTER (WHERE l.discount > 0) AS discount_average,
-                s.cash_paid_amount / s.sale_qty AS cash_total,
-                s.bank_paid_amount / s.sale_qty AS bank_total,
                 SUM(l.price_subtotal_incl) AS price_total,
                 SUM(l.amount_currency) AS price_total_currency,
                 SUM(l.price_subtotal_incl) AS sale_avg

@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
         <field name="arch" type="xml">
             <field name="amount_total" position="replace">
-                <field name="amount_currency"/>
+                <field name="amount_currency" sum="Amount Currency"/>
             </field>
         </field>
     </record>

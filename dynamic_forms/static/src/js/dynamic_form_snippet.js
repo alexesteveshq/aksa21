@@ -175,12 +175,11 @@ odoo.define('dynamic_forms.dynamic_form_snippet', function(require) {
                 var inputName = $(this).find('[name]').attr('name');
                 if (inputLabel !== inputName){
                     self.form_fields.forEach(item => {
-                        if (item['name'].includes('#html_')){
-                            var html_field =$("[name='" + item['name'] + "']").closest(
-                            "[data-type='html_editor']:not(.s_website_form_report_hide)")
+                        var html_field =$("[name='" + item['name'] + "']").closest(
+                        "[data-type='html_editor']:not(.s_website_form_report_hide)")
+                        if (item['name'].includes('#html_') || html_field.length !== 0){
                             $(html_field).each(function() {
                                 var html_body = $(this).find(".s_allow_columns").html()
-                                item['name'] += '|' + $(this).find('.s_website_form_label_content').text()
                                 item['value'] = html_body
                             })
                         }else if (item['name'] === inputName) {

@@ -64,6 +64,7 @@ class PosSession(models.Model):
                 ('barcode', '=', barcode),
                 ('sale_ok', '=', True),
             ])
+            product = product.filtered(lambda prod: prod.mapped('stock_quant_ids.company_id'))
             if product:
                 return {'product_id': [product.id]}
         return result

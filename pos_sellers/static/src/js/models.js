@@ -6,6 +6,10 @@ const Registries = require('point_of_sale.Registries');
 
 
 const PosSellerOrder = (Order) => class PosSellerOrder extends Order {
+    init_from_JSON(json) {
+        super.init_from_JSON(...arguments);
+        this.seller_name = json.seller_name
+    }
     export_as_JSON() {
         const json = super.export_as_JSON(...arguments);
         json.seller_id = this.seller_id;

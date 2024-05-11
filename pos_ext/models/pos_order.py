@@ -28,6 +28,8 @@ class PosOrder(models.Model):
     bank_paid_amount = fields.Float(string='Bank paid amount', compute='_payment_method_paid', store=True)
     cash_paid_amount = fields.Float(string='Cash paid amount', compute='_payment_method_paid', store=True)
     date_order = fields.Datetime(readonly=False)
+    lines = fields.One2many(readonly=False)
+    payment_ids = fields.One2many(readonly=False)
 
     @api.model_create_multi
     def create(self, vals_list):

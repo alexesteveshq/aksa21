@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_pos_order_tree" model="ir.ui.view">
-        <field name="name">pos.order.tree.multicurr</field>
+        <field name="name">pos.order.tree.cost</field>
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
         <field name="arch" type="xml">
-            <field name="amount_total" position="replace">
-                <field name="amount_currency" sum="Amount Currency"/>
+            <field name="state" position="before">
+                <field name="order_cost" sum="Cost" optional="hide"/>
             </field>
         </field>
     </record>
 
     <record id="view_pos_pos_form" model="ir.ui.view">
-        <field name="name">pos.order.form.editable.multicurr</field>
+        <field name="name">pos.order.form.cost</field>
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='lines']/tree/field[@name='price_subtotal']" position="after">
-                <field name="amount_currency"/>
-            </xpath>
+            <field name="amount_total" position="after">
+                <field name="order_cost"
+                   force_save="1"
+                   class="oe_subtotal_footer_separator"
+                   widget="monetary"/>
+            </field>
         </field>
     </record>
 </odoo>

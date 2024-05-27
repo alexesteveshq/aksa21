@@ -1,0 +1,7 @@
+<odoo>
+    <record id="group_delete_pos_order" model="res.groups">
+        <field name="name">Administrator (POS order delete permission)</field>
+        <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        <field name="implied_ids" eval="[(4, ref('point_of_sale.group_pos_manager'))]"/>
+    </record>
+</odoo>

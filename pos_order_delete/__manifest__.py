@@ -7,7 +7,7 @@
     'description': 'Deletes orders from point of sale. Point of sale order delete',
     'category': 'Point of sale',
     'author': 'Visionee',
-    'version': '16.0.1.1',
+    'version': '16.0.1.0',
     'depends': [
         'point_of_sale',
     ],

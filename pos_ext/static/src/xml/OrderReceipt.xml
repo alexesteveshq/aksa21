@@ -4,7 +4,7 @@
         <xpath expr="//span[@t-esc='env.pos.format_currency(receipt.total_discount)']/.." position="replace"/>
         <xpath expr="//span[@t-esc='env.pos.format_currency(receipt.total_tax)']/.." position="before">
             Currency
-            <t t-if="receipt.currency.name == 'USX'">
+            <t t-if="this.env.pos.currency.name == 'USX'">
                 <span class="pos-receipt-right-align">USD</span>
             </t>
             <t t-else="">

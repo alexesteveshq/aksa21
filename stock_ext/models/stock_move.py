@@ -14,6 +14,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     product_barcode = fields.Char(related='product_id.barcode')
+    cost = fields.Float(related='product_id.standard_price')
 
     def _get_aggregated_product_quantities(self, **kwargs):
         result = super(StockMoveLine, self)._get_aggregated_product_quantities(**kwargs)

@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <xpath expr="//tree/field[@name='package_id']" position="after">
                 <field name="product_barcode"/>
+                <field name="cost"/>
             </xpath>
         </field>
     </record>

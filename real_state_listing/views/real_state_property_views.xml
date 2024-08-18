@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_real_state_property_form" model="ir.ui.view">
+        <field name="name">view.real.state.property.form</field>
+        <field name="model">real.state.property</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                        <field name="state"/>
+                        <field name="image"/>
+                        <field name="price"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_real_state_property_tree" model="ir.ui.view">
+        <field name="name">view.real.state.property.tree</field>
+        <field name="model">real.state.property</field>
+        <field name="arch" type="xml">
+            <tree string="Piece Variant">
+                <field name="name"/>
+                <field name="description"/>
+                <field name="state"/>
+                <field name="price"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="real_state_property_action" model="ir.actions.act_window">
+        <field name="name">Real State</field>
+        <field name="res_model">real.state.property</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="real_state_menu" name="Real State"/>
+    <menuitem id="menu_real_state_property"
+              action="real_state_property_action"
+              parent="real_state_listing.real_state_menu"/>
+</odoo>

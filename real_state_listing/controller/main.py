@@ -13,5 +13,6 @@ class RealState(Controller):
         properties = request.env['real.state.property'].sudo().search([])
         base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
         properties = [{'id': prop.id,'name': prop.name, 'description': prop.description, 'status': prop.state,
-                       'url': base_url + prop.image.image_src, 'price': prop.price} for prop in properties]
+                       'url': '' if not prop.image.image_src else base_url + prop.image.image_src, 'price': prop.price}
+                      for prop in properties]
         return properties

@@ -16,3 +16,12 @@ class RealState(Controller):
                        'url': '' if not prop.image.image_src else base_url + prop.image.image_src, 'price': prop.price}
                       for prop in properties]
         return properties
+
+    @route('/web/image/<string:xmlid>/<string:filename>', type='http', auth="public", cors='*')
+    def image(self, xmlid=None, filename=None, **kwargs):
+        attachment = request.env.ref(xmlid)
+        if attachment:
+            content = attachment.datas
+            response = request.make_response(content, content_type=attachment.mimetype)
+            return response
+        return request.not_found()

@@ -65,7 +65,8 @@ class ProductProduct(models.Model):
     def _compute_retail_price_untaxed_usd(self):
         currency_usd = self.env['res.currency'].search([('name', '=', 'USR')])
         for product in self:
-            product.retail_price_untaxed_usd = product.retail_price_untaxed / currency_usd.inverse_rate
+            if not self._context.get('import_file'):
+                product.retail_price_untaxed_usd = product.retail_price_untaxed / currency_usd.inverse_rate
 
     @api.model_create_multi
     def create(self, vals_list):

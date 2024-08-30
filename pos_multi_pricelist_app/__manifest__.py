@@ -19,9 +19,6 @@ point of sale currency pricelist point of sale pricelist currency point of sale 
 """,
     "license": "OPL-1",
     'depends': ['base', 'point_of_sale', 'stock_ext'],
-    'data': [
-        'views/pos_payment.xml',
-    ],
     'assets': {
         'point_of_sale.assets': [
             'pos_multi_pricelist_app/static/src/js/multi_pricelist.js',

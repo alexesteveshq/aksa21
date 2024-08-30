@@ -19,6 +19,10 @@
             <xpath expr="//field[@name='lines']/tree/field[@name='price_subtotal']" position="after">
                 <field name="amount_currency"/>
             </xpath>
+            <xpath expr="//field[@name='payment_ids']/tree/field[@name='amount']" position="after">
+                <field name = "amount_currency" groups="base.group_multi_currency"/>
+                <field name = "currency" groups="base.group_multi_currency"/>
+            </xpath>
         </field>
     </record>
 </odoo>

@@ -7,7 +7,6 @@
 			<field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
 			<field name="arch" type="xml">
 				<xpath expr="//field[@name='payment_ids']/tree/field[@name='amount']" position="after">
-					<field name = "amount_currency" groups="base.group_multi_currency"/>
 					<field name = "currency" groups="base.group_multi_currency"/>
 				</xpath>
 			</field>

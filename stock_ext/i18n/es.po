@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-25 22:37+0000\n"
-"PO-Revision-Date: 2024-03-25 22:37+0000\n"
+"POT-Creation-Date: 2024-09-02 22:22+0000\n"
+"PO-Revision-Date: 2024-09-02 22:22+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -68,6 +68,7 @@ msgstr "Ajustes de configuración"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__standard_price
+#: model:ir.model.fields,field_description:stock_ext.field_stock_move_line__cost
 msgid "Cost"
 msgstr ""
 
@@ -158,6 +159,7 @@ msgstr "Costo de importación (%)"
 
 #. module: stock_ext
 #: model:ir.model.fields,help:stock_ext.field_product_product__standard_price
+#: model:ir.model.fields,help:stock_ext.field_stock_move_line__cost
 msgid ""
 "In Standard Price & AVCO: value of the product (automatically computed in AVCO).\n"
 "        In FIFO: value of the next unit that will leave the stock (automatically computed).\n"
@@ -280,6 +282,11 @@ msgid "Price USD"
 msgstr "Precio USD"
 
 #. module: stock_ext
+#: model:ir.model.fields,field_description:stock_ext.field_product_product__price_update
+msgid "Price update"
+msgstr "Actualizar precios"
+
+#. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_piece_variant__pricelist_id
 msgid "Pricelist"
 msgstr ""
@@ -362,7 +369,7 @@ msgstr "Precio de retail (sin impuestos)"
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__retail_price_untaxed_usd
 msgid "Retail price USD (untaxed)"
-msgstr ""
+msgstr "Precio de retail USD (sin impuestos)"
 
 #. module: stock_ext
 #: model:ir.model.fields,field_description:stock_ext.field_product_product__retail_variant

@@ -41,13 +41,16 @@ class ProductProduct(models.Model):
                                         compute='_compute_retail_price_untaxed', store=True)
     retail_price_untaxed_usd = fields.Float(string='Retail price USD (untaxed)', tracking=True,
                                             compute='_compute_retail_price_untaxed_usd', store=True)
+    price_update = fields.Boolean(string='Price update', default=True)
 
     @api.depends('retail_variant', 'weight', 'lst_price', 'cost_retail_calculation')
     def _compute_retail_price_untaxed(self):
         variants = self.env['piece.variant'].search([])
         currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
         for product in self:
-            if not self._context.get('import_file'):
+            if self._context.get('import_file') or not product.price_update:
+                continue
+            else:
                 variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
                 currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
                 if product.cost_retail_calculation and product.retail_variant:
@@ -65,7 +68,9 @@ class ProductProduct(models.Model):
     def _compute_retail_price_untaxed_usd(self):
         currency_usd = self.env['res.currency'].search([('name', '=', 'USR')])
         for product in self:
-            if not self._context.get('import_file'):
+            if self._context.get('import_file') or not product.price_update:
+                continue
+            else:
                 product.retail_price_untaxed_usd = product.retail_price_untaxed / currency_usd.inverse_rate
 
     @api.model_create_multi
@@ -91,7 +96,9 @@ class ProductProduct(models.Model):
     def _compute_price(self):
         currency_model = self.env['res.currency']
         for piece in self:
-            if not self._context.get('import_file'):
+            if self._context.get('import_file') or not piece.price_update:
+                continue
+            else:
                 price_untaxed = (piece.standard_price * (piece.lot_id.variant or 1))
                 price = price_untaxed + (price_untaxed * piece.lot_id.tax_id.amount / 100)
                 currency_mxn = currency_model.browse(self.env.ref('base.USD').id)

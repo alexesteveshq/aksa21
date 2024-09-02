@@ -13,13 +13,17 @@
                     <field name="force_sticker_update"/>
                     <label for="force_sticker_update"/>
                 </span>
+                <span class="d-inline-block">
+                    <field name="price_update"/>
+                    <label for="price_update"/>
+                </span>
             </xpath>
             <xpath expr="//field[@name='barcode']" position="after">
                 <field name="lot_id"/>
                 <field name="raw_data"/>
                 <field name="retail_variant"/>
-                <field name="retail_price_untaxed"/>
-                <field name="retail_price_untaxed_usd"/>
+                <field name="retail_price_untaxed" readonly="0"/>
+                <field name="retail_price_untaxed_usd" readonly="0"/>
                 <field name="price_usd"/>
                 <field name="price_mxn"/>
             </xpath>

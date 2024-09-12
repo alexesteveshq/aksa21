@@ -7,6 +7,7 @@
     'description': 'Count pieces from stock by scanning them massively',
     'category': 'Stock',
     'author': 'Alex Esteves',
+    'version': '16.0.0.1',
     'depends': [
         'stock',
     ],

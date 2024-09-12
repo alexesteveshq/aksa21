@@ -1,0 +1,137 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_count
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-12 00:46+0000\n"
+"PO-Revision-Date: 2024-09-12 00:46+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_count
+#: model:ir.model.fields.selection,name:stock_count.selection__stock_count_piece_wizard__scan_status__all_scanned
+msgid "All scanned"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard___barcode_scanned
+msgid "Barcode Scanned"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model,name:stock_count.model_stock_count_piece_wizard
+msgid "Count Piece Wizard"
+msgstr "Conteo de piezas"
+
+#. module: stock_count
+#: model:ir.actions.act_window,name:stock_count.action_stock_piece_count
+#: model_terms:ir.ui.view,arch_db:stock_count.stock_count_piece_wizard_form
+msgid "Count pieces"
+msgstr "Conteo de piezas"
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__end_date
+msgid "End date"
+msgstr "Fecha fin"
+
+#. module: stock_count
+#: model:ir.model.fields.selection,name:stock_count.selection__stock_count_piece_wizard__scan_status__error
+msgid "Error"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__missing_product_ids
+msgid "Missing Pieces"
+msgstr "Piezas faltantes"
+
+#. module: stock_count
+#: model:ir.model.fields.selection,name:stock_count.selection__stock_count_piece_wizard__scan_status__missing_products
+msgid "Missing products"
+msgstr "Piezas faltantes"
+
+#. module: stock_count
+#: model_terms:ir.ui.view,arch_db:stock_count.stock_count_piece_wizard_form
+msgid "No barcodes detected"
+msgstr "No se detectaron codigos de barra"
+
+#. module: stock_count
+#: model:ir.model.fields.selection,name:stock_count.selection__stock_count_piece_wizard__scan_status__not_detected
+msgid "Not Detected"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields.selection,name:stock_count.selection__stock_count_piece_wizard__scan_status__not_scanned
+msgid "Not Scanned"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__scan_status
+msgid "Scan status"
+msgstr ""
+
+#. module: stock_count
+#: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__start_date
+msgid "Start date"
+msgstr "Fecha inicio"
+
+#. module: stock_count
+#: model_terms:ir.ui.view,arch_db:stock_count.stock_count_piece_wizard_form
+msgid "There are missing pieces"
+msgstr "Se detectaron piezas faltantes"
+
+#. module: stock_count
+#: model_terms:ir.ui.view,arch_db:stock_count.stock_count_piece_wizard_form
+msgid "There are no missing pieces"
+msgstr "No hay piezas faltantes"
+
+#. module: stock_count
+#: model_terms:ir.ui.view,arch_db:stock_count.stock_count_piece_wizard_form
+msgid "There is an error in the barcodes format"
+msgstr "Hay un error en el formato de los codigos de barra"
+
+#. module: stock_count
+#: model:ir.model.fields,help:stock_count.field_stock_count_piece_wizard___barcode_scanned
+msgid "Value of the last barcode scanned."
+msgstr ""

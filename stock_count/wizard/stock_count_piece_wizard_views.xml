@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_count_piece_wizard_form" model="ir.ui.view">
+        <field name="name">stock.count.piece.wizard.form</field>
+        <field name="model">stock.count.piece.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Count pieces">
+                <div class="alert alert-warning text-left" role="alert"
+                     attrs="{'invisible': [('scan_status', '!=', 'missing_products')]}">
+                    There are missing pieces
+                </div>
+                <div class="alert alert-info text-left" role="alert"
+                     attrs="{'invisible': [('scan_status', '!=', 'all_scanned')]}">
+                    There are no missing pieces
+                </div>
+                <div class="alert alert-danger text-left" role="alert"
+                     attrs="{'invisible': [('scan_status', '!=', 'error')]}">
+                    There is an error in the barcodes format
+                </div>
+                <div class="alert alert-info text-left" role="alert"
+                     attrs="{'invisible': [('scan_status', '!=', 'not_detected')]}">
+                    No barcodes detected
+                </div>
+                <field name="_barcode_scanned" widget="barcode_handler"/>
+                <group>
+                    <field name="scan_status" invisible="1"/>
+                    <field name="start_date" required="1"/>
+                    <field name="end_date"  required="1"/>
+                    <field name="missing_product_ids" readonly="1">
+                        <tree>
+                            <field name="barcode"/>
+                            <field name="name"/>
+                            <field name="standard_price"/>
+                        </tree>
+                    </field>
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>

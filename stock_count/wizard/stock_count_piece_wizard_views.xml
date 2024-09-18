@@ -24,8 +24,6 @@
                 <field name="_barcode_scanned" widget="barcode_handler"/>
                 <group>
                     <field name="scan_status" invisible="1"/>
-                    <field name="start_date" required="1"/>
-                    <field name="end_date"  required="1"/>
                     <field name="missing_product_ids" readonly="1">
                         <tree>
                             <field name="barcode"/>

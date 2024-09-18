@@ -14,30 +14,23 @@ class StockCountPieceWizard(models.TransientModel):
                                     ('missing_products', 'Missing products'),
                                     ('all_scanned', 'All scanned'),
                                     ('error', 'Error')], string='Scan status', default='not_scanned')
-    start_date = fields.Date(string='Start date')
-    end_date = fields.Date(string='End date')
+
+    @api.model
+    def default_get(self, fields):
+        result = super(StockCountPieceWizard, self).default_get(fields)
+        result['missing_product_ids'] = self.env['stock.move'].search(
+            [('company_id', '=', self.env.company.id)]).mapped('product_id')
+        return result
 
     def on_barcode_scanned(self, barcode=''):
-        self.missing_product_ids = False
         if barcode:
-            stock_moves = self.env['stock.move'].search(
-                [('location_id.usage', 'in', ('internal', 'transit')),
-                 ('location_dest_id.usage', 'not in', ('internal', 'transit')),
-                 ('date', '>=', self.start_date), ('date', '<=', self.end_date)])
-            product_moves = stock_moves.mapped('product_id')
-            try:
-                barcodes = barcode.split('\n')
-                barcodes = [value.upper() for value in barcodes]
-                for barcode in barcodes:
-                    product = self.env['product.product'].search([('barcode', '=', barcode)])
-                    if product in product_moves:
-                        product_moves -= product
-                self.missing_product_ids = product_moves
+            product = self.env['product.product'].search([('barcode', '=', barcode.upper())])
+            if product:
+                self.missing_product_ids = self.missing_product_ids.filtered(
+                    lambda prod: prod.barcode != product.barcode)
                 if self.missing_product_ids:
                     self.scan_status = 'missing_products'
                 else:
                     self.scan_status = 'all_scanned'
-            except Exception as e:
-                self.scan_status = 'error'
         else:
             self.scan_status = 'not_detected'

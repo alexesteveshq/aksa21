@@ -56,11 +56,11 @@ class ProductProduct(models.Model):
                 if product.cost_retail_calculation and product.retail_variant:
                     price = product.standard_price * float(product.retail_variant)
                     price_currency = price * currency_mxr.inverse_rate
-                    product.retail_price_untaxed = price_currency
+                    product.retail_price_untaxed = price_currency / 1.16
                 elif variant and product.retail_variant:
                     price = (float(product.retail_variant) * product.weight) * variant.value
                     price = price - (price * 15 / 100)
-                    product.retail_price_untaxed = price * currency_usx.inverse_rate
+                    product.retail_price_untaxed = (price * currency_usx.inverse_rate) / 1.16
                 elif product.cost_retail_calculation:
                     product.retail_price_untaxed = product.lst_price * currency_mxr.inverse_rate
 
@@ -128,8 +128,8 @@ class ProductProduct(models.Model):
                     'weight': self.weight,
                     'price_usd': str(round(self.price_usd)),
                     'price_mxn': str(round(self.price_mxn))}
-            data.update({'price_usd': str(round(self.retail_price_untaxed_usd)),
-                         'price_mxn': str(round(self.retail_price_untaxed))})
+            data.update({'price_usd': str(round(self.retail_price_untaxed_usd * 1.16)),
+                         'price_mxn': str(round(self.retail_price_untaxed * 1.16))})
             label = manager.generate_label_data(data)
             self.write({'raw_data': label.dumpZPL()})
         self.write({'print_enabled': print_enabled,

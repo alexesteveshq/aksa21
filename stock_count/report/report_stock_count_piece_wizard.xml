@@ -7,26 +7,24 @@
                     <p><strong>Company:</strong> <t t-esc="doc.env.company.name"/></p>
                     <p><strong>Date:</strong> <t t-esc="doc.date"/></p>
 
-                    <!-- Spare Pieces Section (Spare Pieces first) -->
-                    <h3 style="margin-bottom: 10px;">Spare Pieces</h3>
-                    <div style="margin-bottom: 20px;">
-                        <!-- Header Row for Spare Pieces -->
-                        <div style="display: flex; font-weight: bold; padding: 8px; border-bottom: 1px solid #000;">
-                            <div style="flex: 1; padding: 0 10px;">Piece</div>
-                            <div style="flex: 1; padding: 0 10px;">Code</div>
+                    <h3 class="mt-4 mb-3">Spare Pieces</h3>
+                    <div class="container-fluid">
+                        <!-- Header Row -->
+                        <div class="row font-weight-bold" style="border-bottom: 1px solid #000;">
+                            <div class="col-6">Product Name</div>
+                            <div class="col-6">Barcode</div>
                         </div>
 
-                        <!-- Grouping Rows into Blocks of 5 -->
+                        <!-- Grouping Spare Pieces into Blocks of 5 -->
                         <t t-if="doc.spare_product_ids">
                             <t t-foreach="range(0, len(doc.spare_product_ids), 5)" t-as="block_index">
-                                <div style="page-break-inside: avoid;">
+                                <div class="container-fluid" style="page-break-inside: avoid;">
                                     <t t-foreach="doc.spare_product_ids[block_index:block_index+5]" t-as="product">
-                                        <div style="display: flex; justify-content: space-between; padding: 8px;
-                                                    border-bottom: 1px solid #000;">
-                                            <div style="flex: 1; padding: 0 10px; word-wrap: break-word;">
+                                        <div class="row" style="border-bottom: 1px solid #000; padding: 8px;">
+                                            <div class="col-6">
                                                 <t t-esc="product.display_name"/>
                                             </div>
-                                            <div style="flex: 1; padding: 0 10px; word-wrap: break-word;">
+                                            <div class="col-6">
                                                 <t t-esc="product.barcode"/>
                                             </div>
                                         </div>
@@ -35,30 +33,31 @@
                             </t>
                         </t>
                         <t t-if="not doc.spare_product_ids">
-                            <p>No spare pieces found.</p>
+                            <div class="row">
+                                <div class="col-12">No spare pieces found.</div>
+                            </div>
                         </t>
                     </div>
 
                     <!-- Missing Pieces Section -->
-                    <h3 style="margin-bottom: 10px;">Missing Pieces</h3>
-                    <div style="margin-bottom: 20px;">
-                        <!-- Header Row for Missing Pieces -->
-                        <div style="display: flex; font-weight: bold; padding: 8px; border-bottom: 1px solid #000;">
-                            <div style="flex: 1; padding: 0 10px;">Piece</div>
-                            <div style="flex: 1; padding: 0 10px;">Code</div>
+                    <h3 class="mt-4 mb-3">Missing Pieces</h3>
+                    <div class="container-fluid">
+                        <!-- Header Row -->
+                        <div class="row font-weight-bold" style="border-bottom: 1px solid #000;">
+                            <div class="col-6">Product Name</div>
+                            <div class="col-6">Barcode</div>
                         </div>
 
-                        <!-- Grouping Rows into Blocks of 5 -->
+                        <!-- Grouping Missing Pieces into Blocks of 5 -->
                         <t t-if="doc.missing_product_ids">
                             <t t-foreach="range(0, len(doc.missing_product_ids), 5)" t-as="block_index">
-                                <div style="page-break-inside: avoid;">
+                                <div class="container-fluid" style="page-break-inside: avoid;">
                                     <t t-foreach="doc.missing_product_ids[block_index:block_index+5]" t-as="product">
-                                        <div style="display: flex; justify-content: space-between; padding: 8px;
-                                                    border-bottom: 1px solid #000;">
-                                            <div style="flex: 1; padding: 0 10px; word-wrap: break-word;">
+                                        <div class="row" style="border-bottom: 1px solid #000; padding: 8px;">
+                                            <div class="col-6">
                                                 <t t-esc="product.display_name"/>
                                             </div>
-                                            <div style="flex: 1; padding: 0 10px; word-wrap: break-word;">
+                                            <div class="col-6">
                                                 <t t-esc="product.barcode"/>
                                             </div>
                                         </div>
@@ -67,7 +66,9 @@
                             </t>
                         </t>
                         <t t-if="not doc.missing_product_ids">
-                            <p>No missing pieces found.</p>
+                            <div class="row">
+                                <div class="col-12">No missing pieces found.</div>
+                            </div>
                         </t>
                     </div>
                 </div>

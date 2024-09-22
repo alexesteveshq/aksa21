@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-22 10:19+0000\n"
-"PO-Revision-Date: 2024-09-22 10:19+0000\n"
+"POT-Creation-Date: 2024-09-22 10:40+0000\n"
+"PO-Revision-Date: 2024-09-22 10:40+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -31,6 +31,11 @@ msgid "All scanned"
 msgstr ""
 
 #. module: stock_count
+#: model_terms:ir.ui.view,arch_db:stock_count.report_stock_count_piece_wizard
+msgid "Barcode"
+msgstr "Código"
+
+#. module: stock_count
 #: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__barcodes
 msgid "Barcodes"
 msgstr "Códigos de barra"
@@ -39,11 +44,6 @@ msgstr "Códigos de barra"
 #: model_terms:ir.ui.view,arch_db:stock_count.stock_count_piece_wizard_form
 msgid "Cancel"
 msgstr "Cancelar"
-
-#. module: stock_count
-#: model_terms:ir.ui.view,arch_db:stock_count.report_stock_count_piece_wizard
-msgid "Code"
-msgstr "Código"
 
 #. module: stock_count
 #: model:ir.model,name:stock_count.model_stock_count_piece_wizard
@@ -138,14 +138,14 @@ msgid "Not Scanned"
 msgstr ""
 
 #. module: stock_count
-#: model_terms:ir.ui.view,arch_db:stock_count.report_stock_count_piece_wizard
-msgid "Piece"
-msgstr "Nombre"
-
-#. module: stock_count
 #: model_terms:ir.ui.view,arch_db:stock_count.stock_count_piece_wizard_form
 msgid "Print"
 msgstr "Imprimir"
+
+#. module: stock_count
+#: model_terms:ir.ui.view,arch_db:stock_count.report_stock_count_piece_wizard
+msgid "Product Name"
+msgstr "Nombre"
 
 #. module: stock_count
 #: model:ir.model.fields,field_description:stock_count.field_stock_count_piece_wizard__scan_status

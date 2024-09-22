@@ -15,6 +15,8 @@
         'data/ir_actions.xml',
         'security/ir.model.access.csv',
         'wizard/stock_count_piece_wizard_views.xml',
+        'report/report_stock_count_piece_wizard.xml',
+        'report/stock_count_report.xml',
     ],
     'license': 'AGPL-3',
     'installable': True,

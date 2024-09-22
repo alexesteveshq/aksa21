@@ -21,9 +21,16 @@
                      attrs="{'invisible': [('scan_status', '!=', 'not_detected')]}">
                     No barcodes detected
                 </div>
-                <field name="_barcode_scanned" widget="barcode_handler"/>
                 <group>
                     <field name="scan_status" invisible="1"/>
+                    <field name="barcodes" required="1"/>
+                    <field name="spare_product_ids" readonly="1">
+                        <tree>
+                            <field name="barcode"/>
+                            <field name="name"/>
+                            <field name="standard_price"/>
+                        </tree>
+                    </field>
                     <field name="missing_product_ids" readonly="1">
                         <tree>
                             <field name="barcode"/>
@@ -32,6 +39,11 @@
                         </tree>
                     </field>
                 </group>
+                <footer>
+                    <button name="print_pieces" string="Print" type="object"
+                            class="btn btn-sm btn-primary"/>
+                    <button string="Cancel" class="btn btn-sm btn-secondary" special="cancel"/>
+                </footer>
             </form>
         </field>
     </record>

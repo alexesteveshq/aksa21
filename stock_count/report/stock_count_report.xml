@@ -1,0 +1,25 @@
+<odoo>
+    <record id="paperformat_count_pice_report" model="report.paperformat">
+        <field name="name">Count pieces report paperformat</field>
+        <field name="default" eval="False"/>
+        <field name="disable_shrinking" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">20</field>
+        <field name="margin_right">20</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="action_report_stock_count_piece" model="ir.actions.report">
+       <field name="name">Stock Count Piece Report</field>
+       <field name="model">stock.count.piece.wizard</field>
+       <field name="report_type">qweb-pdf</field>
+       <field name="report_name">stock_count.report_stock_count_piece_wizard</field>
+       <field name="report_file">stock_count.report_stock_count_piece_wizard</field>
+       <field name="paperformat_id" ref="paperformat_count_pice_report"/>
+    </record>
+</odoo>

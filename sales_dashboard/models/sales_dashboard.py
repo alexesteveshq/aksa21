@@ -7,7 +7,7 @@ class PosOrder(models.Model):
     @api.model
     def get_dashboard_data(self):
         today = datetime.today().replace(hour=23, minute=59, second=59)
-        month_start = today.replace(day=1)
+        month_start = today.replace(day=1, hour=0, minute=0, second=0)
 
         # Calculate the same period in the previous month (first day to today's day)
         previous_month_start = (month_start - timedelta(days=1)).replace(day=1)

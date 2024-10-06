@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<t t-name="sales_dashboard.SalesDashboard" owl="1">
+    <div class="o_sales_dashboard">
+        <div class="o_sales_dashboard_container">
+            <!-- Row for the dashboard columns -->
+            <div class="o_sales_dashboard_row">
+                <!-- Column 1: Sales Dashboard (50% Width) -->
+                <div class="o_sales_dashboard_column o_column_left">
+                    <h2>Sales Dashboard - Current Month</h2>
+                    <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
+                        <h3>Total Sales</h3>
+                        <span t-esc="state.totalSales" /> $
+                        <span t-if="state.totalSalesChange >= 0" style="color: green; font-size: 18px;">
+                            (+<t t-esc="state.totalSalesChange" />%)
+                        </span>
+                        <span t-else="" style="color: red; font-size: 18px;">
+                            (-<t t-esc="Math.abs(state.totalSalesChange)" />%)
+                        </span>
+                    </div>
+
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Current Sales</th>
+                                <th>Change (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.companySales" t-as="company" t-key="company.company">
+                                <td>
+                                    <span t-esc="company.company" />
+                                </td>
+                                <td>
+                                    <span t-esc="company.current_sales" /> $
+                                </td>
+                                <td>
+                                    <span t-esc="company.percentage_change" /> %
+                                    <t t-if="company.percentage_change >= 0">
+                                        <span style="color: green; font-size: 22px; font-weight: bold">↑</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span style="color: red; font-size: 22px; font-weight: bold">↓</span>
+                                    </t>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Graph Canvas -->
+                    <h4>Predicted Sales for the Month</h4>
+                    <div style="height: 300px;">
+                        <canvas id="salesPredictionGraph" style="width: 100%; height: 100%;"></canvas>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <h2>Stock Statistics</h2>
+                        <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
+                            <h3>Current Month Inventory</h3>
+                            <div>
+                                <h4>Total Products: <span t-esc="state.currentTotalQuantity" /></h4>
+                                <h4>Total Cost: <span t-esc="state.currentTotalCost" /> $</h4>
+                            </div>
+                        </div>
+
+                        <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
+                            <h3>Previous Month Inventory</h3>
+                            <div>
+                                <h4>Total Products: <span t-esc="state.previousTotalQuantity" /></h4>
+                                <h4>Total Cost: <span t-esc="state.previousTotalCost" /> $</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modified Section: Seller Ranking -->
+                    <div class="o_sales_dashboard_column o_column_right" style="margin-top: 20px;">
+                        <h3 style="text-align: center; margin-bottom: 20px;">Seller Ranking</h3>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Seller</th>
+                                    <th>Amount Sold</th>
+                                    <th>Change (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="state.sellerRanking" t-as="seller" t-key="seller.id"> <!-- Fix: Use seller.id as key -->
+                                    <td><span t-esc="seller.name" /></td>
+                                    <td><span t-esc="seller.amount_sold" /> $</td>
+                                    <td>
+                                        <span t-esc="seller.percentage_change" /> %
+                                        <t t-if="seller.percentage_change >= 0">
+                                            <span style="color: green; font-size: 22px; font-weight: bold">↑</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="color: red; font-size: 22px; font-weight: bold">↓</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                <!-- Column 2: POS Order Statistics (50% Width) -->
+                <div class="o_sales_dashboard_column o_column_right">
+                    <h2>POS Order Statistics</h2>
+
+                    <!-- Order Amount Average Block -->
+                    <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
+                        <h3>Order Amount Average</h3>
+                        <span t-esc="state.orderAvg" /> $
+                        <span t-if="state.orderAvgChange >= 0" style="color: green; font-size: 18px;">
+                            (+<t t-esc="state.orderAvgChange" />%)
+                        </span>
+                        <span t-else="" style="color: red; font-size: 18px;">
+                            (-<t t-esc="Math.abs(state.orderAvgChange)" />%)
+                        </span>
+                    </div>
+
+                    <!-- Order Count Block -->
+                    <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
+                        <h3>Number of Orders</h3>
+                        <span t-esc="state.orderCount" />
+                        <span t-if="state.orderCountChange >= 0" style="color: green; font-size: 18px;">
+                            (+<t t-esc="state.orderCountChange" />)
+                        </span>
+                        <span t-else="" style="color: red; font-size: 18px;">
+                            (-<t t-esc="Math.abs(state.orderCountChange)" />)
+                        </span>
+                    </div>
+
+                    <!-- Discount Average Block with percentage format -->
+                    <div class="o_dashboard_blue_block">
+                        <h3>Discount Average</h3>
+                        <span t-esc="state.discountAvg" /> %
+                        <span t-if="state.discountAvgChange > 0" style="color: red; font-size: 18px;">
+                            (+<t t-esc="state.discountAvgChange" />%)
+                        </span>
+                        <span t-else="" style="color: green; font-size: 18px;">
+                            (-<t t-esc="Math.abs(state.discountAvgChange)" />%)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="o_sales_dashboard_column o_column_right">
+                    <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
+                        <h3>Today's Sales</h3>
+                        <span t-esc="state.todaySales" /> $
+                        <t t-if="state.todaySalesChange">
+                            <span t-if="state.todaySalesChange > 0" style="color: green; font-size: 18px;">
+                            (+<t t-esc="state.todaySalesChange" />%)
+                            </span>
+                            <span t-else="" style="color: red; font-size: 18px;">
+                                (-<t t-esc="Math.abs(state.todaySalesChange)" />%)
+                            </span>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>

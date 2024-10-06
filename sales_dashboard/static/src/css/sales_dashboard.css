@@ -1,0 +1,52 @@
+.o_sales_dashboard {
+    height: inherit;
+    overflow: auto;
+    padding: 20px;
+}
+
+.o_sales_dashboard_container {
+    width: 100%;
+}
+
+.o_sales_dashboard_row {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.o_sales_dashboard_column {
+    width: 48%;
+    margin: 10px;
+}
+
+.o_column_left {
+    float: left;
+}
+
+.o_column_right {
+    float: right;
+}
+
+.o_dashboard_blue_block {
+    background-color: #eaf6fb;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.o_dashboard_blue_block h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+table.table-hover {
+    width: 100%;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+table.table-hover th, table.table-hover td {
+    padding: 10px;
+    text-align: center;
+}

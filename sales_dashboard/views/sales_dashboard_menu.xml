@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_sales_dashboard_js" model="ir.actions.client">
+        <field name="name">Sales Dashboard</field>
+        <field name="tag">sales_dashboard_js_action</field>
+    </record>
+
+    <menuitem
+        id="menu_sales_dashboard_root"
+        name="Sales Dashboard"
+        groups="point_of_sale.group_pos_manager,point_of_sale.group_pos_user"
+        web_icon="spreadsheet_dashboard,static/description/icon.svg"/>
+
+    <menuitem id="menu_sales_dashboard_js"
+              name="Sales Dashboard"
+              parent="menu_sales_dashboard_root"
+              action="action_sales_dashboard_js"
+              sequence="10"/>
+</odoo>

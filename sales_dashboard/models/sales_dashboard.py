@@ -98,8 +98,9 @@ class PosOrder(models.Model):
         # Calculate product inventory for current and previous period
         current_products = self.env['product.product'].with_context(
             active_test=False).search([('type', '=', 'product'), ('qty_available', '>', 0)])
+
         prev_products = self.env['product.product'].with_context(
-            to_date=previous_month_end, active_test=False).search(
+            to_date=datetime.now().replace(day=1, hour=0, minute=0, second=0) - timedelta(days=1), active_test=False).search(
             [('type', '=', 'product'), ('qty_available', '>', 0)])
 
         # Create product data with unique IDs

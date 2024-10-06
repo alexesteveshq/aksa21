@@ -166,7 +166,7 @@ class PosOrder(models.Model):
             'order_avg': order_avg,
             'order_count': order_count,
             'discount_avg': round(discount_avg, 2),
-            'order_avg_change': order_avg_change,
+            'order_avg_change': round(order_avg_change, 2),
             'order_count_change': order_count_change,
             'discount_avg_change': discount_avg_change,
             'currentTotalQuantity': sum(p['quantity'] for p in current_product_data),

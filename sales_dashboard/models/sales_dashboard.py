@@ -1,29 +1,41 @@
 from odoo import models, api
 from datetime import datetime, timedelta
+import pytz
+
 
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     @api.model
     def get_dashboard_data(self):
-        today = datetime.today().replace(hour=23, minute=59, second=59)
-        month_start = today.replace(day=1, hour=0, minute=0, second=0)
+        # Get the user's timezone or fallback to 'UTC'
+        timezone = pytz.timezone(self._context.get('tz') or self.env.user.tz or 'UTC')
 
-        # Calculate the same period in the previous month (first day to today's day)
+        # Use timezone-aware datetime objects for `today`
+        today = datetime.now(tz=timezone)
+        month_start = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        # Calculate the same period in the previous month
         previous_month_start = (month_start - timedelta(days=1)).replace(day=1)
         previous_month_end = previous_month_start + timedelta(days=today.day - 1)
 
-        # Fetch current month's orders up to today across all companies
+        # Convert `today` and other relevant datetimes to UTC for comparison
+        today_utc = today.astimezone(pytz.UTC)
+        month_start_utc = month_start.astimezone(pytz.UTC)
+        previous_month_start_utc = previous_month_start.astimezone(pytz.UTC)
+        previous_month_end_utc = previous_month_end.astimezone(pytz.UTC)
+
+        # Fetch current month's orders up to the current time across all companies
         current_month_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', month_start),
-            ('date_order', '<=', today),
+            ('date_order', '>=', month_start_utc),
+            ('date_order', '<=', today_utc),
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ])
 
         # Fetch the previous month's orders up to the same day
         previous_month_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', previous_month_start),
-            ('date_order', '<=', previous_month_end),
+            ('date_order', '>=', previous_month_start_utc),
+            ('date_order', '<=', previous_month_end_utc),
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ])
 
@@ -32,7 +44,9 @@ class PosOrder(models.Model):
         previous_month_total_sales = sum(order.amount_currency for order in previous_month_orders)
 
         # Calculate total sales change percentage
-        total_sales_change = round(((current_month_total_sales - previous_month_total_sales) / previous_month_total_sales) * 100, 2) if previous_month_total_sales else 100.0 if current_month_total_sales else 0.0
+        total_sales_change = round(
+            ((current_month_total_sales - previous_month_total_sales) / previous_month_total_sales) * 100,
+            2) if previous_month_total_sales else 100.0 if current_month_total_sales else 0.0
 
         # Calculate order-related statistics
         order_amount_sum = sum(order.amount_currency for order in current_month_orders)
@@ -99,36 +113,38 @@ class PosOrder(models.Model):
         current_products = self.env['product.product'].with_context(
             active_test=False).search([('type', '=', 'product'), ('qty_available', '>', 0)])
 
+        # Convert to naive datetime for `to_date` in previous product search
+        previous_month_end_naive = previous_month_end_utc.replace(tzinfo=None)
+
         prev_products = self.env['product.product'].with_context(
-            to_date=datetime.now().replace(day=1, hour=0, minute=0, second=0) - timedelta(days=1), active_test=False).search(
+            to_date=previous_month_end_naive, active_test=False).search(
             [('type', '=', 'product'), ('qty_available', '>', 0)])
 
         # Create product data with unique IDs
         current_product_data = [{
-            'id': product.id,  # Use product ID as unique key
+            'id': product.id,
             'product': product.name,
             'quantity': product.qty_available,
             'cost': round(product.standard_price, 2)
         } for product in current_products]
 
         previous_product_data = [{
-            'id': product.id,  # Use product ID as unique key
+            'id': product.id,
             'product': product.name,
             'quantity': product.qty_available,
             'cost': round(product.standard_price, 2)
         } for product in prev_products]
 
         # Calculate today's sales and comparison with the same day in the previous month
-        today_start = today.replace(hour=0, minute=0, second=0)
-        today_end = today.replace(hour=23, minute=59, second=59)
+        today_start = today.replace(hour=0, minute=0, second=0, microsecond=0)
 
         today_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', today_start),
-            ('date_order', '<=', today_end),
+            ('date_order', '>=', today_start.astimezone(pytz.UTC)),
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ])
 
-        previous_same_day = previous_month_start + timedelta(days=today.day - 1) if previous_month_end.day >= today.day else None
+        previous_same_day = previous_month_start + timedelta(
+            days=today.day - 1) if previous_month_end.day >= today.day else None
         previous_same_day_end = previous_same_day.replace(hour=23, minute=59, second=59) if previous_same_day else None
 
         previous_same_day_orders = self.with_context(active_test=False).sudo().search([
@@ -139,14 +155,17 @@ class PosOrder(models.Model):
 
         today_sales = sum(order.amount_currency for order in today_orders)
         previous_same_day_sales = sum(order.amount_currency for order in previous_same_day_orders)
-        today_sales_change = round(((today_sales - previous_same_day_sales) / previous_same_day_sales) * 100, 2) if previous_same_day_sales else (100.0 if today_sales else 0.0)
+        today_sales_change = round(((today_sales - previous_same_day_sales) / previous_same_day_sales) * 100,
+                                   2) if previous_same_day_sales else (100.0 if today_sales else 0.0)
 
         # Calculate and sort seller ranking
         seller_ranking = []
 
         for seller in current_month_orders.mapped('seller_id'):
-            current_seller_sales = sum(order.amount_currency for order in current_month_orders.filtered(lambda o: o.seller_id == seller))
-            previous_seller_sales = sum(order.amount_currency for order in previous_month_orders.filtered(lambda o: o.seller_id == seller))
+            current_seller_sales = sum(
+                order.amount_currency for order in current_month_orders.filtered(lambda o: o.seller_id == seller))
+            previous_seller_sales = sum(
+                order.amount_currency for order in previous_month_orders.filtered(lambda o: o.seller_id == seller))
             seller_change = calculate_change(current_seller_sales, previous_seller_sales)
             seller_ranking.append({
                 'id': seller.id,
@@ -176,5 +195,5 @@ class PosOrder(models.Model):
             'previousTotalCost': round(sum(p['quantity'] * p['cost'] for p in previous_product_data), 2),
             'today_sales': today_sales,
             'today_sales_change': today_sales_change,
-            'seller_ranking': seller_ranking  # Return sorted seller ranking
+            'seller_ranking': seller_ranking
         }

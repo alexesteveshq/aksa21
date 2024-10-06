@@ -76,8 +76,12 @@ class SalesDashboard extends Component {
             this.state.todaySales = result.today_sales || 0;
             this.state.todaySalesChange = result.today_sales_change || 0;
 
-            // Set seller ranking data
-            this.state.sellerRanking = result.seller_ranking || [];
+            // Set seller ranking data, including discount_avg and discount_change
+            this.state.sellerRanking = (result.seller_ranking || []).map(seller => ({
+                ...seller,
+                discount_avg: seller.discount_avg || 0,   // Add discount average
+                discount_change: seller.discount_change || undefined  // Add discount change percentage
+            }));
 
             this.state.loading = false;
 

@@ -55,7 +55,7 @@ class PosOrder(models.Model):
 
         # Calculate discount average from order lines
         total_discount = sum(line.discount for order in current_month_orders for line in order.lines)
-        discount_avg = total_discount / order_count if order_count > 0 else 0
+        discount_avg = total_discount / len(current_month_orders.mapped('lines')) if order_count > 0 else 0
 
         # Calculate previous period statistics
         previous_order_sum = sum(order.amount_currency for order in previous_month_orders)
@@ -72,7 +72,7 @@ class PosOrder(models.Model):
 
         order_avg_change = calculate_change(order_avg, previous_order_avg)
         order_count_change = order_count - previous_order_count  # Difference in count instead of percentage
-        discount_avg_change = calculate_change(discount_avg, previous_discount_avg)
+        discount_avg_change = round(discount_avg - previous_discount_avg, 2)
 
         # Prepare daily sales data for each company
         companies = self.env['res.company'].search([])
@@ -167,11 +167,26 @@ class PosOrder(models.Model):
             previous_seller_sales = sum(
                 order.amount_currency for order in previous_month_orders.filtered(lambda o: o.seller_id == seller))
             seller_change = calculate_change(current_seller_sales, previous_seller_sales)
+
+            # Calculate discount averages for the current and previous month for each seller
+            current_total_discount = sum(line.discount for order in current_month_orders.filtered(lambda o: o.seller_id == seller) for line in order.lines)
+            current_line_count = len(current_month_orders.filtered(lambda o: o.seller_id == seller).mapped('lines'))
+            current_seller_discount_avg = current_total_discount / current_line_count if current_line_count > 0 else 0
+
+            previous_total_discount = sum(line.discount for order in previous_month_orders.filtered(lambda o: o.seller_id == seller) for line in order.lines)
+            previous_line_count = len(previous_month_orders.filtered(lambda o: o.seller_id == seller).mapped('lines'))
+            previous_seller_discount_avg = previous_total_discount / previous_line_count if previous_line_count > 0 else 0
+
+            discount_avg_change = 0 if not previous_seller_discount_avg else\
+                round(current_seller_discount_avg - previous_seller_discount_avg, 2)
+
             seller_ranking.append({
                 'id': seller.id,
                 'name': seller.name,
                 'amount_sold': round(current_seller_sales, 2),
                 'percentage_change': seller_change,
+                'discount_avg': round(current_seller_discount_avg, 2),
+                'discount_change': discount_avg_change,
             })
 
         # Sort the seller ranking data by 'amount_sold' in descending order

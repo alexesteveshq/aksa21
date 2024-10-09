@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_stock_count_piece_wizard_user,stock.count.piece.wizard,model_stock_count_piece_wizard,base.group_user,1,1,1,1
+access_product_count_user,product.count.user,model_product_count,base.group_user,1,1,1,1

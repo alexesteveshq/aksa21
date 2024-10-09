@@ -24,18 +24,20 @@
                 <group>
                     <field name="scan_status" invisible="1"/>
                     <field name="barcodes" required="1"/>
-                    <field name="spare_product_ids" readonly="1">
+                    <field name="spare_product_count_ids" readonly="1">
                         <tree>
                             <field name="barcode"/>
                             <field name="name"/>
                             <field name="standard_price"/>
+                            <field name="quantity"/>
                         </tree>
                     </field>
-                    <field name="missing_product_ids" readonly="1">
+                    <field name="missing_product_count_ids" readonly="1">
                         <tree>
                             <field name="barcode"/>
                             <field name="name"/>
                             <field name="standard_price"/>
+                            <field name="quantity"/>
                         </tree>
                     </field>
                 </group>

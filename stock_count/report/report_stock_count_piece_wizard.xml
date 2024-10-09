@@ -3,36 +3,42 @@
         <t t-call="web.basic_layout">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
+                    <!-- Report Header -->
                     <h2>Stock Count Report</h2>
                     <p><strong>Company:</strong> <t t-esc="doc.env.company.name"/></p>
                     <p><strong>Date:</strong> <t t-esc="doc.date"/></p>
 
+                    <!-- Spare Pieces Section -->
                     <h3 class="mt-4 mb-3">Spare Pieces</h3>
                     <div class="container-fluid">
-                        <!-- Header Row -->
+                        <!-- Table Header -->
                         <div class="row font-weight-bold" style="border-bottom: 1px solid #000;">
-                            <div class="col-6">Product Name</div>
-                            <div class="col-6">Barcode</div>
+                            <div class="col-4">Product Name</div>
+                            <div class="col-4">Barcode</div>
+                            <div class="col-4">Quantity</div>
                         </div>
 
                         <!-- Grouping Spare Pieces into Blocks of 5 -->
-                        <t t-if="doc.spare_product_ids">
-                            <t t-foreach="range(0, len(doc.spare_product_ids), 5)" t-as="block_index">
+                        <t t-if="doc.spare_product_count_ids">
+                            <t t-foreach="range(0, len(doc.spare_product_count_ids), 5)" t-as="block_index">
                                 <div class="container-fluid" style="page-break-inside: avoid;">
-                                    <t t-foreach="doc.spare_product_ids[block_index:block_index+5]" t-as="product">
+                                    <t t-foreach="doc.spare_product_count_ids[block_index:block_index+5]" t-as="product">
                                         <div class="row" style="border-bottom: 1px solid #000; padding: 8px;">
-                                            <div class="col-6">
-                                                <t t-esc="product.display_name"/>
+                                            <div class="col-4">
+                                                <t t-esc="product.name"/>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-4">
                                                 <t t-esc="product.barcode"/>
+                                            </div>
+                                            <div class="col-4">
+                                                <t t-esc="product.quantity"/>
                                             </div>
                                         </div>
                                     </t>
                                 </div>
                             </t>
                         </t>
-                        <t t-if="not doc.spare_product_ids">
+                        <t t-if="not doc.spare_product_count_ids">
                             <div class="row">
                                 <div class="col-12">No spare pieces found.</div>
                             </div>
@@ -42,30 +48,34 @@
                     <!-- Missing Pieces Section -->
                     <h3 class="mt-4 mb-3">Missing Pieces</h3>
                     <div class="container-fluid">
-                        <!-- Header Row -->
+                        <!-- Table Header -->
                         <div class="row font-weight-bold" style="border-bottom: 1px solid #000;">
-                            <div class="col-6">Product Name</div>
-                            <div class="col-6">Barcode</div>
+                            <div class="col-4">Product Name</div>
+                            <div class="col-4">Barcode</div>
+                            <div class="col-4">Quantity</div>
                         </div>
 
                         <!-- Grouping Missing Pieces into Blocks of 5 -->
-                        <t t-if="doc.missing_product_ids">
-                            <t t-foreach="range(0, len(doc.missing_product_ids), 5)" t-as="block_index">
+                        <t t-if="doc.missing_product_count_ids">
+                            <t t-foreach="range(0, len(doc.missing_product_count_ids), 5)" t-as="block_index">
                                 <div class="container-fluid" style="page-break-inside: avoid;">
-                                    <t t-foreach="doc.missing_product_ids[block_index:block_index+5]" t-as="product">
+                                    <t t-foreach="doc.missing_product_count_ids[block_index:block_index+5]" t-as="product">
                                         <div class="row" style="border-bottom: 1px solid #000; padding: 8px;">
-                                            <div class="col-6">
-                                                <t t-esc="product.display_name"/>
+                                            <div class="col-4">
+                                                <t t-esc="product.name"/>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-4">
                                                 <t t-esc="product.barcode"/>
+                                            </div>
+                                            <div class="col-4">
+                                                <t t-esc="product.quantity"/>
                                             </div>
                                         </div>
                                     </t>
                                 </div>
                             </t>
                         </t>
-                        <t t-if="not doc.missing_product_ids">
+                        <t t-if="not doc.missing_product_count_ids">
                             <div class="row">
                                 <div class="col-12">No missing pieces found.</div>
                             </div>

@@ -78,9 +78,11 @@ class PosOrder(models.Model):
         companies = self.env['res.company'].search([])
         daily_sales = []
         current_sales_by_company = {company.id: 0 for company in companies}
+        current_cost_by_company = {company.id: 0 for company in companies}
         previous_sales_by_company = {company.id: 0 for company in companies}
 
         for order in current_month_orders:
+            current_cost_by_company[order.company_id.id] += order.order_cost
             current_sales_by_company[order.company_id.id] += order.amount_currency
 
         for order in previous_month_orders:
@@ -89,6 +91,7 @@ class PosOrder(models.Model):
         # Create daily sales data for each company
         for company in companies:
             current_sales = current_sales_by_company[company.id]
+            current_cost = current_cost_by_company[company.id]
             previous_sales = previous_sales_by_company[company.id]
 
             # Skip companies with zero sales in both periods
@@ -102,6 +105,7 @@ class PosOrder(models.Model):
             daily_sales.append({
                 'company': company.name,
                 'current_sales': current_sales,
+                'current_cost': round(current_cost, 2),
                 'percentage_change': percentage_change,
             })
 
@@ -155,9 +159,11 @@ class PosOrder(models.Model):
 
         # Calculate today's sales by company
         today_sales_by_company = {company.id: 0 for company in companies}
+        today_cost_by_company = {company.id: 0 for company in companies}
         previous_sales_by_company_today = {company.id: 0 for company in companies}
 
         for order in today_orders:
+            today_cost_by_company[order.company_id.id] += order.order_cost
             today_sales_by_company[order.company_id.id] += order.amount_currency
 
         for order in previous_same_day_orders:
@@ -166,6 +172,7 @@ class PosOrder(models.Model):
         # Create today's sales data for each company
         today_sales_data = []
         for company in companies:
+            current_cost = today_cost_by_company[company.id]
             current_sales = today_sales_by_company[company.id]
             previous_sales = previous_sales_by_company_today[company.id]
 
@@ -179,6 +186,7 @@ class PosOrder(models.Model):
             # Include company in today's sales data
             today_sales_data.append({
                 'company': company.name,
+                'current_cost': round(current_cost, 2),
                 'current_sales': round(current_sales, 2),
                 'percentage_change': percentage_change,
             })

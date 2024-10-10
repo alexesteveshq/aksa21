@@ -33,6 +33,7 @@ class SalesDashboard extends Component {
             todaySales: 0,             // State for today's sales amount
             todaySalesChange: 0,       // Change in today's sales compared to the same day last month
             sellerRanking: [],         // Seller ranking data
+            todaySalesData: [],        // New state for today's sales data by company
         });
 
         // Use onWillStart to load data before component is rendered
@@ -75,6 +76,9 @@ class SalesDashboard extends Component {
             // Set today's sales data
             this.state.todaySales = result.today_sales || 0;
             this.state.todaySalesChange = result.today_sales_change || 0;
+
+            // Set today's sales by company data
+            this.state.todaySalesData = result.today_sales_data || [];
 
             // Set seller ranking data, including discount_avg and discount_change
             this.state.sellerRanking = (result.seller_ranking || []).map(seller => ({

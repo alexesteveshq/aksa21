@@ -153,10 +153,35 @@ class PosOrder(models.Model):
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ]) if previous_same_day else []
 
-        today_sales = sum(order.amount_currency for order in today_orders)
-        previous_same_day_sales = sum(order.amount_currency for order in previous_same_day_orders)
-        today_sales_change = round(((today_sales - previous_same_day_sales) / previous_same_day_sales) * 100,
-                                   2) if previous_same_day_sales else (100.0 if today_sales else 0.0)
+        # Calculate today's sales by company
+        today_sales_by_company = {company.id: 0 for company in companies}
+        previous_sales_by_company_today = {company.id: 0 for company in companies}
+
+        for order in today_orders:
+            today_sales_by_company[order.company_id.id] += order.amount_currency
+
+        for order in previous_same_day_orders:
+            previous_sales_by_company_today[order.company_id.id] += order.amount_currency
+
+        # Create today's sales data for each company
+        today_sales_data = []
+        for company in companies:
+            current_sales = today_sales_by_company[company.id]
+            previous_sales = previous_sales_by_company_today[company.id]
+
+            # Skip companies with zero sales in both periods
+            if current_sales == 0 and previous_sales == 0:
+                continue
+
+            # Calculate percentage change
+            percentage_change = calculate_change(current_sales, previous_sales)
+
+            # Include company in today's sales data
+            today_sales_data.append({
+                'company': company.name,
+                'current_sales': round(current_sales, 2),
+                'percentage_change': percentage_change,
+            })
 
         # Calculate and sort seller ranking
         seller_ranking = []
@@ -208,7 +233,6 @@ class PosOrder(models.Model):
             'currentTotalCost': round(sum(p['quantity'] * p['cost'] for p in current_product_data), 2),
             'previousTotalQuantity': sum(p['quantity'] for p in previous_product_data),
             'previousTotalCost': round(sum(p['quantity'] * p['cost'] for p in previous_product_data), 2),
-            'today_sales': today_sales,
-            'today_sales_change': today_sales_change,
+            'today_sales_data': today_sales_data,
             'seller_ranking': seller_ranking
         }

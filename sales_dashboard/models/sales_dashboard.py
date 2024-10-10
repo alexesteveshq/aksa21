@@ -157,6 +157,11 @@ class PosOrder(models.Model):
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ]) if previous_same_day else []
 
+        today_sales = sum(order.amount_currency for order in today_orders)
+        previous_same_day_sales = sum(order.amount_currency for order in previous_same_day_orders)
+        today_sales_change = round(((today_sales - previous_same_day_sales) / previous_same_day_sales) * 100,
+                                   2) if previous_same_day_sales else (100.0 if today_sales else 0.0)
+
         # Calculate today's sales by company
         today_sales_by_company = {company.id: 0 for company in companies}
         today_cost_by_company = {company.id: 0 for company in companies}
@@ -242,5 +247,7 @@ class PosOrder(models.Model):
             'previousTotalQuantity': sum(p['quantity'] for p in previous_product_data),
             'previousTotalCost': round(sum(p['quantity'] * p['cost'] for p in previous_product_data), 2),
             'today_sales_data': today_sales_data,
+            'today_sales': today_sales,
+            'today_sales_change': today_sales_change,
             'seller_ranking': seller_ranking
         }

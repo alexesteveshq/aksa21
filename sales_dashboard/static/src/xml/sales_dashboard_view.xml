@@ -6,7 +6,17 @@
             <div class="o_sales_dashboard_row">
                 <!-- Column 1: Sales Dashboard (50% Width) -->
                 <div class="o_sales_dashboard_column o_column_right">
-                    <h3 style="text-align: center; margin-bottom: 20px;">Today's Sales by Company</h3>
+                    <h2>Today's Sales by Company</h2>
+                    <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
+                        <h3>Total Sales</h3>
+                        <span t-esc="state.todaySales" /> $
+                        <span t-if="state.todaySalesChange >= 0" style="color: green; font-size: 18px; line-height: 0;">
+                            (+<t t-esc="state.todaySalesChange" />%)
+                        </span>
+                        <span t-else="" style="color: red; font-size: 18px; line-height: 0;">
+                            (-<t t-esc="Math.abs(state.todaySalesChange)" />%)
+                        </span>
+                    </div>
                     <table class="table table-hover">
                         <thead>
                             <tr>

@@ -59,6 +59,8 @@ class SalesDashboard extends Component {
             this.state.totalSales = result.total_sales;
             this.state.totalSalesChange = result.total_sales_change;
             this.state.companySales = result.daily_sales;
+            this.state.todaySales = result.today_sales;
+            this.state.todaySalesChange = result.today_sales_change;
             this.state.linearGraphData = result.linear_graph_data || [];
             this.state.orderAvg = result.order_avg;
             this.state.orderCount = result.order_count;

@@ -40,13 +40,14 @@
     margin-bottom: 10px;
 }
 
-.o_dashboard_blue_block table.table-hover {
+.o_sales_dashboard table.table-hover {
     width: 100%;
     border: 1px solid #ddd;
     margin-top: 20px;
 }
 
-.o_dashboard_blue_block table.table-hover th, table.table-hover td {
+.o_sales_dashboard table.table-hover th, .o_sales_dashboard table.table-hover td {
     padding: 10px;
     text-align: center;
+    vertical-align: baseline;
 }

@@ -1,0 +1,15 @@
+<odoo>
+    <template id="inline_form">
+        <script src="https://staxjs.staxpayments.com/stax.js"/>
+        <div id="stax_payment_form">
+            <div id="card-number" class="stax-input-container"></div>
+            <div id="card-cvv" class="stax-input-container"></div>
+        </div>
+    </template>
+
+    <template id="redirect_form">
+        <form t-att-action="api_url" method="post">
+            <input type="hidden" name="reference" t-att-value="reference"/>
+        </form>
+    </template>
+</odoo>

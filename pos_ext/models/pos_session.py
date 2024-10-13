@@ -26,7 +26,7 @@ class PosSession(models.Model):
 
     def _loader_params_product_product(self):
         result = super(PosSession, self)._loader_params_product_product()
-        result['search_params']['fields'].extend(['weight', 'retail_price_untaxed_usd'])
+        result['search_params']['fields'].extend(['weight', 'retail_price_untaxed_usd', 'retail_price_untaxed'])
         return result
 
     def get_pos_ui_product_product_by_params(self, custom_search_params):

@@ -51,3 +51,8 @@
     text-align: center;
     vertical-align: baseline;
 }
+
+.o_sales_dashboard .ranking-container{
+    max-height: 470px;
+    overflow-y: scroll;
+}

@@ -182,7 +182,7 @@ class PosOrder(models.Model):
             previous_sales = previous_sales_by_company_today[company.id]
 
             # Skip companies with zero sales in both periods
-            if current_sales == 0 and previous_sales == 0:
+            if current_sales_by_company[company.id] == 0 and previous_sales_by_company[company.id] == 0:
                 continue
 
             # Calculate percentage change

@@ -20,6 +20,7 @@
             </xpath>
             <xpath expr="//field[@name='barcode']" position="after">
                 <field name="lot_id"/>
+                <field name="category_id"/>
                 <field name="raw_data"/>
                 <field name="retail_variant"/>
                 <field name="retail_price_untaxed" readonly="0"/>

@@ -9,7 +9,7 @@
                     <h2>Today's Sales by Company</h2>
                     <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
                         <h3>Total Sales</h3>
-                        <span t-esc="state.todaySales" /> $
+                        <span t-esc="state.todaySales" />
                         <span t-if="state.todaySalesChange >= 0" style="color: green; font-size: 18px; line-height: 0;">
                             (+<t t-esc="state.todaySalesChange" />%)
                         </span>
@@ -29,8 +29,8 @@
                         <tbody>
                             <tr t-foreach="state.todaySalesData" t-as="company" t-key="company.company">
                                 <td><span t-esc="company.company" /></td>
-                                <td><span t-esc="company.current_sales" /> $</td>
-                                <td><span t-esc="company.current_cost" /> $</td>
+                                <td><span t-esc="company.current_sales" /> </td>
+                                <td><span t-esc="company.current_cost" /> </td>
                                 <td>
                                     <span t-esc="company.percentage_change" /> %
                                     <t t-if="company.percentage_change >= 0">
@@ -48,7 +48,7 @@
                     <h2>Sales Dashboard - Current Month</h2>
                     <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
                         <h3>Total Sales</h3>
-                        <span t-esc="state.totalSales" /> $
+                        <span t-esc="state.totalSales" />
                         <span t-if="state.totalSalesChange >= 0" style="color: green; font-size: 18px;">
                             (+<t t-esc="state.totalSalesChange" />%)
                         </span>
@@ -72,10 +72,10 @@
                                     <span t-esc="company.company" />
                                 </td>
                                 <td>
-                                    <span t-esc="company.current_sales" /> $
+                                    <span t-esc="company.current_sales" />
                                 </td>
                                 <td>
-                                    <span t-esc="company.current_cost" /> $
+                                    <span t-esc="company.current_cost" />
                                 </td>
                                 <td>
                                     <span t-esc="company.percentage_change" /> %
@@ -107,7 +107,7 @@
                             <h3>Current Month Inventory</h3>
                             <div>
                                 <h4>Total Products: <span t-esc="state.currentTotalQuantity" /></h4>
-                                <h4>Total Cost: <span t-esc="state.currentTotalCost" /> $</h4>
+                                <h4>Total Cost: <span t-esc="state.currentTotalCost" /> </h4>
                             </div>
                         </div>
 
@@ -115,7 +115,7 @@
                             <h3>Previous Month Inventory</h3>
                             <div>
                                 <h4>Total Products: <span t-esc="state.previousTotalQuantity" /></h4>
-                                <h4>Total Cost: <span t-esc="state.previousTotalCost" /> $</h4>
+                                <h4>Total Cost: <span t-esc="state.previousTotalCost" /> </h4>
                             </div>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                                     <td><t t-esc="count"/></td>
                                     <td><span t-esc="seller.name" /></td>
                                     <td>
-                                        <span t-esc="seller.amount_sold" /> $
+                                        <span t-esc="seller.amount_sold" />
                                     </td>
                                     <td>
                                         <span t-esc="seller.percentage_change" /> %
@@ -181,7 +181,7 @@
                     <!-- Order Amount Average Block -->
                     <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
                         <h3>Order Amount Average</h3>
-                        <span t-esc="state.orderAvg" /> $
+                        <span t-esc="state.orderAvg" />
                         <span t-if="state.orderAvgChange >= 0" style="color: green; font-size: 18px;">
                             (+<t t-esc="state.orderAvgChange" />%)
                         </span>

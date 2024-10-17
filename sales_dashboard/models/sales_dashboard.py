@@ -1,5 +1,6 @@
 from odoo import models, api, _
 from datetime import datetime, timedelta
+from odoo.tools import format_amount
 import pytz
 
 
@@ -104,8 +105,8 @@ class PosOrder(models.Model):
             # Include company in `daily_sales` data
             daily_sales.append({
                 'company': company.name,
-                'current_sales': current_sales,
-                'current_cost': round(current_cost, 2),
+                'current_sales': format_amount(self.env, current_sales, self.env.company.currency_id),
+                'current_cost': format_amount(self.env, current_cost, self.env.company.currency_id),
                 'percentage_change': percentage_change,
             })
 
@@ -191,8 +192,8 @@ class PosOrder(models.Model):
             # Include company in today's sales data
             today_sales_data.append({
                 'company': company.name,
-                'current_cost': round(current_cost, 2),
-                'current_sales': round(current_sales, 2),
+                'current_cost': format_amount(self.env, current_cost, self.env.company.currency_id),
+                'current_sales': format_amount(self.env, current_sales, self.env.company.currency_id),
                 'percentage_change': percentage_change,
             })
 
@@ -221,7 +222,7 @@ class PosOrder(models.Model):
             seller_ranking.append({
                 'id': seller.id,
                 'name': seller.name,
-                'amount_sold': round(current_seller_sales, 2),
+                'amount_sold': format_amount(self.env, current_seller_sales, self.env.company.currency_id),
                 'percentage_change': seller_change,
                 'discount_avg': round(current_seller_discount_avg, 2),
                 'discount_change': discount_avg_change,
@@ -241,26 +242,27 @@ class PosOrder(models.Model):
         # Prepare the data for best-selling products by category based on quantities
         best_selling_products_data = [{'category': category, 'quantity': round(quantity, 2)} for category, quantity in
                                       sorted_category_sales]
-
         # Return updated dashboard data
         return {
-            'total_sales': current_month_total_sales,
+            'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
             'total_sales_change': round(total_sales_change, 2),
             'best_selling_products': best_selling_products_data,
             'daily_sales': daily_sales,
             'linear_graph_data': linear_graph_data,
-            'order_avg': round(order_avg, 2),
+            'order_avg': format_amount(self.env, order_avg, self.env.company.currency_id),
             'order_count': order_count,
             'discount_avg': round(discount_avg, 2),
             'order_avg_change': order_avg_change,
             'order_count_change': order_count_change,
             'discount_avg_change': discount_avg_change,
             'currentTotalQuantity': sum(p['quantity'] for p in current_product_data),
-            'currentTotalCost': round(sum(p['quantity'] * p['cost'] for p in current_product_data), 2),
+            'currentTotalCost': format_amount(
+                self.env, sum(p['quantity'] * p['cost'] for p in current_product_data), self.env.company.currency_id),
             'previousTotalQuantity': sum(p['quantity'] for p in previous_product_data),
-            'previousTotalCost': round(sum(p['quantity'] * p['cost'] for p in previous_product_data), 2),
+            'previousTotalCost': format_amount(
+                self.env, sum(p['quantity'] * p['cost'] for p in previous_product_data), self.env.company.currency_id),
             'today_sales_data': today_sales_data,
-            'today_sales': today_sales,
+            'today_sales': format_amount(self.env, today_sales, self.env.company.currency_id),
             'today_sales_change': today_sales_change,
             'seller_ranking': seller_ranking
         }

@@ -34,6 +34,7 @@ class SalesDashboard extends Component {
             todaySalesChange: 0,       // Change in today's sales compared to the same day last month
             sellerRanking: [],         // Seller ranking data
             todaySalesData: [],        // New state for today's sales data by company
+            bestSellingProducts: [],
         });
 
         // Use onWillStart to load data before component is rendered
@@ -74,6 +75,7 @@ class SalesDashboard extends Component {
             this.state.currentTotalCost = result.currentTotalCost || 0;
             this.state.previousTotalQuantity = result.previousTotalQuantity || 0;
             this.state.previousTotalCost = result.previousTotalCost || 0;
+            this.state.bestSellingProducts = result.best_selling_products || [];
 
             // Set today's sales data
             this.state.todaySales = result.today_sales || 0;
@@ -152,6 +154,66 @@ class SalesDashboard extends Component {
         });
 
         console.log("Graph rendered successfully with custom dimensions!");
+
+        // Pie chart for Best Selling Products by Category
+        const bestSellingCanvas = $(document).find("#bestSellingProductsGraph");
+        if (bestSellingCanvas.length === 0) {
+            console.error("Canvas element with ID 'bestSellingProductsGraph' not found!");
+            return;
+        }
+
+        const bestSellingCtx = bestSellingCanvas[0].getContext("2d");
+        if (!bestSellingCtx) {
+            console.error("Failed to get canvas context for rendering the pie chart.");
+            return;
+        }
+
+        const categories = this.state.bestSellingProducts.map((product) => product.category);
+        const quantity = this.state.bestSellingProducts.map((product) => product.quantity);
+
+        // Render the pie chart using Chart.js
+        new Chart(bestSellingCtx, {
+            type: "pie",
+            data: {
+                labels: categories,
+                datasets: [{
+                    data: quantity,
+                    backgroundColor: [
+                        "rgba(255, 99, 132, 0.2)",
+                        "rgba(54, 162, 235, 0.2)",
+                        "rgba(255, 206, 86, 0.2)",
+                        "rgba(75, 192, 192, 0.2)",
+                        "rgba(153, 102, 255, 0.2)",
+                        "rgba(255, 159, 64, 0.2)",
+                        "rgba(199, 199, 199, 0.2)",
+                        "rgba(83, 102, 255, 0.2)",
+                        "rgba(255, 209, 64, 0.2)",
+                        "rgba(173, 102, 255, 0.2)"
+                    ],
+                    borderColor: [
+                        "rgba(255, 99, 132, 1)",
+                        "rgba(54, 162, 235, 1)",
+                        "rgba(255, 206, 86, 1)",
+                        "rgba(75, 192, 192, 1)",
+                        "rgba(153, 102, 255, 1)",
+                        "rgba(255, 159, 64, 1)",
+                        "rgba(199, 199, 199, 1)",
+                        "rgba(83, 102, 255, 1)",
+                        "rgba(255, 209, 64, 1)",
+                        "rgba(173, 102, 255, 1)"
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                }
+            }
+        });
     }
 }
 

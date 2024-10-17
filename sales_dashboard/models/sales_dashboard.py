@@ -1,4 +1,4 @@
-from odoo import models, api
+from odoo import models, api, _
 from datetime import datetime, timedelta
 import pytz
 
@@ -230,10 +230,23 @@ class PosOrder(models.Model):
         # Sort the seller ranking data by 'amount_sold' in descending order
         seller_ranking = sorted(seller_ranking, key=lambda x: x['amount_sold'], reverse=True)
 
+        category_sales = {}
+        for line in current_month_orders.mapped('lines'):
+            category = line.product_id.category_id.name or _('Uncategorized')
+            category_sales[category] = category_sales.get(category, 0) + line.qty
+
+        # Sort by quantity and limit to top 10 categories
+        sorted_category_sales = sorted(category_sales.items(), key=lambda x: x[1], reverse=True)[:10]
+
+        # Prepare the data for best-selling products by category based on quantities
+        best_selling_products_data = [{'category': category, 'quantity': round(quantity, 2)} for category, quantity in
+                                      sorted_category_sales]
+
         # Return updated dashboard data
         return {
             'total_sales': current_month_total_sales,
             'total_sales_change': round(total_sales_change, 2),
+            'best_selling_products': best_selling_products_data,
             'daily_sales': daily_sales,
             'linear_graph_data': linear_graph_data,
             'order_avg': round(order_avg, 2),

@@ -42,6 +42,7 @@ class ProductProduct(models.Model):
     retail_price_untaxed_usd = fields.Float(string='Retail price USD (untaxed)', tracking=True,
                                             compute='_compute_retail_price_untaxed_usd', store=True)
     price_update = fields.Boolean(string='Price update', default=True)
+    category_id = fields.Many2one('stock.product.category', string='category')
 
     @api.depends('retail_variant', 'weight', 'lst_price', 'cost_retail_calculation')
     def _compute_retail_price_untaxed(self):

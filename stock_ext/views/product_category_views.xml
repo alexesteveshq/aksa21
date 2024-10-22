@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree string="Stock Categories">
                 <field name="name"/>
+                <field name="code"/>
             </tree>
         </field>
     </record>

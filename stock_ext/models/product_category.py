@@ -8,3 +8,4 @@ class StockProductCategory(models.Model):
     _description = 'Product Category'
 
     name = fields.Char(string='Name')
+    code = fields.Char(string='Code')

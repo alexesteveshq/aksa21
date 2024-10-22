@@ -43,6 +43,7 @@ class ProductProduct(models.Model):
                                             compute='_compute_retail_price_untaxed_usd', store=True)
     price_update = fields.Boolean(string='Price update', default=True)
     category_id = fields.Many2one('stock.product.category', string='category')
+    category_code = fields.Char(string='Category code')
 
     @api.depends('retail_variant', 'weight', 'lst_price', 'cost_retail_calculation')
     def _compute_retail_price_untaxed(self):
@@ -78,6 +79,9 @@ class ProductProduct(models.Model):
     def create(self, vals_list):
         result = super(ProductProduct, self).create(vals_list)
         for piece in result:
+            if piece.category_code:
+                piece.category_id = self.env['stock.product.category'].search(
+                    [('code', '=', piece.category_code)], limit=1)
             if piece.scale_created:
                 piece.name = piece.barcode
                 self.env['stock.quant'].create({

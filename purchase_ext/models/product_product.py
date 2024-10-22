@@ -13,4 +13,4 @@ class ProductProduct(models.Model):
         if self:
             self.env['purchase.order'].create( {'name': _('Aksa Products'), 'partner_id': partner.id,
                  'order_line': [(0, 0, {'product_id': prod.id, 'price_unit': prod.standard_price,
-                                        'product_qty': prod.import_qty}) for prod in self]})
+                                        'product_qty': prod.import_qty or 1}) for prod in self]})

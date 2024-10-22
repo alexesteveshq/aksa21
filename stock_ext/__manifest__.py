@@ -23,6 +23,7 @@
         'views/stock_picking_templates.xml',
         'security/ir.model.access.csv',
         'views/stock_pieces_views.xml',
+        'views/product_category_views.xml',
         'views/res_config_settings_views.xml',
         'views/stock_quant_views.xml',
         'views/stock_picking_views.xml',

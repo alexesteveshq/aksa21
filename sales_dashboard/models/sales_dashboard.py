@@ -222,7 +222,7 @@ class PosOrder(models.Model):
             seller_ranking.append({
                 'id': seller.id,
                 'name': seller.name,
-                'amount_sold': format_amount(self.env, current_seller_sales, self.env.company.currency_id),
+                'amount_sold': current_seller_sales,
                 'percentage_change': seller_change,
                 'discount_avg': round(current_seller_discount_avg, 2),
                 'discount_change': discount_avg_change,
@@ -230,6 +230,9 @@ class PosOrder(models.Model):
 
         # Sort the seller ranking data by 'amount_sold' in descending order
         seller_ranking = sorted(seller_ranking, key=lambda x: x['amount_sold'], reverse=True)
+
+        for record in seller_ranking:
+            record['amount_sold'] = format_amount(self.env, record['amount_sold'], self.env.company.currency_id)
 
         category_sales = {}
         for line in current_month_orders.mapped('lines'):

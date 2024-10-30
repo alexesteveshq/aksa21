@@ -75,13 +75,23 @@ class ProductProduct(models.Model):
             else:
                 product.retail_price_untaxed_usd = product.retail_price_untaxed / currency_usd.inverse_rate
 
+    def get_product_category(self, code):
+        category = self.env['stock.product.category'].search([('code', '=', code)], limit=1)
+        if not category and code:
+            category = self.env['stock.product.category'].create({'name': code.replace("_", " "), 'code': code})
+        return category
+
+    def write(self, vals):
+        if vals and 'category_code' in vals:
+            vals['category_id'] = self.get_product_category(vals['category_code']).id
+        return super(ProductProduct, self).write(vals)
+
     @api.model_create_multi
     def create(self, vals_list):
         result = super(ProductProduct, self).create(vals_list)
         for piece in result:
             if piece.category_code:
-                piece.category_id = self.env['stock.product.category'].search(
-                    [('code', '=', piece.category_code)], limit=1)
+                piece.category_id = self.get_product_category(piece.category_code)
             if piece.scale_created:
                 piece.name = piece.barcode
                 self.env['stock.quant'].create({

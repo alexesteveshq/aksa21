@@ -8,11 +8,18 @@ class ProductProduct(models.Model):
 
     import_qty = fields.Integer(string='Import Qty')
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        result = super(ProductProduct, self).create(vals_list)
+        for piece in result:
+            if piece.import_qty and self._context.get('import_file'):
+                piece.standard_price = piece.standard_price * 1.16
+        return result
+
     def purchase_from_products(self):
         partner = self.env.ref('__custom__.aksa_partner')
         if self:
             self.env['purchase.order'].create( {'name': _('Aksa Products'), 'partner_id': partner.id,
                  'order_line': [(0, 0, {'product_id': prod.id,
-                                        'price_unit': prod.standard_price * 1.16
-                                        if prod.import_qty else prod.standard_price,
+                                        'price_unit': prod.standard_price,
                                         'product_qty': prod.import_qty or 1}) for prod in self]})

@@ -237,7 +237,7 @@ class PosOrder(models.Model):
             record['amount_sold'] = format_amount(self.env, record['amount_sold'], self.env.company.currency_id)
 
         category_sales = {}
-        for line in current_month_orders.mapped('lines'):
+        for line in current_month_orders.mapped('lines').filtered(lambda ln: ln.price_unit > 0):
             category = line.product_id.category_id.name or _('Uncategorized')
             category_sales[category] = category_sales.get(category, 0) + line.qty
 

@@ -13,14 +13,16 @@ class PurchaseOrder(models.Model):
             for val in vals_list:
                 if 'order_line' in val:
                     for line in val['order_line']:
-                        if 'product_qty' in line[2] and line[2]['product_qty'] > 1 and 'barcode' in line[2]:
+                        if 'product_qty' in line[2] and 'barcode' in line[2]:
                             product = prod_model.search([('barcode', '=', line[2]['barcode'])], limit=1)
+                            if line[2]['product_qty'] > 1:
+                                line[2]['price_unit'] *= 1.16
                             if not product:
-                                line[2]['product_id'] = [(0, 0, {'name': line[2]['product_description_variants'],
-                                                              'standard_price': line[2]['price_unit'] * 1.16,
-                                                              'barcode': line[2]['barcode']})]
-                            else:
-                                line[2]['product_id'] = product.id
+                                product = prod_model.create({'name': line[2]['name'],
+                                                              'standard_price': line[2]['price_unit']
+                                                              if line[2]['product_qty'] > 1 else line[2]['price_unit'],
+                                                              'barcode': line[2]['barcode']})
+                            line[2]['product_id'] = product.id
         return super(PurchaseOrder, self).create(vals_list)
 
     def set_costs(self):

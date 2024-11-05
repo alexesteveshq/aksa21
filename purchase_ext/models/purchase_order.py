@@ -34,3 +34,4 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
     barcode = fields.Char(string='barcode')
+    weight = fields.Float(string='Weight')

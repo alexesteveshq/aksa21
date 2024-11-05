@@ -21,7 +21,8 @@ class PurchaseOrder(models.Model):
                                 product = prod_model.create({'name': line[2]['name'],
                                                               'standard_price': line[2]['price_unit']
                                                               if line[2]['product_qty'] > 1 else line[2]['price_unit'],
-                                                              'barcode': line[2]['barcode']})
+                                                              'barcode': line[2]['barcode'],
+                                                              'weight': line[2]['weight']})
                             line[2]['product_id'] = product.id
         return super(PurchaseOrder, self).create(vals_list)
 

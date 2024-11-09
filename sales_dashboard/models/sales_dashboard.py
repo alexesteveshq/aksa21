@@ -29,6 +29,7 @@ class PosOrder(models.Model):
         # Fetch current month's orders up to the current time across all companies
         current_month_orders = self.with_context(active_test=False).sudo().search([
             ('date_order', '>=', month_start_utc),
+            ('price_unit', '>', 0),
             ('date_order', '<=', today_utc),
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ]).filtered(lambda o: not o.is_refunded and not o.refunded_orders_count)
@@ -38,6 +39,7 @@ class PosOrder(models.Model):
             ('date_order', '>=', previous_month_start_utc),
             ('date_order', '<=', previous_month_end_utc),
             ('is_refunded', '=', False),
+            ('price_unit', '>', 0),
             ('refunded_orders_count', '=', 0),
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ]).filtered(lambda o: not o.is_refunded and not o.refunded_orders_count)

@@ -29,7 +29,6 @@ class PosOrder(models.Model):
         # Fetch current month's orders up to the current time across all companies
         current_month_orders = self.with_context(active_test=False).sudo().search([
             ('date_order', '>=', month_start_utc),
-            ('price_unit', '>', 0),
             ('date_order', '<=', today_utc),
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ]).filtered(lambda o: not o.is_refunded and not o.refunded_orders_count)
@@ -39,7 +38,6 @@ class PosOrder(models.Model):
             ('date_order', '>=', previous_month_start_utc),
             ('date_order', '<=', previous_month_end_utc),
             ('is_refunded', '=', False),
-            ('price_unit', '>', 0),
             ('refunded_orders_count', '=', 0),
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ]).filtered(lambda o: not o.is_refunded and not o.refunded_orders_count)
@@ -212,12 +210,16 @@ class PosOrder(models.Model):
             seller_change = calculate_change(current_seller_sales, previous_seller_sales)
 
             # Calculate discount averages for the current and previous month for each seller
-            current_total_discount = sum(line.discount for order in current_month_orders.filtered(lambda o: o.seller_id == seller) for line in order.lines)
-            current_line_count = len(current_month_orders.filtered(lambda o: o.seller_id == seller).mapped('lines'))
+            current_total_discount = sum(line.discount for order in current_month_orders.filtered(
+                lambda o: o.seller_id == seller) for line in order.lines.filtered(lambda ln: ln.price_unit > 0))
+            current_line_count = len(current_month_orders.filtered(
+                lambda o: o.seller_id == seller).mapped('lines').filtered(lambda ln: ln.price_unit > 0))
             current_seller_discount_avg = current_total_discount / current_line_count if current_line_count > 0 else 0
 
-            previous_total_discount = sum(line.discount for order in previous_month_orders.filtered(lambda o: o.seller_id == seller) for line in order.lines)
-            previous_line_count = len(previous_month_orders.filtered(lambda o: o.seller_id == seller).mapped('lines'))
+            previous_total_discount = sum(line.discount for order in previous_month_orders.filtered(
+                lambda o: o.seller_id == seller) for line in order.lines.filtered(lambda ln: ln.price_unit > 0))
+            previous_line_count = len(previous_month_orders.filtered(
+                lambda o: o.seller_id == seller).mapped('lines').filtered(lambda ln: ln.price_unit > 0))
             previous_seller_discount_avg = previous_total_discount / previous_line_count if previous_line_count > 0 else 0
 
             discount_avg_change = 0 if not previous_seller_discount_avg else\

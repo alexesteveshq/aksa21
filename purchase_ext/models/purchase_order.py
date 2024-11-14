@@ -19,6 +19,8 @@ class PurchaseOrder(models.Model):
                                 line[2]['price_unit'] *= 1.16
                             if not product:
                                 product = prod_model.create({'name': line[2]['name'],
+                                                             'category_code': False if 'category_code' not in line[2]
+                                                             else line[2]['category_code'],
                                                               'standard_price': line[2]['price_unit']
                                                               if line[2]['product_qty'] > 1 else line[2]['price_unit'],
                                                               'barcode': line[2]['barcode'],
@@ -36,3 +38,4 @@ class PurchaseOrderLine(models.Model):
 
     barcode = fields.Char(string='barcode')
     weight = fields.Float(string='Weight')
+    category_code = fields.Char(string='Category code')

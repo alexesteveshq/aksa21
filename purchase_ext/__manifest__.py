@@ -8,7 +8,7 @@
     'category': 'Purchase',
     'author': 'Alex Esteves',
     'depends': [
-        'purchase',
+        'purchase', 'stock_ext',
     ],
     'data': [
         'data/ir_actions.xml',

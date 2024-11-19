@@ -1,0 +1,10 @@
+<odoo>
+    <record id="action_stock_valuation_update" model="ir.actions.act_window">
+        <field name="name">Stock valuation update</field>
+        <field name="res_model">stock.valuation.update.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem action="action_stock_valuation_update" id="menu_stock_valuation_update" parent="stock.menu_stock_warehouse_mgmt"/>
+</odoo>

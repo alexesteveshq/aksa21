@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_valuation_update_wizard_form" model="ir.ui.view">
+        <field name="name">stock.valuation.update.wizard.form</field>
+        <field name="model">stock.valuation.update.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Stock Valuation Update">
+                <group>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="value_increase"/>
+                </group>
+                <footer>
+                    <button name="update_stock" string="Update" type="object"
+                            class="btn btn-sm btn-primary"/>
+                    <button string="Cancel" class="btn btn-sm btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

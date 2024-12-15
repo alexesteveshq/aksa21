@@ -27,20 +27,53 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="state.todaySalesData" t-as="company" t-key="company.company">
-                                <td><span t-esc="company.company" /></td>
-                                <td><span t-esc="company.current_sales" /> </td>
-                                <td><span t-esc="company.current_cost" /> </td>
-                                <td>
-                                    <span t-esc="company.percentage_change" /> %
-                                    <t t-if="company.percentage_change >= 0">
-                                        <span style="color: green; font-size: 22px; font-weight: bold;">↑</span>
-                                    </t>
-                                    <t t-else="">
-                                        <span style="color: red; font-size: 22px; font-weight: bold;">↓</span>
-                                    </t>
-                                </td>
-                            </tr>
+                            <t t-foreach="state.todaySalesData" t-as="company" t-key="company.company">
+                                <tr class="sales-section">
+                                    <td><span t-esc="company.company" /></td>
+                                    <td><span t-esc="company.current_sales" /> </td>
+                                    <td><span t-esc="company.current_cost" /> </td>
+                                    <td>
+                                        <span t-esc="company.percentage_change" /> %
+                                        <t t-if="company.percentage_change >= 0">
+                                            <span style="color: green; font-size: 22px; font-weight: bold;">↑</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="color: red; font-size: 22px; font-weight: bold;">↓</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <t t-if="company.order_details and company.order_details.length > 0">
+                                    <tr class="ticket-section">
+                                        <td colspan="4">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Ticket Reference</th>
+                                                        <th>Sale amount</th>
+                                                        <th>Seller</th>
+                                                        <th>Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr t-foreach="company.order_details || []" t-as="order" t-key="order.ticket_reference">
+                                                        <td><span t-esc="order.ticket_reference" /></td>
+                                                        <td><span t-esc="order.amount_currency" /></td>
+                                                        <td><span t-esc="order.seller" /></td>
+                                                        <td><span t-esc="order.datetime" /></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-else="">
+                                    <tr class="ticket-section">
+                                        <td colspan="4">
+                                            <p class="text-center">No orders found.</p>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
                         </tbody>
                     </table>
                 </div>
@@ -61,9 +94,10 @@
                         <thead>
                             <tr>
                                 <th>Company</th>
-                                <th>Current Sales</th>
                                 <th>Cost</th>
+                                <th>Current Sales</th>
                                 <th>Change (%)</th>
+                                <th>Margin</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,10 +106,10 @@
                                     <span t-esc="company.company" />
                                 </td>
                                 <td>
-                                    <span t-esc="company.current_sales" />
+                                    <span t-esc="company.current_cost" />
                                 </td>
                                 <td>
-                                    <span t-esc="company.current_cost" />
+                                    <span t-esc="company.current_sales" />
                                 </td>
                                 <td>
                                     <span t-esc="company.percentage_change" /> %
@@ -86,19 +120,22 @@
                                         <span style="color: red; font-size: 22px; font-weight: bold">↓</span>
                                     </t>
                                 </td>
+                                <td>
+                                    <span t-esc="company.margin" /> %
+                                </td>
                             </tr>
                         </tbody>
                     </table>
 
                     <!-- Graph Canvas -->
-                    <h4>Predicted Sales for the Month</h4>
+                    <h4 class="mt-5">Predicted Sales for the Month</h4>
                     <div style="height: 300px; margin-bottom: 30px;">
                         <canvas id="salesPredictionGraph" style="width: 100%; height: 100%;"></canvas>
                     </div>
 
                     <h4>Best Selling Products by Category</h4>
-                    <div  style="width: 500px; height: 500px; margin: 0 auto;">
-                        <canvas id="bestSellingProductsGraph" style="width: 100%; height: 100%;"></canvas>
+                    <div style="display: grid; justify-content: center;">
+                        <div id="bestSellingProductsGraph"/>
                     </div>
 
                     <div style="margin-top: 20px;">
@@ -134,6 +171,9 @@
                                     <th>Amount change %</th> <!-- Merged change into amount sold -->
                                     <th>Discount Avg</th> <!-- Merged change into discount avg -->
                                     <th>Discount change %</th>
+                                    <th>Product count</th>
+                                    <th>Order count</th>
+                                    <th>Product/Order Avg</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -168,6 +208,10 @@
                                         </t>
                                     </td>
                                     <t t-set="count" t-value="count+1"/>
+                                    <td><span t-esc="seller.avg_products_sold" /></td> <!-- New Column -->
+                                    <td><span t-esc="seller.avg_order_count" /></td> <!-- New Column -->
+                                    <td><span t-esc="seller.avg_products_per_order" /></td> <!-- New Column -->
+                                    <t t-set="count" t-value="count+1" />
                                 </tr>
                             </tbody>
                         </table>
@@ -175,7 +219,7 @@
                 </div>
 
                 <!-- Column 2: POS Order Statistics (50% Width) -->
-                <div class="o_sales_dashboard_column o_column_right">
+                <div class="o_sales_dashboard_column o_column_right mt-5">
                     <h2>POS Order Statistics</h2>
 
                     <!-- Order Amount Average Block -->
@@ -212,6 +256,77 @@
                         <span t-else="" style="color: green; font-size: 18px;">
                             (-<t t-esc="Math.abs(state.discountAvgChange)" />%)
                         </span>
+                    </div>
+
+                    <div class="o_dashboard_blue_block">
+                        <h3>Product/Order Average</h3>
+                        <span t-esc="state.OrderProdAvg" />
+                    </div>
+                    <div>
+                        <h3>Daily sales</h3>
+                        <div style="height: 300px; margin-bottom: 30px;">
+                            <canvas id="dailySalesGraph" style="width: 100%; height: 100%;"></canvas>
+                        </div>
+                    </div>
+                    <div class="o_monthly_sales_table">
+                        <h2>Monthly sales</h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Month</th>
+                                    <th>Total Sales</th>
+                                    <th>Total Cost</th>
+                                    <th>Total Orders</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.monthlySalesData" t-as="month" t-key="month.year + month.month">
+                                    <!-- Main Row: Monthly Summary -->
+                                    <tr class="sales-section">
+                                        <td><t t-esc="month.year" /></td>
+                                        <td><t t-esc="month.month" /></td>
+                                        <td><t t-esc="month.total_sales" /></td>
+                                        <td><t t-esc="month.total_cost" /></td>
+                                        <td><t t-esc="month.total_orders" /></td>
+                                    </tr>
+                                    <!-- Details Row: Toggable Tickets -->
+                                    <t t-if="month.tickets and month.tickets.length > 0">
+                                        <tr class="ticket-section">
+                                            <td colspan="5">
+                                                <div class="ranking-container">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Ticket Reference</th>
+                                                                <th>Sale Amount</th>
+                                                                <th>Seller</th>
+                                                                <th>Date</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr t-foreach="month.tickets || []" t-as="ticket" t-key="ticket.ticket_reference">
+                                                                <td><t t-esc="ticket.ticket_reference" /></td>
+                                                                <td><t t-esc="ticket.amount" /></td>
+                                                                <td><t t-esc="ticket.seller" /></td>
+                                                                <td><t t-esc="ticket.datetime" /></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-else="">
+                                        <tr class="ticket-section">
+                                            <td colspan="5">
+                                                <p class="text-center">No tickets found for this month.</p>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

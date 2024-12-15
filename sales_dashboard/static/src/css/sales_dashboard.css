@@ -13,6 +13,22 @@
     margin-bottom: 20px;
 }
 
+.ticket-section tbody td {
+    border-bottom: 0;
+}
+
+.o_sales_dashboard .ticket-section{
+    display: none;
+}
+
+.o_sales_dashboard .ticket-show {
+    display: table-row;
+}
+
+.o_sales_dashboard .sales-section {
+    cursor: pointer;
+}
+
 .o_sales_dashboard_column {
     width: 48%;
     margin: 10px;

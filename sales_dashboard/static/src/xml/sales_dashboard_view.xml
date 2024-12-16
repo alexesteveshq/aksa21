@@ -76,6 +76,12 @@
                             </t>
                         </tbody>
                     </table>
+                    <div class="mt-5">
+                        <h3>Daily sales</h3>
+                        <div style="height: 300px; margin-bottom: 30px;">
+                            <canvas id="dailySalesGraph" style="width: 100%; height: 100%;"></canvas>
+                        </div>
+                    </div>
                 </div>
                 <div class="o_sales_dashboard_column o_column_left">
                     <h2>Sales Dashboard - Current Month</h2>
@@ -94,8 +100,8 @@
                         <thead>
                             <tr>
                                 <th>Company</th>
-                                <th>Cost</th>
                                 <th>Current Sales</th>
+                                <th>Cost</th>
                                 <th>Change (%)</th>
                                 <th>Margin</th>
                             </tr>
@@ -106,10 +112,10 @@
                                     <span t-esc="company.company" />
                                 </td>
                                 <td>
-                                    <span t-esc="company.current_cost" />
+                                    <span t-esc="company.current_sales" />
                                 </td>
                                 <td>
-                                    <span t-esc="company.current_sales" />
+                                    <span t-esc="company.current_cost" />
                                 </td>
                                 <td>
                                     <span t-esc="company.percentage_change" /> %
@@ -261,12 +267,6 @@
                     <div class="o_dashboard_blue_block">
                         <h3>Product/Order Average</h3>
                         <span t-esc="state.OrderProdAvg" />
-                    </div>
-                    <div>
-                        <h3>Daily sales</h3>
-                        <div style="height: 300px; margin-bottom: 30px;">
-                            <canvas id="dailySalesGraph" style="width: 100%; height: 100%;"></canvas>
-                        </div>
                     </div>
                     <div class="o_monthly_sales_table">
                         <h2>Monthly sales</h2>

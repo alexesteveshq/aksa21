@@ -302,36 +302,36 @@ class PosOrder(models.Model):
         for record in seller_ranking:
             record['amount_sold'] = format_amount(self.env, record['amount_sold'], self.env.company.currency_id)
 
-        #bestselling
-        category_sales = {}
-        category_totals = {}
+        # Initialize dictionaries to track sales and totals by category
+        category_sales = {}  # Total sales amount (amount_currency) per category
+        category_totals = {}  # Total quantity sold per category
 
-        # Calculate total sales quantity and total amount for each category
+        # Calculate total sales amount and total quantity per category
         for line in current_month_orders.mapped('lines').filtered(lambda ln: ln.amount_currency > 0):
             category = line.product_id.category_id.name or _('Uncategorized')
-            category_sales[category] = category_sales.get(category, 0) + line.qty
-            category_totals[category] = category_totals.get(category, 0) + (line.qty * line.amount_currency)
+            category_sales[category] = category_sales.get(category, 0) + line.amount_currency  # Sum by amount_currency
+            category_totals[category] = category_totals.get(category, 0) + line.qty  # Sum by quantity
 
-        # Calculate the total quantity sold across all categories
-        total_quantity = sum(category_sales.values())
+        # Calculate the total sales amount across all categories
+        total_sales_amount = sum(category_sales.values())
 
-        # Prepare the data with percentages, total quantity, and total sales amount
+        # Prepare the data with percentages based on revenue (amount_currency)
         best_selling_products_data = []
-        for category, quantity in category_sales.items():
-            percentage = (quantity / total_quantity) * 100 if total_quantity > 0 else 0
-            total_sales = category_totals[category]
-            # Format total sales using f-string with thousands separator and two decimal places
-            formatted_sales = f"{total_sales:,.2f}"
+        for category, sales_amount in category_sales.items():
+            percentage = (sales_amount / total_sales_amount) * 100 if total_sales_amount > 0 else 0
+            quantity = category_totals[category]  # Total quantity for the category
+            formatted_sales = f"{sales_amount:,.2f}"  # Format sales amount
+
             best_selling_products_data.append({
                 'category': f"{category} ({int(quantity)})",  # Add number of products sold next to the name
-                'quantity': round(quantity, 2),
-                'percentage': round(percentage, 2),
+                'quantity': round(quantity, 2),  # Keep quantity rounded
+                'percentage': round(percentage, 2),  # Percentage based on revenue
                 'total_sales': formatted_sales  # Total sales formatted in US style
             })
 
-        # Sort by percentage and limit to top 10 categories
-        best_selling_products_data = sorted(
-            best_selling_products_data, key=lambda x: x['percentage'], reverse=True)[:10]
+        # Sort by percentage of revenue and limit to the top 10 categories
+        best_selling_products_data = sorted(best_selling_products_data,
+                                            key=lambda x: x['percentage'], reverse=True)[:10]
 
         # Generate daily sales data per company for the graph
         daily_sales_graph_data = []

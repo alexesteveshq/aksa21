@@ -228,7 +228,7 @@ class PosOrder(models.Model):
                 'ticket_reference': order.pos_reference,
                 'amount_currency': format_amount(self.env, order.amount_currency, self.env.company.currency_id),
                 'seller': order.seller_id.name if order.seller_id else _('Unknown'),
-                'datetime': order.date_order.strftime('%Y-%m-%d %H:%M:%S')
+                'datetime': order.date_order.astimezone(pytz.timezone(self.env.user.tz or 'UTC')).strftime('%H:%M:%S')
             } for order in company_today_orders]
 
             # Skip companies with zero sales in both periods
@@ -416,7 +416,8 @@ class PosOrder(models.Model):
             ticket_details = [{
                 'ticket_reference': order.pos_reference,
                 'seller': order.seller_id.name if order.seller_id else _('Unknown'),
-                'datetime': order.date_order.strftime('%Y-%m-%d %H:%M:%S'),
+                'datetime': order.date_order.astimezone(
+                    pytz.timezone(self.env.user.tz or 'UTC')).strftime('%Y-%m-%d %H:%M:%S'),
                 'amount': format_amount(self.env, order.amount_currency, self.env.company.currency_id),
             } for order in monthly_orders]
 

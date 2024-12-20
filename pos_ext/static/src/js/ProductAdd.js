@@ -17,6 +17,15 @@ odoo.define('pos_ext.prevent_add', function(require) {
                      ['company_id', '=', product.pos.company.id]]],
                     fields: ['id'],
                 })
+                this.orderlines.forEach(orderline => {
+                    if (orderline.product === product){
+                        Gui.showPopup('ErrorPopup', {
+                            title: _t('Error'),
+                            body: _t('You cannot add the same product twice')
+                        });
+                        return
+                    }
+                });
                 if (!avlProduct.length){
                     Gui.showPopup('ErrorPopup', {
                         title: _t('Error'),

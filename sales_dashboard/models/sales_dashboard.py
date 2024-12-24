@@ -21,17 +21,14 @@ class PosOrder(models.Model):
         previous_month_end = previous_month_start + timedelta(days=today.day - 1)
 
         # Convert `today` and other relevant datetimes to UTC for comparison
-        today_utc = today.astimezone(pytz.UTC)
-        month_start_utc = month_start.astimezone(pytz.UTC)
-        previous_month_start_utc = previous_month_start.astimezone(pytz.UTC)
-        previous_month_end_utc = previous_month_end.astimezone(pytz.UTC)
+        previous_month_start_utc = previous_month_start.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
+        previous_month_end_utc = previous_month_end.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
 
         # Fetch current month's orders up to the current time across all companies
         current_month_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', month_start_utc),
-            ('date_order', '<=', today_utc),
+            ('date_order', '>=', month_start),
             ('state', 'in', ['paid', 'done', 'invoiced'])
-        ]).filtered(lambda o: not o.is_refunded and not o.refunded_orders_count)
+        ]).filtered(lambda o: not o.is_refunded and not o.refunded_order_ids)
 
         # Fetch the previous month's orders up to the same day
         previous_month_orders = self.with_context(active_test=False).sudo().search([
@@ -40,7 +37,7 @@ class PosOrder(models.Model):
             ('is_refunded', '=', False),
             ('refunded_orders_count', '=', 0),
             ('state', 'in', ['paid', 'done', 'invoiced'])
-        ]).filtered(lambda o: not o.is_refunded and not o.refunded_orders_count)
+        ]).filtered(lambda o: not o.is_refunded and not o.refunded_order_ids)
 
         # Calculate total sales for both periods
         current_month_total_sales = sum(order.amount_currency for order in current_month_orders)
@@ -182,7 +179,7 @@ class PosOrder(models.Model):
             ('state', 'in', ['paid', 'done', 'invoiced']),
             ('is_refunded', '=', False),
             ('refunded_orders_count', '=', 0),
-        ]).filtered(lambda o: not o.is_refunded and not o.refunded_orders_count)
+        ]).filtered(lambda o: not o.is_refunded and not o.refunded_order_ids)
 
         previous_same_day = previous_month_start + timedelta(
             days=today.day - 1) if previous_month_end.day >= today.day else None
@@ -194,7 +191,7 @@ class PosOrder(models.Model):
             ('state', 'in', ['paid', 'done', 'invoiced']),
             ('is_refunded', '=', False),
             ('refunded_orders_count', '=', 0),
-        ]).filtered(lambda o: not o.is_refunded and not o.refunded_orders_count) if previous_same_day else []
+        ]).filtered(lambda o: not o.is_refunded and not o.refunded_order_ids) if previous_same_day else []
 
         today_sales = sum(order.amount_currency for order in today_orders)
         previous_same_day_sales = sum(order.amount_currency for order in previous_same_day_orders)
@@ -220,6 +217,7 @@ class PosOrder(models.Model):
             current_cost = today_cost_by_company[company.id]
             current_sales = today_sales_by_company[company.id]
             previous_sales = previous_sales_by_company_today[company.id]
+            prev_month_orders = previous_month_orders.filtered(lambda o: o.company_id == company)
 
             # Fetch today's POS orders for this company
             company_today_orders = today_orders.filtered(lambda o: o.company_id == company)
@@ -232,7 +230,7 @@ class PosOrder(models.Model):
             } for order in company_today_orders]
 
             # Skip companies with zero sales in both periods
-            if current_sales == 0 and previous_sales == 0:
+            if current_sales == 0 and not prev_month_orders:
                 continue
 
             # Calculate percentage change

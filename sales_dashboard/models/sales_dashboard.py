@@ -109,7 +109,7 @@ class PosOrder(models.Model):
                 'company': company.name,
                 'current_sales': format_amount(self.env, current_sales, self.env.company.currency_id),
                 'current_cost': format_amount(self.env, current_cost, self.env.company.currency_id),
-                'margin': format_amount(self.env, current_margin, self.env.company.currency_id),
+                'margin': format_amount(self.env, round(current_margin, 2), self.env.company.currency_id),
                 'percentage_change': percentage_change,
             })
 

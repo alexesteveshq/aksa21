@@ -227,8 +227,8 @@ class PosOrder(models.Model):
                 'margin': format_amount(self.env, round(order.amount_currency - order.order_cost, 2),
                                         self.env.company.currency_id),
                 'amount_currency': format_amount(self.env, order.amount_currency, self.env.company.currency_id),
-                'discount': sum([line.discount for line in order.lines if line.amount_currency]) /
-                            len(order.lines.filtered(lambda o: o.amount_currency))
+                'discount': round(sum([line.discount for line in order.lines if line.amount_currency]) /
+                            len(order.lines.filtered(lambda o: o.amount_currency)), 2)
                 if order.lines.filtered(lambda o: o.amount_currency) else 0,
                 'seller': order.seller_id.name if order.seller_id else _('Unknown'),
                 'datetime': order.date_order.astimezone(pytz.timezone(self.env.user.tz or 'UTC')).strftime('%H:%M:%S')

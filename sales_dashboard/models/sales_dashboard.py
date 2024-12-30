@@ -102,14 +102,14 @@ class PosOrder(models.Model):
 
             # Calculate percentage change
             percentage_change = calculate_change(current_sales, previous_sales)
-            current_margin = current_sales - current_cost
+            current_margin = ((current_sales - current_cost)/current_sales) * 100
 
             # Include company in `daily_sales` data
             daily_sales.append({
                 'company': company.name,
                 'current_sales': format_amount(self.env, current_sales, self.env.company.currency_id),
                 'current_cost': format_amount(self.env, current_cost, self.env.company.currency_id),
-                'margin': format_amount(self.env, round(current_margin, 2), self.env.company.currency_id),
+                'margin': round(current_margin, 2),
                 'percentage_change': percentage_change,
             })
 
@@ -224,15 +224,13 @@ class PosOrder(models.Model):
 
             company_order_details = [{
                 'ticket_reference': order.pos_reference,
-                'margin': format_amount(self.env, round(order.amount_currency - order.order_cost, 2),
-                                        self.env.company.currency_id),
+                'margin': round((order.amount_currency - order.order_cost)/order.amount_currency)
+                                * 100 if order.amount_currency and order.order_cost else 0,
                 'amount_currency': format_amount(self.env, order.amount_currency, self.env.company.currency_id),
-                'discount': round(sum([line.discount for line in order.lines if line.amount_currency]) /
-                            len(order.lines.filtered(lambda o: o.amount_currency)), 2)
-                if order.lines.filtered(lambda o: o.amount_currency) else 0,
+                'categories': ', '.join(order.mapped('lines.product_id.category_id.name')),
                 'seller': order.seller_id.name if order.seller_id else _('Unknown'),
                 'datetime': order.date_order.astimezone(pytz.timezone(self.env.user.tz or 'UTC')).strftime('%H:%M:%S')
-            } for order in company_today_orders]
+            } for order in company_today_orders.filtered(lambda o: o.amount_currency > 0)]
 
             # Skip companies with zero sales in both periods
             if current_sales == 0 and not prev_month_orders:
@@ -421,12 +419,11 @@ class PosOrder(models.Model):
                 'seller': order.seller_id.name if order.seller_id else _('Unknown'),
                 'datetime': order.date_order.astimezone(
                     pytz.timezone(self.env.user.tz or 'UTC')).strftime('%Y-%m-%d %H:%M:%S'),
-                'discount': sum([line.discount for line in order.lines if line.amount_currency ]) /
-                            len(order.lines.filtered(lambda o: o.amount_currency))
-                            if order.lines.filtered(lambda o: o.amount_currency) else 0,
+                'categories': ', '.join(order.mapped('lines.product_id.category_id.name')),
                 'amount': format_amount(self.env, order.amount_currency, self.env.company.currency_id),
-                'margin': format_amount(self.env, order.amount_currency - order.order_cost
-                if order.amount_currency else 0, self.env.company.currency_id)} for order in monthly_orders]
+                'margin': round(((order.amount_currency - order.order_cost)/order.amount_currency) * 100)
+                if order.amount_currency and order.order_cost else 0}
+                for order in monthly_orders.filtered(lambda o: o.amount_currency > 0)]
             # Append the month's data
             monthly_sales_data.append({
                 'year': month_start.year,

@@ -51,7 +51,7 @@
                                                         <th>Ticket Reference</th>
                                                         <th>Sale amount</th>
                                                         <th>Margin</th>
-                                                        <th>Discount</th>
+                                                        <th>Categories</th>
                                                         <th>Seller</th>
                                                         <th>Date</th>
                                                     </tr>
@@ -60,8 +60,8 @@
                                                     <tr t-foreach="company.order_details || []" t-as="order" t-key="order.ticket_reference">
                                                         <td><span t-esc="order.ticket_reference" /></td>
                                                         <td><span t-esc="order.amount_currency" /></td>
-                                                        <td><span t-esc="order.margin" /></td>
-                                                        <td><span t-esc="order.discount" />%</td>
+                                                        <td><span t-esc="order.margin" />%</td>
+                                                        <td><span t-esc="order.categories" /></td>
                                                         <td><span t-esc="order.seller" /></td>
                                                         <td><span t-esc="order.datetime" /></td>
                                                     </tr>
@@ -131,7 +131,7 @@
                                     </t>
                                 </td>
                                 <td>
-                                    <span t-esc="company.margin" />
+                                    <span t-esc="company.margin" />%
                                 </td>
                             </tr>
                         </tbody>
@@ -305,7 +305,7 @@
                                                                 <th>Ticket Reference</th>
                                                                 <th>Sale Amount</th>
                                                                 <th>Margin</th>
-                                                                <th>Discount</th>
+                                                                <th>Categories</th>
                                                                 <th>Seller</th>
                                                                 <th>Date</th>
                                                             </tr>
@@ -314,8 +314,8 @@
                                                             <tr t-foreach="month.tickets || []" t-as="ticket" t-key="ticket.ticket_reference">
                                                                 <td><t t-esc="ticket.ticket_reference" /></td>
                                                                 <td><t t-esc="ticket.amount" /></td>
-                                                                <td><t t-esc="ticket.margin"/></td>
-                                                                <td><t t-esc="ticket.discount"/>%</td>
+                                                                <td><t t-esc="ticket.margin"/>%</td>
+                                                                <td><t t-esc="ticket.categories"/></td>
                                                                 <td><t t-esc="ticket.seller" /></td>
                                                                 <td><t t-esc="ticket.datetime" /></td>
                                                             </tr>

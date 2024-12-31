@@ -224,8 +224,8 @@ class PosOrder(models.Model):
 
             company_order_details = [{
                 'ticket_reference': order.pos_reference,
-                'margin': round((order.amount_currency - order.order_cost)/order.amount_currency)
-                                * 100 if order.amount_currency and order.order_cost else 0,
+                'margin': round(((order.amount_currency - order.order_cost)/order.amount_currency)
+                                * 100) if order.amount_currency and order.order_cost else 0,
                 'amount_currency': format_amount(self.env, order.amount_currency, self.env.company.currency_id),
                 'categories': ', '.join(order.mapped('lines.product_id.category_id.name')),
                 'seller': order.seller_id.name if order.seller_id else _('Unknown'),

@@ -14,15 +14,15 @@ class PosOrder(models.Model):
 
         # Use timezone-aware datetime objects for `today`
         today = datetime.now(tz=timezone)
-        month_start = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_start = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC'))
 
         # Calculate the same period in the previous month
         previous_month_start = (month_start - timedelta(days=1)).replace(day=1)
         previous_month_end = previous_month_start + timedelta(days=today.day - 1)
 
         # Convert `today` and other relevant datetimes to UTC for comparison
-        previous_month_start_utc = previous_month_start.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
-        previous_month_end_utc = previous_month_end.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
+        previous_month_start_utc = previous_month_start.astimezone(pytz.timezone('UTC'))
+        previous_month_end_utc = previous_month_end.astimezone(pytz.timezone('UTC'))
 
         # Fetch current month's orders up to the current time across all companies
         current_month_orders = self.with_context(active_test=False).sudo().search([
@@ -97,12 +97,13 @@ class PosOrder(models.Model):
             previous_sales = previous_sales_by_company[company.id]
 
             # Skip companies with zero sales in both periods
-            if current_sales == 0 and previous_sales == 0:
+            # Skip companies with zero sales in both periods
+            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
                 continue
 
             # Calculate percentage change
             percentage_change = calculate_change(current_sales, previous_sales)
-            current_margin = ((current_sales - current_cost)/current_sales) * 100
+            current_margin = ((current_sales - current_cost)/current_sales) * 100 if current_sales else 0
 
             # Include company in `daily_sales` data
             daily_sales.append({
@@ -233,7 +234,7 @@ class PosOrder(models.Model):
             } for order in company_today_orders.filtered(lambda o: o.amount_currency > 0)]
 
             # Skip companies with zero sales in both periods
-            if current_sales == 0 and not prev_month_orders:
+            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
                 continue
 
             # Calculate percentage change
@@ -398,8 +399,8 @@ class PosOrder(models.Model):
             month_end = next_month_start - timedelta(seconds=1)  # Last second of the current month
 
             # Convert to UTC
-            month_start_utc = month_start.astimezone(pytz.UTC)
-            month_end_utc = month_end.astimezone(pytz.UTC)
+            month_start_utc = month_start.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
+            month_end_utc = month_end.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
 
             # Fetch orders for the current month
             monthly_orders = self.with_context(active_test=False).sudo().search([

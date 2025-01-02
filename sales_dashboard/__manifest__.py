@@ -7,7 +7,7 @@
     'version': '1.0',
     'depends': ['point_of_sale', 'web', 'pos_sellers'],
     'data': [
-        'views/sales_dashboard_menu.xml',  # Menu and action definitions
+        'views/sales_dashboard_menu.xml',
     ],
     'assets': {
         'web.assets_backend': [

@@ -388,55 +388,59 @@ class PosOrder(models.Model):
 
         # Generate monthly sales data with detailed tickets
         monthly_sales_data = []
+        user_tz = pytz.timezone(self.env.user.tz or 'UTC')
+        today = datetime.now(tz=pytz.UTC).astimezone(user_tz)
         start_date = (today - timedelta(days=today.day)).replace(day=1)  # First day of the previous month
-        end_date = today.replace(day=1)  # Current month (1st day)
+        end_date = (today + timedelta(days=31)).replace(day=1)  # First day of the next month
 
-        # Loop from the past month to the current month
-        while start_date <= end_date:
-            # Calculate the start and end of the current month
-            month_start = start_date
-            next_month_start = (month_start + timedelta(days=31)).replace(day=1)  # First day of the next month
-            month_end = next_month_start - timedelta(seconds=1)  # Last second of the current month
+        # Convert start_date and end_date to UTC
+        start_date_utc = start_date.astimezone(pytz.UTC)
+        end_date_utc = end_date.astimezone(pytz.UTC)
 
-            # Convert to UTC
-            month_start_utc = month_start.astimezone(pytz.timezone('UTC'))
-            month_end_utc = month_end.astimezone(pytz.timezone('UTC'))
+        # Fetch all orders within the date range in a single query
+        all_orders = self.with_context(active_test=False).sudo().search([
+            ('date_order', '>=', start_date_utc),
+            ('date_order', '<', end_date_utc),  # Exclude end_date itself
+            ('state', 'in', ['paid', 'done', 'invoiced']),
+        ])
 
-            # Fetch orders for the current month
-            monthly_orders = self.with_context(active_test=False).sudo().search([
-                ('date_order', '>=', month_start_utc),
-                ('date_order', '<=', month_end_utc),
-                ('state', 'in', ['paid', 'done', 'invoiced']),
-            ])
+        # Group orders by month
+        orders_by_month = {}
+        for order in all_orders:
+            order_date = order.date_order.astimezone(user_tz)
+            month_key = (order_date.year, order_date.month)
+            if month_key not in orders_by_month:
+                orders_by_month[month_key] = []
+            orders_by_month[month_key].append(order)
+
+        for (year, month), orders in sorted(orders_by_month.items()):
+            month_start = datetime(year, month, 1, tzinfo=user_tz).astimezone(pytz.UTC)
 
             # Calculate totals
-            total_sales = sum(order.amount_currency for order in monthly_orders)
-            total_cost = sum(order.order_cost for order in monthly_orders)
-            total_orders = len(monthly_orders)
+            total_sales = sum(order.amount_currency for order in orders)
+            total_cost = sum(order.order_cost for order in orders)
+            total_orders = len(orders)
 
             # Fetch detailed ticket data
             ticket_details = [{
                 'ticket_reference': order.pos_reference,
                 'seller': order.seller_id.name if order.seller_id else _('Unknown'),
-                'datetime': order.date_order.astimezone(
-                    pytz.timezone(self.env.user.tz or 'UTC')).strftime('%Y-%m-%d %H:%M:%S'),
+                'datetime': order.date_order.astimezone(user_tz).strftime('%Y-%m-%d %H:%M:%S'),
                 'categories': ', '.join(order.mapped('lines.product_id.category_id.name')),
                 'amount': format_amount(self.env, order.amount_currency, self.env.company.currency_id),
-                'margin': round(((order.amount_currency - order.order_cost)/order.amount_currency) * 100)
-                if order.amount_currency and order.order_cost else 0}
-                for order in monthly_orders.filtered(lambda o: o.amount_currency > 0)]
+                'margin': round(((order.amount_currency - order.order_cost) / order.amount_currency) * 100)
+                if order.amount_currency and order.order_cost else 0
+            } for order in orders if order.amount_currency > 0]
+
             # Append the month's data
             monthly_sales_data.append({
-                'year': month_start.year,
+                'year': year,
                 'month': month_start.strftime('%B'),  # Month name (e.g., 'November')
                 'total_sales': format_amount(self.env, total_sales, self.env.company.currency_id),
                 'total_cost': format_amount(self.env, total_cost, self.env.company.currency_id),
                 'total_orders': total_orders,
-                'tickets': ticket_details,  # Add ticket details
+                'tickets': ticket_details,
             })
-
-            # Move to the next month
-            start_date = next_month_start
 
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),

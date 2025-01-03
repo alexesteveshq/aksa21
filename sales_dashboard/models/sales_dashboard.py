@@ -399,8 +399,8 @@ class PosOrder(models.Model):
             month_end = next_month_start - timedelta(seconds=1)  # Last second of the current month
 
             # Convert to UTC
-            month_start_utc = month_start.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
-            month_end_utc = month_end.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
+            month_start_utc = month_start.astimezone(pytz.timezone('UTC'))
+            month_end_utc = month_end.astimezone(pytz.timezone('UTC'))
 
             # Fetch orders for the current month
             monthly_orders = self.with_context(active_test=False).sudo().search([

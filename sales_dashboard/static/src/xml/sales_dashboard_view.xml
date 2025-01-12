@@ -166,6 +166,29 @@
                             </div>
                         </div>
                     </div>
+                    <div class="o_monthly_payments_table">
+                        <h2>Monthly Payments</h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <t t-foreach="state.paymentMethods" t-as="method" t-key="method">
+                                        <th><t t-esc="method" /></th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.monthlyPaymentsData" t-as="company_data" t-key="company_data.company">
+                                    <tr>
+                                        <td><t t-esc="company_data.company" /></td>
+                                        <t t-foreach="state.paymentMethods" t-as="method" t-key="method">
+                                            <td><t t-esc="company_data.payments[method] or '0.00'" /></td>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Modified Section: Seller Ranking -->

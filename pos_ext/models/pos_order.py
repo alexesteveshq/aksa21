@@ -39,6 +39,12 @@ class PosOrder(models.Model):
             converted_amount = order.pricelist_id.currency_id._convert(
                 order.amount_total, currency_mxr, order.company_id, fields.Date.today())
             order.amount_currency = converted_amount
+            order.amount_paid = converted_amount
+            order.amount_total = converted_amount
+            if order._is_pos_order_paid():
+                order.action_pos_order_paid()
+                order._create_order_picking()
+                order._compute_total_cost_in_real_time()
         return result
 
     @api.depends('payment_ids', 'payment_ids.amount')

@@ -8,6 +8,12 @@ from odoo.exceptions import UserError
 class PosSession(models.Model):
     _inherit = 'pos.session'
 
+    def load_pos_data(self):
+        result = super(PosSession, self).load_pos_data()
+        currency = self.env['res.currency'].with_company(self.company_id.id).search([('name', '=', 'MXR')], limit=1)
+        result['rate'] = currency.rate
+        return result
+
     def post_closing_cash_details(self, counted_cash):
         draft_orders = self.order_ids.filtered(lambda order: order.state == 'draft')
         for order in draft_orders:

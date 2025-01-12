@@ -15,7 +15,7 @@ odoo.define('pos_discount_calc.ProductScreen', function(require) {
                 } else if (this.env.pos.numpadMode === 'price') {
                     var order_line = this.currentOrder.get_selected_orderline();
                     var total_price = order_line.product.retail_price_untaxed_usd
-                    if (this.currentOrder.pricelist.currency_id[1] !== 'USX'){
+                    if (this.currentOrder.pricelist.currency_id[1] === 'MXR'){
                         total_price = order_line.product.retail_price_untaxed
                     }
                     order_line.price_manually_set = true;

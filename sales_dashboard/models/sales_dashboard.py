@@ -442,6 +442,43 @@ class PosOrder(models.Model):
                 'tickets': ticket_details,
             })
 
+        # Calculate monthly payments data
+        monthly_payments_data = []
+
+        # Fetch all payment methods and sort by currency name
+        payment_methods = self.env['pos.payment.method'].search([('journal_id.code', '!=', 'ROOMC')])
+        payment_methods_sorted = sorted(
+            payment_methods,
+            key=lambda method: (method.currency_id.name != 'MXN', method.currency_id.name != 'USD')
+        )
+
+        for company in companies:
+            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
+                continue
+            # Filter payments for the current company and the current month
+            company_payments = self.env['pos.payment'].sudo().search([
+                ('company_id', '=', company.id),
+                ('payment_date', '>=', month_start),
+            ])
+
+            # Aggregate payments directly using filtered and sum
+            payments_summary = {method.name: 0 for method in payment_methods_sorted}
+            for method in payment_methods_sorted:
+                total_amount = sum(
+                    payment.amount_currency for payment in company_payments.filtered(lambda p: p.payment_method_id == method)
+                )
+                payments_summary[method.name] = format_amount(
+                    self.env, total_amount, self.env.company.currency_id).replace('$', '')
+
+            # Append the company's payment summary to the result
+            monthly_payments_data.append({
+                'company': company.name,
+                'payments': payments_summary
+            })
+
+        # Include the payment method names in the response for column headers
+        payment_methods_names = [method.name for method in payment_methods_sorted]
+
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
             'total_sales_change': round(total_sales_change, 2),
@@ -466,5 +503,7 @@ class PosOrder(models.Model):
             'today_sales_data': today_sales_data,
             'today_sales': format_amount(self.env, today_sales, self.env.company.currency_id),
             'today_sales_change': today_sales_change,
-            'seller_ranking': seller_ranking
+            'seller_ranking': seller_ranking,
+            'monthly_payments_data': monthly_payments_data,
+            'payment_methods': payment_methods_names,
         }

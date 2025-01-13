@@ -26,8 +26,6 @@ class SalesDashboard extends Component {
             orderCountChange: 0,
             discountAvgChange: 0,
             loading: true,
-            paymentMethods: [], // Column headers
-            monthlyPaymentsData: [],
             currentProductData: [],  // State for current month product inventory
             previousProductData: [], // State for previous month product inventory
             currentTotalQuantity: 0,  // Total quantity for current month products
@@ -39,6 +37,9 @@ class SalesDashboard extends Component {
             sellerRanking: [],         // Seller ranking data
             todaySalesData: [],        // New state for today's sales data by company
             bestSellingProducts: [],
+            monthlyPaymentsData: [],
+            categories: [],
+            currencies: [],
         });
 
         this.state.expandedTodayRows = useState({});
@@ -100,8 +101,9 @@ class SalesDashboard extends Component {
             this.state.bestSellingProducts = result.best_selling_products || [];
             this.state.dailySalesGraphData = result.daily_sales_graph_data || [];
             this.state.monthlySalesData = result.monthly_sales_data || [];
-            this.state.paymentMethods = result.payment_methods || [];
             this.state.monthlyPaymentsData = result.monthly_payments_data || [];
+            this.state.categories = result.categories || [];
+            this.state.currencies = result.currencies || [];
 
             // Set today's sales data
             this.state.todaySales = result.today_sales || 0;

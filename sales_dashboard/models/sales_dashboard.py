@@ -442,42 +442,60 @@ class PosOrder(models.Model):
                 'tickets': ticket_details,
             })
 
+        # Define categories with journal codes for grouping
+        categories = {
+            'CASH': {
+                'MXN': ['CSH1'],
+                'USD': ['CASHU'],
+            },
+            'BANKS': {
+                'MXN': ['INBMX', 'INMXN'],
+                'USD': ['INUSD'],
+            },
+            'ROOMCHARGE': {
+                'MXN': ['ROOMC'],  # Only ROOMC applies for MXN
+                'USD': ['ROOMC'],  # ROOMC also applies for USD
+            },
+        }
+
         # Calculate monthly payments data
         monthly_payments_data = []
 
-        # Fetch all payment methods and sort by currency name
-        payment_methods = self.env['pos.payment.method'].search(
-            [('journal_id.code', '!=', 'ROOMC')])
-        payment_methods_sorted = sorted(
-            payment_methods,
-            key=lambda method: (method.currency_id.name != 'MXN', method.currency_id.name != 'USD')
-        )
+        # Fetch all payment methods
+        payment_methods = self.env['pos.payment.method'].search([])
 
+        # Fetch company payments for the current month
         company_payments = self.env['pos.payment'].with_context(active_test=False).sudo().search([
             ('payment_date', '>=', month_start),
         ])
 
+        # Process each company
         for company in companies:
             if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
                 continue
 
-            # Aggregate payments directly using filtered and sum
-            payments_summary = {method.name: 0 for method in payment_methods_sorted}
-            for method in payment_methods_sorted:
-                total_amount = sum(
-                    payment.amount for payment in company_payments.filtered(
-                        lambda p: p.payment_method_id.journal_id.code == method.journal_id.code and p.company_id == company))
-                payments_summary[method.name] = format_amount(
-                    self.env, total_amount, self.env.company.currency_id).replace('$', '')
+            # Initialize payment summary by categories and currencies
+            payments_summary = {category: {'MXN': 0, 'USD': 0} for category in categories.keys()}
+
+            # Calculate total amounts for each category and currency
+            for category, currencies in categories.items():
+                for currency, journal_codes in currencies.items():
+                    # Sum the payments matching the journal codes and company
+                    total_amount = sum(
+                        payment.amount for payment in company_payments.filtered(
+                            lambda p: p.payment_method_id.journal_id.code in journal_codes and p.company_id == company
+                        )
+                    )
+                    # Store the formatted amount in the summary
+                    payments_summary[category][currency] = format_amount(
+                        self.env, total_amount, self.env.company.currency_id
+                    ).replace('$', '')
 
             # Append the company's payment summary to the result
             monthly_payments_data.append({
                 'company': company.name,
-                'payments': payments_summary
+                'payments': payments_summary,
             })
-
-        # Include the payment method names in the response for column headers
-        payment_methods_names = [method.name for method in payment_methods_sorted]
 
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
@@ -505,5 +523,6 @@ class PosOrder(models.Model):
             'today_sales_change': today_sales_change,
             'seller_ranking': seller_ranking,
             'monthly_payments_data': monthly_payments_data,
-            'payment_methods': payment_methods_names,
+            'categories': list(categories.keys()),
+            'currencies': ['MXN', 'USD'],
         }

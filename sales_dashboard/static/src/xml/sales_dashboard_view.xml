@@ -168,26 +168,56 @@
                     </div>
                     <div class="o_monthly_payments_table">
                         <h2>Monthly Payments</h2>
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Company</th>
-                                    <t t-foreach="state.paymentMethods" t-as="method" t-key="method">
-                                        <th><t t-esc="method" /></th>
-                                    </t>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="state.monthlyPaymentsData" t-as="company_data" t-key="company_data.company">
+                        <t t-if="state.loading">
+                            <p>Loading...</p>
+                        </t>
+                        <t t-else="">
+                            <table class="table table-hover table-bordered table-striped">
+                                <thead>
+                                    <!-- Main Headers (Categories) -->
                                     <tr>
-                                        <td><t t-esc="company_data.company" /></td>
-                                        <t t-foreach="state.paymentMethods" t-as="method" t-key="method">
-                                            <td><t t-esc="company_data.payments[method] or '0.00'" /></td>
+                                        <th rowspan="2" class="text-center align-middle">Company</th> <!-- Center and align header -->
+                                        <t t-foreach="state.categories" t-as="category" t-key="category">
+                                            <th t-if="category != 'ROOMCHARGE'" colspan="2" class="text-center">
+                                                <t t-esc="category" />
+                                            </th>
+                                            <th t-else="" class="text-center">
+                                                <t t-esc="category" />
+                                            </th>
                                         </t>
                                     </tr>
-                                </t>
-                            </tbody>
-                        </table>
+                                    <!-- Sub-Headers (Currencies) -->
+                                    <tr>
+                                        <t t-foreach="state.categories" t-as="category" t-key="category">
+                                            <t t-if="category != 'ROOMCHARGE'">
+                                                <th class="text-center">MXN</th>
+                                                <th class="text-center">USD</th>
+                                            </t>
+                                            <t t-else="">
+                                                <th class="text-center">MXN</th>
+                                            </t>
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Company Payment Data -->
+                                    <t t-foreach="state.monthlyPaymentsData" t-as="company_data" t-key="company_data.company">
+                                        <tr>
+                                            <td><t t-esc="company_data.company" /></td>
+                                            <t t-foreach="state.categories" t-as="category" t-key="category">
+                                                <t t-if="category != 'ROOMCHARGE'">
+                                                    <td class="text-right"><t t-esc="company_data.payments[category]['MXN'] or '0.00'" /></td>
+                                                    <td class="text-right"><t t-esc="company_data.payments[category]['USD'] or '0.00'" /></td>
+                                                </t>
+                                                <t t-else="">
+                                                    <td class="text-right"><t t-esc="company_data.payments[category]['MXN'] or '0.00'" /></td>
+                                                </t>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
                     </div>
                 </div>
 

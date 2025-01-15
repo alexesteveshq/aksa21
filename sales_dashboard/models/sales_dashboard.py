@@ -454,48 +454,46 @@ class PosOrder(models.Model):
             },
             'ROOMCHARGE': {
                 'MXN': ['ROOMC'],  # Only ROOMC applies for MXN
-                'USD': ['ROOMC'],  # ROOMC also applies for USD
+                # USD is omitted for ROOMCHARGE
             },
         }
 
-        # Calculate monthly payments data
         monthly_payments_data = []
 
-        # Fetch all payment methods
-        payment_methods = self.env['pos.payment.method'].search([])
-
-        # Fetch company payments for the current month
         company_payments = self.env['pos.payment'].with_context(active_test=False).sudo().search([
             ('payment_date', '>=', month_start),
         ])
 
-        # Process each company
         for company in companies:
             if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
                 continue
 
-            # Initialize payment summary by categories and currencies
-            payments_summary = {category: {'MXN': 0, 'USD': 0} for category in categories.keys()}
+            payments_summary = {category: {'MXN': {}, 'USD': {}} for category in categories}
 
-            # Calculate total amounts for each category and currency
             for category, currencies in categories.items():
                 for currency, journal_codes in currencies.items():
-                    # Sum the payments matching the journal codes and company
-                    total_amount = sum(
-                        payment.amount for payment in company_payments.filtered(
-                            lambda p: p.payment_method_id.journal_id.code in journal_codes and p.company_id == company
+                    for code in journal_codes:
+                        total_amount = sum(
+                            payment.amount for payment in company_payments.filtered(
+                                lambda p: p.payment_method_id.journal_id.code == code and p.company_id == company
+                            )
                         )
-                    )
-                    # Store the formatted amount in the summary
-                    payments_summary[category][currency] = format_amount(
-                        self.env, total_amount, self.env.company.currency_id
-                    ).replace('$', '')
+                        payments_summary[category][currency][code] = format_amount(
+                            self.env, total_amount, self.env.company.currency_id
+                        ).replace('$', '')
 
-            # Append the company's payment summary to the result
             monthly_payments_data.append({
                 'company': company.name,
-                'payments': payments_summary,
+                'payments': payments_summary
             })
+
+        payment_methods = {
+            category: {
+                'MXN': currencies.get('MXN', []),
+                'USD': currencies.get('USD', []),
+            }
+            for category, currencies in categories.items()
+        }
 
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
@@ -522,7 +520,7 @@ class PosOrder(models.Model):
             'today_sales': format_amount(self.env, today_sales, self.env.company.currency_id),
             'today_sales_change': today_sales_change,
             'seller_ranking': seller_ranking,
-            'monthly_payments_data': monthly_payments_data,
+            'monthlyPaymentsData': monthly_payments_data,
             'categories': list(categories.keys()),
-            'currencies': ['MXN', 'USD'],
+            'paymentMethods': payment_methods,
         }

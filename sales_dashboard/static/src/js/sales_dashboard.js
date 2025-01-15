@@ -37,9 +37,9 @@ class SalesDashboard extends Component {
             sellerRanking: [],         // Seller ranking data
             todaySalesData: [],        // New state for today's sales data by company
             bestSellingProducts: [],
-            monthlyPaymentsData: [],
-            categories: [],
-            currencies: [],
+            monthlyPaymentsData: [], // Stores payments data
+            categories: [],          // List of categories (CASH, BANKS, ROOMCHARGE)
+            paymentMethods: {},
         });
 
         this.state.expandedTodayRows = useState({});
@@ -101,9 +101,9 @@ class SalesDashboard extends Component {
             this.state.bestSellingProducts = result.best_selling_products || [];
             this.state.dailySalesGraphData = result.daily_sales_graph_data || [];
             this.state.monthlySalesData = result.monthly_sales_data || [];
-            this.state.monthlyPaymentsData = result.monthly_payments_data || [];
+            this.state.monthlyPaymentsData = result.monthlyPaymentsData || [];
             this.state.categories = result.categories || [];
-            this.state.currencies = result.currencies || [];
+            this.state.paymentMethods = result.paymentMethods || {};
 
             // Set today's sales data
             this.state.todaySales = result.today_sales || 0;

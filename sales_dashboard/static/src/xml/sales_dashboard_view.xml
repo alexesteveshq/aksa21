@@ -176,12 +176,12 @@
                                 <thead>
                                     <!-- Main Headers (Categories) -->
                                     <tr>
-                                        <th rowspan="2" class="text-center align-middle">Company</th> <!-- Center and align header -->
+                                        <th rowspan="2" class="text-center align-middle">Company</th>
                                         <t t-foreach="state.categories" t-as="category" t-key="category">
-                                            <th t-if="category != 'ROOMCHARGE'" colspan="2" class="text-center">
+                                            <th t-if="category == 'BANKS'" colspan="3" class="text-center">
                                                 <t t-esc="category" />
                                             </th>
-                                            <th t-else="" class="text-center">
+                                            <th t-else="" class="text-center" colspan="2">
                                                 <t t-esc="category" />
                                             </th>
                                         </t>
@@ -190,11 +190,31 @@
                                     <tr>
                                         <t t-foreach="state.categories" t-as="category" t-key="category">
                                             <t t-if="category != 'ROOMCHARGE'">
-                                                <th class="text-center">MXN</th>
-                                                <th class="text-center">USD</th>
+                                                <t t-if="category == 'BANKS'">
+                                                    <th class="text-center" colspan="2">MXN</th>
+                                                    <th class="text-center">USD</th>
+                                                </t>
+                                                <t t-else="">
+                                                    <th class="text-center">MXN</th>
+                                                    <th class="text-center">USD</th>
+                                                </t>
                                             </t>
                                             <t t-else="">
                                                 <th class="text-center">MXN</th>
+                                            </t>
+                                        </t>
+                                    </tr>
+                                    <!-- Third Level Headers (Payment Methods) -->
+                                    <tr>
+                                        <th/>
+                                        <t t-foreach="state.categories" t-as="category" t-key="category">
+                                            <t t-foreach="state.paymentMethods[category]['MXN']" t-as="method" t-key="method">
+                                                <th class="text-center"><t t-esc="method" /></th>
+                                            </t>
+                                            <t t-if="category != 'ROOMCHARGE'">
+                                                <t t-foreach="state.paymentMethods[category]['USD']" t-as="method" t-key="method">
+                                                    <th class="text-center"><t t-esc="method" /></th>
+                                                </t>
                                             </t>
                                         </t>
                                     </tr>
@@ -205,12 +225,25 @@
                                         <tr>
                                             <td><t t-esc="company_data.company" /></td>
                                             <t t-foreach="state.categories" t-as="category" t-key="category">
-                                                <t t-if="category != 'ROOMCHARGE'">
-                                                    <td class="text-right"><t t-esc="company_data.payments[category]['MXN'] or '0.00'" /></td>
-                                                    <td class="text-right"><t t-esc="company_data.payments[category]['USD'] or '0.00'" /></td>
+                                                <!-- MXN Payment Methods -->
+                                                <t t-foreach="state.paymentMethods[category]['MXN']" t-as="method" t-key="method">
+                                                    <td class="text-right">
+                                                        <t t-esc="company_data.payments[category]
+                                                                    and company_data.payments[category]['MXN']
+                                                                    and company_data.payments[category]['MXN'][method]
+                                                                    or '0.00'" />
+                                                    </td>
                                                 </t>
-                                                <t t-else="">
-                                                    <td class="text-right"><t t-esc="company_data.payments[category]['MXN'] or '0.00'" /></td>
+                                                <!-- USD Payment Methods (Excluded for ROOMCHARGE) -->
+                                                <t t-if="category != 'ROOMCHARGE'">
+                                                    <t t-foreach="state.paymentMethods[category]['USD']" t-as="method" t-key="method">
+                                                        <td class="text-right">
+                                                            <t t-esc="company_data.payments[category]
+                                                                        and company_data.payments[category]['USD']
+                                                                        and company_data.payments[category]['USD'][method]
+                                                                        or '0.00'" />
+                                                        </td>
+                                                    </t>
                                                 </t>
                                             </t>
                                         </tr>

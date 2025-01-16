@@ -467,17 +467,17 @@ class PosOrder(models.Model):
         currency_payments = {
             'CASH':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'CSH1')), self.env.company.currency_id),
+                lambda p: p.payment_method_id.journal_id.code == 'CSH1')), self.env.company.currency_id).replace('$', ''),
                  'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'CASHU')), self.env.company.currency_id)},
+                lambda p: p.payment_method_id.journal_id.code == 'CASHU')), self.env.company.currency_id).replace('$', '')},
             'BANKS':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code in ['INBMX', 'INMXN'])), self.env.company.currency_id),
+                lambda p: p.payment_method_id.journal_id.code in ['INBMX', 'INMXN'])), self.env.company.currency_id).replace('$', ''),
                 'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'INUSD')), self.env.company.currency_id)},
+                lambda p: p.payment_method_id.journal_id.code == 'INUSD')), self.env.company.currency_id).replace('$', '')},
             'ROOMCHARGE':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'ROOMC')), self.env.company.currency_id)}
+                lambda p: p.payment_method_id.journal_id.code == 'ROOMC')), self.env.company.currency_id).replace('$', '')}
         }
 
         for company in companies:

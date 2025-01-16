@@ -176,7 +176,7 @@
                                 <thead>
                                     <!-- Main Headers (Categories) -->
                                     <tr>
-                                        <th rowspan="2" class="text-center align-middle">Company</th>
+                                        <th class="text-center align-middle">Company</th>
                                         <t t-foreach="state.categories" t-as="category" t-key="category">
                                             <th t-if="category == 'BANKS'" colspan="3" class="text-center">
                                                 <t t-esc="category" />
@@ -188,19 +188,30 @@
                                     </tr>
                                     <!-- Sub-Headers (Currencies) -->
                                     <tr>
-                                        <t t-foreach="state.categories" t-as="category" t-key="category">
+                                        <th>Totals</th>
+                                        <t t-foreach="state.currencyPayments" t-as="category" t-key="category">
                                             <t t-if="category != 'ROOMCHARGE'">
                                                 <t t-if="category == 'BANKS'">
-                                                    <th class="text-center" colspan="2">MXN</th>
-                                                    <th class="text-center">USD</th>
+                                                    <th class="text-center" colspan="2">
+                                                        <t t-esc="state.currencyPayments[category]['MXN'] + ' (MXN)'"/>
+                                                    </th>
+                                                    <th class="text-center">
+                                                        <t t-esc="state.currencyPayments[category]['USD'] + ' (USD)'"/>
+                                                    </th>
                                                 </t>
                                                 <t t-else="">
-                                                    <th class="text-center">MXN</th>
-                                                    <th class="text-center">USD</th>
+                                                    <th class="text-center">
+                                                        <t t-esc="state.currencyPayments[category]['MXN'] + ' (MXN)'"/>
+                                                    </th>
+                                                    <th class="text-center">
+                                                        <t t-esc="state.currencyPayments[category]['USD'] + ' (USD)'"/>
+                                                    </th>
                                                 </t>
                                             </t>
                                             <t t-else="">
-                                                <th class="text-center">MXN</th>
+                                                <th class="text-center">
+                                                    <t t-esc="state.currencyPayments[category]['MXN'] + ' (MXN)'"/>
+                                                </th>
                                             </t>
                                         </t>
                                     </tr>
@@ -209,11 +220,11 @@
                                         <th/>
                                         <t t-foreach="state.categories" t-as="category" t-key="category">
                                             <t t-foreach="state.paymentMethods[category]['MXN']" t-as="method" t-key="method">
-                                                <th class="text-center"><t t-esc="method" /></th>
+                                                <th class="text-center"><t t-esc="state.paymentMethodsNames[method]" /></th>
                                             </t>
                                             <t t-if="category != 'ROOMCHARGE'">
                                                 <t t-foreach="state.paymentMethods[category]['USD']" t-as="method" t-key="method">
-                                                    <th class="text-center"><t t-esc="method" /></th>
+                                                    <th class="text-center"><t t-esc="state.paymentMethodsNames[method]" /></th>
                                                 </t>
                                             </t>
                                         </t>

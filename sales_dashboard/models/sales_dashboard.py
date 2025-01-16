@@ -464,6 +464,22 @@ class PosOrder(models.Model):
             ('payment_date', '>=', month_start),
         ])
 
+        currency_payments = {
+            'CASH':
+                {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
+                lambda p: p.payment_method_id.journal_id.code == 'CSH1')), self.env.company.currency_id),
+                 'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
+                lambda p: p.payment_method_id.journal_id.code == 'CASHU')), self.env.company.currency_id)},
+            'BANKS':
+                {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
+                lambda p: p.payment_method_id.journal_id.code in ['INBMX', 'INMXN'])), self.env.company.currency_id),
+                'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
+                lambda p: p.payment_method_id.journal_id.code == 'INUSD')), self.env.company.currency_id)},
+            'ROOMCHARGE':
+                {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
+                lambda p: p.payment_method_id.journal_id.code == 'ROOMC')), self.env.company.currency_id)}
+        }
+
         for company in companies:
             if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
                 continue
@@ -495,6 +511,9 @@ class PosOrder(models.Model):
             for category, currencies in categories.items()
         }
 
+        payment_methods_names = {method.journal_id.code: method.name for method in company_payments.mapped(
+            'payment_method_id').filtered(lambda m: m.journal_id.code in ['CSH1', 'CASHU', 'INBMX', 'INMXN', 'INUSD', 'ROOMC'])}
+
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
             'total_sales_change': round(total_sales_change, 2),
@@ -523,4 +542,6 @@ class PosOrder(models.Model):
             'monthlyPaymentsData': monthly_payments_data,
             'categories': list(categories.keys()),
             'paymentMethods': payment_methods,
+            'payment_methods_names': payment_methods_names,
+            'currency_payments': currency_payments,
         }

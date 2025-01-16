@@ -40,6 +40,8 @@ class SalesDashboard extends Component {
             monthlyPaymentsData: [], // Stores payments data
             categories: [],          // List of categories (CASH, BANKS, ROOMCHARGE)
             paymentMethods: {},
+            payment_methods_names: {},
+            currency_payments: {},
         });
 
         this.state.expandedTodayRows = useState({});
@@ -104,6 +106,8 @@ class SalesDashboard extends Component {
             this.state.monthlyPaymentsData = result.monthlyPaymentsData || [];
             this.state.categories = result.categories || [];
             this.state.paymentMethods = result.paymentMethods || {};
+            this.state.paymentMethodsNames = result.payment_methods_names || {};
+            this.state.currencyPayments = result.currency_payments || {};
 
             // Set today's sales data
             this.state.todaySales = result.today_sales || 0;

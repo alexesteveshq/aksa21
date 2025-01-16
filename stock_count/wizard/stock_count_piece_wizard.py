@@ -62,17 +62,18 @@ class StockCountPieceWizard(models.TransientModel):
                     for code in codes:
                         count_prod = self.missing_product_count_ids.filtered(lambda prod: prod.barcode == code)
                         if count_prod:
-                            count_prod.quantity -= 1
-                            if not count_prod.quantity:
+                            count_prod[0].quantity -= 1
+                            if not count_prod[0].quantity:
                                 self.missing_product_count_ids = self.missing_product_count_ids.filtered(
                                     lambda prod_count: prod_count.barcode != code)
                         else:
                             missing_prod = self.spare_product_count_ids.filtered(lambda prod: prod.barcode == code)
                             if missing_prod:
-                                missing_prod.quantity += 1
+                                missing_prod[0].quantity += 1
                             else:
-                                self.spare_product_count_ids = [(0, 0, {'product_id': not_found_prods.filtered(
-                                    lambda prod: prod.barcode == code).id, 'quantity': 1})]
+                                product = not_found_prods.filtered(lambda prod: prod.barcode == code)
+                                if product:
+                                    self.spare_product_count_ids = [(0, 0, {'product_id': product[0].id, 'quantity': 1})]
                     if self.missing_product_count_ids:
                         self.scan_status = 'missing_products'
                     else:
@@ -80,4 +81,5 @@ class StockCountPieceWizard(models.TransientModel):
                 else:
                     self.scan_status = 'not_detected'
         except Exception as e:
+            print(e)
             self.scan_status = 'error'

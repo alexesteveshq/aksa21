@@ -50,7 +50,7 @@ class StockCountPieceWizard(models.TransientModel):
         codes = []
         try:
             for row in csv_reader:
-                code = row[0].replace(',,', '').replace(',', '')
+                code = row[0].replace(',,', '').replace(',', '').upper()
                 codes.append(code)
             if codes:
                 products = self.env['product.product'].with_context(count_pieces=True).search(

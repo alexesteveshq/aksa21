@@ -56,6 +56,7 @@ class SalesDashboard extends Component {
             this.renderGraph();
             this.addToggleListeners();
             this.renderDailySalesGraph();
+            this.renderCategoryBarGraph();
         });
     }
 
@@ -108,6 +109,7 @@ class SalesDashboard extends Component {
             this.state.paymentMethods = result.paymentMethods || {};
             this.state.paymentMethodsNames = result.payment_methods_names || {};
             this.state.currencyPayments = result.currency_payments || {};
+            this.state.categoryStockData = result.category_stock_data || [];
 
             // Set today's sales data
             this.state.todaySales = result.today_sales || 0;
@@ -181,6 +183,112 @@ class SalesDashboard extends Component {
                 },
             },
         });
+    }
+
+    renderCategoryBarGraph() {
+        const data = this.state.categoryStockData;
+
+        if (!data || data.length === 0) {
+            console.warn("No category stock data available to render.");
+            return;
+        }
+
+        // Sort categories dynamically by quantity
+        const sortCategoriesByDataset = (dataset, labels) => {
+            const categoryData = labels.map((label, index) => ({
+                category_name: label,
+                quantity: dataset.data[index],
+            }));
+            categoryData.sort((a, b) => b.quantity - a.quantity);
+            return {
+                sortedLabels: categoryData.map(item => item.category_name),
+                sortedData: categoryData.map(item => item.quantity),
+            };
+        };
+
+        // Prepare initial labels (sorted by "Legacy" dataset by default)
+        const legacyData = data.find(company => company.company_name === "Legacy");
+        const initialLabels = legacyData
+            ? legacyData.categories
+                  .sort((a, b) => b.total_quantity - a.total_quantity)
+                  .map(category => category.category_name)
+            : [...new Set(data.flatMap(company => company.categories.map(category => category.category_name)))];
+
+        // Prepare datasets
+        const datasets = data.map(company => ({
+            label: company.company_name,
+            data: initialLabels.map(label => {
+                const category = company.categories.find(cat => cat.category_name === label);
+                return category ? category.total_quantity : 0;
+            }),
+            backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+            borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+            borderWidth: 1,
+            hidden: company.company_name !== "Legacy", // Default to showing only "Legacy"
+        }));
+
+        // Select the graph container
+        const graphContainer = document.getElementById("categoryBarGraphContainer");
+        if (graphContainer) {
+            graphContainer.style.width = "2000px"; // Adjust width to occupy full space
+            graphContainer.style.height = "500px"; // Increase graph height
+        }
+
+        // Render the Chart.js graph
+        const ctx = document.getElementById("categoryBarGraph").getContext("2d");
+
+        const chartConfig = {
+            type: "bar",
+            data: {
+                labels: initialLabels,
+                datasets: datasets,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        onClick: (e, legendItem) => {
+                            const chart = this.categoryBarGraphInstance; // Use the instance of the chart
+                            const dataset = chart.data.datasets[legendItem.datasetIndex];
+
+                            // Hide all datasets except the clicked one
+                            chart.data.datasets.forEach((ds, index) => {
+                                ds.hidden = index !== legendItem.datasetIndex; // Hide all others
+                            });
+
+                            // Sort the labels and data for the selected dataset
+                            const { sortedLabels, sortedData } = sortCategoriesByDataset(dataset, chart.data.labels);
+
+                            // Update labels and align the dataset data
+                            chart.data.labels = sortedLabels;
+                            dataset.data = sortedData;
+
+                            chart.update();
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: { display: true, text: 'Product Categories' },
+                        ticks: {
+                            callback: function (value) {
+                                return this.getLabelForValue(value);
+                            },
+                        },
+                    },
+                    y: { stacked: true, title: { display: true, text: 'Total Quantity' } },
+                },
+            },
+        };
+
+        if (this.categoryBarGraphInstance) {
+            this.categoryBarGraphInstance.destroy();
+        }
+
+        this.categoryBarGraphInstance = new Chart(ctx, chartConfig);
     }
 
     renderGraph() {

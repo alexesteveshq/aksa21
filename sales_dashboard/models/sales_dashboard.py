@@ -148,14 +148,14 @@ class PosOrder(models.Model):
 
         # Calculate product inventory for current and previous period
         current_products = self.env['product.product'].with_context(
-            active_test=False).search([('type', '=', 'product'), ('qty_available', '>', 0)])
+            active_test=False).search([('type', '=', 'product'), ('qty_available', '>', 0)], limit=1)
 
         # Convert to naive datetime for `to_date` in previous product search
         previous_month_end_naive = previous_month_end_utc.replace(tzinfo=None)
 
         prev_products = self.env['product.product'].with_context(
             to_date=previous_month_end_naive, active_test=False).search(
-            [('type', '=', 'product'), ('qty_available', '>', 0)])
+            [('type', '=', 'product'), ('qty_available', '>', 0)], limit=1)
 
         # Create product data with unique IDs
         current_product_data = [{
@@ -514,6 +514,8 @@ class PosOrder(models.Model):
         payment_methods_names = {method.journal_id.code: method.name for method in company_payments.mapped(
             'payment_method_id').filtered(lambda m: m.journal_id.code in ['CSH1', 'CASHU', 'INBMX', 'INMXN', 'INUSD', 'ROOMC'])}
 
+        category_stock_data = self.get_category_stock(companies)
+
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
             'total_sales_change': round(total_sales_change, 2),
@@ -544,4 +546,93 @@ class PosOrder(models.Model):
             'paymentMethods': payment_methods,
             'payment_methods_names': payment_methods_names,
             'currency_payments': currency_payments,
+            'category_stock_data': category_stock_data,
         }
+
+    def get_category_stock(self, companies):
+        # SQL query to fetch product quantities grouped by company and category
+        companies = companies.filtered(
+            lambda comp: comp.company_registry in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres'])
+
+        query = """
+            SELECT
+                sq.company_id AS company_id,
+                c.name AS company_name,
+                pp.category_id AS category_id,
+                pc.name AS category_name,
+                SUM(sq.quantity) AS total_quantity
+            FROM
+                stock_quant sq
+            JOIN
+                product_product pp ON sq.product_id = pp.id
+            LEFT JOIN
+                product_category pc ON pp.category_id = pc.id
+            JOIN
+                res_company c ON sq.company_id = c.id
+            WHERE
+                sq.company_id IN %s
+                AND pp.category_id IS NOT NULL
+                AND pc.name IS NOT NULL
+                AND sq.quantity > 0 
+            GROUP BY
+                sq.company_id, c.name, pp.category_id, pc.name
+            ORDER BY
+                sq.company_id, pp.category_id;
+        """
+
+        # Execute the query with the provided company IDs
+        self.env.cr.execute(query, (tuple(companies.ids),))
+        query_results = self.env.cr.fetchall()
+
+        # Structure the data for the frontend
+        result = []
+        company_mapping = {company.id: company.name for company in companies}
+        category_mapping = {category.id: category.name for category in self.env['product.category'].browse(
+            set(row[2] for row in query_results if row[2]))}
+
+        # Organize the data by company
+        company_data = {}
+        for company_id, company_name, category_id, category_name, total_quantity in query_results:
+            if company_id not in company_data:
+                company_data[company_id] = {
+                    'company_name': company_mapping[company_id],
+                    'categories': []
+                }
+            company_data[company_id]['categories'].append({
+                'category_name': category_mapping.get(category_id, 'Uncategorized'),
+                'total_quantity': total_quantity
+            })
+
+        # Sort categories by total_quantity for each company
+        for company_id, data in company_data.items():
+            data['categories'] = sorted(
+                data['categories'],
+                key=lambda x: x['total_quantity'],
+                reverse=True  # Sort in descending order
+            )
+
+        # Add legacy totals if needed
+        legacy_data = {'company_name': 'Legacy', 'categories': []}
+        for company_id, data in company_data.items():
+            for category in data['categories']:
+                existing_category = next((c for c in legacy_data['categories']
+                                          if c['category_name'] == category['category_name']), None)
+                if existing_category:
+                    existing_category['total_quantity'] += category['total_quantity']
+                else:
+                    legacy_data['categories'].append({
+                        'category_name': category['category_name'],
+                        'total_quantity': category['total_quantity']
+                    })
+
+        # Sort the legacy data categories by total_quantity
+        legacy_data['categories'] = sorted(
+            legacy_data['categories'],
+            key=lambda x: x['total_quantity'],
+            reverse=True
+        )
+
+        result = list(company_data.values())
+        result.append(legacy_data)
+
+        return result

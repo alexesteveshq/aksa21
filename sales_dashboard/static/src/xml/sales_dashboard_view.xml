@@ -263,6 +263,10 @@
                             </table>
                         </t>
                     </div>
+                    <div id="categoryBarGraphContainer" class="pt-5">
+                        <h2>Product Stock by Category</h2>
+                        <canvas id="categoryBarGraph"></canvas>
+                    </div>
                 </div>
 
                 <!-- Modified Section: Seller Ranking -->

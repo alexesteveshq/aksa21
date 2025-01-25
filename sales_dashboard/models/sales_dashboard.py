@@ -566,7 +566,7 @@ class PosOrder(models.Model):
             JOIN
                 product_product pp ON sq.product_id = pp.id
             LEFT JOIN
-                product_category pc ON pp.category_id = pc.id
+                stock_product_category pc ON pp.category_id = pc.id
             JOIN
                 res_company c ON sq.company_id = c.id
             WHERE
@@ -587,7 +587,7 @@ class PosOrder(models.Model):
         # Structure the data for the frontend
         result = []
         company_mapping = {company.id: company.name for company in companies}
-        category_mapping = {category.id: category.name for category in self.env['product.category'].browse(
+        category_mapping = {category.id: category.name for category in self.env['stock.product.category'].browse(
             set(row[2] for row in query_results if row[2]))}
 
         # Organize the data by company

@@ -31,21 +31,21 @@ class PosOrder(models.Model):
     lines = fields.One2many(readonly=False)
     payment_ids = fields.One2many(readonly=False)
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        result = super(PosOrder, self).create(vals_list)
+    def action_pos_order_paid(self):
+        currency = self.mapped('payment_ids.payment_method_id.currency_id')
+        if len(currency) == 1 and currency.name == 'MXN':
+            self.pricelist_id = self.env['product.pricelist'].search([('currency_id.name', '=', 'MXR')])
+        elif len(currency) > 1:
+            self.pricelist_id = self.env['product.pricelist'].search([('currency_id.name', '=', 'USM')])
+        else:
+            self.pricelist_id = self.env['product.pricelist'].search([('currency_id.name', '=', 'USX')])
         currency_mxr = self.env['res.currency'].search([('name', '=', 'MXR')])
-        for order in result:
-            converted_amount = order.pricelist_id.currency_id._convert(
-                order.amount_total, currency_mxr, order.company_id, fields.Date.today())
-            order.amount_currency = converted_amount
-            order.amount_paid = converted_amount
-            order.amount_total = converted_amount
-            if order._is_pos_order_paid():
-                order.action_pos_order_paid()
-                order._create_order_picking()
-                order._compute_total_cost_in_real_time()
-        return result
+        converted_amount = self.pricelist_id.currency_id._convert(
+            self.amount_total, currency_mxr, self.company_id, fields.Date.today())
+        self.amount_currency = converted_amount
+        self.amount_paid = converted_amount
+        self.amount_total = converted_amount
+        return super(PosOrder, self).action_pos_order_paid()
 
     @api.depends('payment_ids', 'payment_ids.amount')
     def _payment_method_paid(self):

@@ -193,54 +193,59 @@ class SalesDashboard extends Component {
             return;
         }
 
-        // Sort categories dynamically by quantity
-        const sortCategoriesByDataset = (dataset, labels) => {
-            const categoryData = labels.map((label, index) => ({
-                category_name: label,
-                quantity: dataset.data[index],
-            }));
-            categoryData.sort((a, b) => b.quantity - a.quantity);
-            return {
-                sortedLabels: categoryData.map(item => item.category_name),
-                sortedData: categoryData.map(item => item.quantity),
-            };
-        };
-
-        // Prepare initial labels (sorted by "Legacy" dataset by default)
+        // **Step 1: Establish fixed category order using "Legacy" dataset**
         const legacyData = data.find(company => company.company_name === "Legacy");
-        const initialLabels = legacyData
+        const fixedLabels = legacyData
             ? legacyData.categories
                   .sort((a, b) => b.total_quantity - a.total_quantity)
                   .map(category => category.category_name)
             : [...new Set(data.flatMap(company => company.categories.map(category => category.category_name)))];
 
-        // Prepare datasets
+        // **Step 2: Function to create labels with updated quantities**
+        const updateLabelsWithQuantities = (companyIndex) => {
+            const selectedCompany = data[companyIndex];
+
+            return fixedLabels.map(label => {
+                const category = selectedCompany.categories.find(cat => cat.category_name === label);
+                return category ? `${label} (${category.total_quantity})` : `${label} (0)`;
+            });
+        };
+
+        // **Step 3: Ensure "Legacy" data is properly set up from the start**
+        const initialCompanyIndex = data.findIndex(company => company.company_name === "Legacy");
+        const initialLabels = updateLabelsWithQuantities(initialCompanyIndex);
+        const initialDataset = fixedLabels.map(label => {
+            const category = data[initialCompanyIndex]?.categories.find(cat => cat.category_name === label);
+            return category ? category.total_quantity : 0;
+        });
+
+        // **Step 4: Prepare datasets using fixed category order**
         const datasets = data.map(company => ({
             label: company.company_name,
-            data: initialLabels.map(label => {
+            data: fixedLabels.map(label => {
                 const category = company.categories.find(cat => cat.category_name === label);
                 return category ? category.total_quantity : 0;
             }),
             backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`,
             borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
             borderWidth: 1,
-            hidden: company.company_name !== "Legacy", // Default to showing only "Legacy"
+            hidden: company.company_name !== "Legacy",
         }));
 
         // Select the graph container
         const graphContainer = document.getElementById("categoryBarGraphContainer");
         if (graphContainer) {
-            graphContainer.style.width = "2000px"; // Adjust width to occupy full space
-            graphContainer.style.height = "500px"; // Increase graph height
+            graphContainer.style.width = "2000px";
+            graphContainer.style.height = "500px";
         }
 
-        // Render the Chart.js graph
+        // **Step 5: Render the Chart.js graph**
         const ctx = document.getElementById("categoryBarGraph").getContext("2d");
 
         const chartConfig = {
             type: "bar",
             data: {
-                labels: initialLabels,
+                labels: initialLabels, // **Set correct initial labels for "Legacy"**
                 datasets: datasets,
             },
             options: {
@@ -250,20 +255,21 @@ class SalesDashboard extends Component {
                     legend: {
                         position: 'top',
                         onClick: (e, legendItem) => {
-                            const chart = this.categoryBarGraphInstance; // Use the instance of the chart
-                            const dataset = chart.data.datasets[legendItem.datasetIndex];
+                            const chart = this.categoryBarGraphInstance;
+                            const datasetIndex = legendItem.datasetIndex;
+                            const dataset = chart.data.datasets[datasetIndex];
 
                             // Hide all datasets except the clicked one
                             chart.data.datasets.forEach((ds, index) => {
-                                ds.hidden = index !== legendItem.datasetIndex; // Hide all others
+                                ds.hidden = index !== datasetIndex;
                             });
 
-                            // Sort the labels and data for the selected dataset
-                            const { sortedLabels, sortedData } = sortCategoriesByDataset(dataset, chart.data.labels);
-
-                            // Update labels and align the dataset data
-                            chart.data.labels = sortedLabels;
-                            dataset.data = sortedData;
+                            // **Update labels dynamically when switching companies**
+                            chart.data.labels = updateLabelsWithQuantities(datasetIndex);
+                            dataset.data = fixedLabels.map(label => {
+                                const category = data[datasetIndex].categories.find(cat => cat.category_name === label);
+                                return category ? category.total_quantity : 0;
+                            });
 
                             chart.update();
                         },
@@ -273,11 +279,6 @@ class SalesDashboard extends Component {
                     x: {
                         stacked: true,
                         title: { display: true, text: 'Product Categories' },
-                        ticks: {
-                            callback: function (value) {
-                                return this.getLabelForValue(value);
-                            },
-                        },
                     },
                     y: { stacked: true, title: { display: true, text: 'Total Quantity' } },
                 },

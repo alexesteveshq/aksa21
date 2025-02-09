@@ -2,6 +2,16 @@
 <t t-name="sales_dashboard.SalesDashboard" owl="1">
     <div class="o_sales_dashboard">
         <div class="o_sales_dashboard_container">
+            <div class="o_sales_dashboard_filters">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" t-model="state.startDate" class="date-input"/>
+
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" t-model="state.endDate" class="date-input"/>
+
+                <button class="btn btn-primary" t-on-click="applyDateFilter">Apply</button>
+                <button class="btn btn-primary" t-on-click="resetDateFilter">Reset</button>
+            </div>
             <!-- Row for the dashboard columns -->
             <div class="o_sales_dashboard_row">
                 <!-- Column 1: Sales Dashboard (50% Width) -->

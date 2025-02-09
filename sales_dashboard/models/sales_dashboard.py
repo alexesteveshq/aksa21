@@ -8,12 +8,18 @@ class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     @api.model
-    def get_dashboard_data(self):
+    def get_dashboard_data(self, usr_start_date=None, usr_end_date=None):
         # Get the user's timezone or fallback to 'UTC'
         timezone = pytz.timezone(self._context.get('tz') or self.env.user.tz or 'UTC')
-
-        # Use timezone-aware datetime objects for `today`
         today = datetime.now(tz=timezone)
+
+        if usr_start_date:
+            usr_start_date = datetime.strptime(usr_start_date, '%Y-%m-%d').replace(
+                hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC'))
+        if usr_end_date:
+            usr_end_date = datetime.strptime(usr_end_date, '%Y-%m-%d').replace(
+                hour=23, minute=59, second=59).astimezone(pytz.timezone('UTC'))
+
         month_start = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC'))
 
         # Calculate the same period in the previous month
@@ -24,20 +30,29 @@ class PosOrder(models.Model):
         previous_month_start_utc = previous_month_start.astimezone(pytz.timezone('UTC'))
         previous_month_end_utc = previous_month_end.astimezone(pytz.timezone('UTC'))
 
-        # Fetch current month's orders up to the current time across all companies
-        current_month_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', month_start),
+        curr_domain = [
+            ('date_order', '>=', usr_start_date or month_start),
             ('state', 'in', ['paid', 'done', 'invoiced'])
-        ]).filtered(lambda o: not o.is_refunded and not o.refunded_order_ids)
+        ]
 
-        # Fetch the previous month's orders up to the same day
-        previous_month_orders = self.with_context(active_test=False).sudo().search([
+        prev_domain = [
             ('date_order', '>=', previous_month_start_utc),
-            ('date_order', '<=', previous_month_end_utc),
+            ('date_order', '<=', previous_month_end),
             ('is_refunded', '=', False),
             ('refunded_orders_count', '=', 0),
             ('state', 'in', ['paid', 'done', 'invoiced'])
-        ]).filtered(lambda o: not o.is_refunded and not o.refunded_order_ids)
+        ]
+
+        if usr_end_date:
+            curr_domain += [('date_order', '<=', usr_end_date)]
+
+        # Fetch current month's orders up to the current time across all companies
+        current_month_orders = self.with_context(active_test=False).sudo().search(curr_domain).filtered(
+            lambda o: not o.is_refunded and not o.refunded_order_ids)
+
+        # Fetch the previous month's orders up to the same day
+        previous_month_orders = self.with_context(active_test=False).sudo().search(prev_domain).filtered(
+            lambda o: not o.is_refunded and not o.refunded_order_ids)
 
         # Calculate total sales for both periods
         current_month_total_sales = sum(order.amount_currency for order in current_month_orders)
@@ -147,8 +162,8 @@ class PosOrder(models.Model):
         })
 
         # Calculate product inventory for current and previous period
-        current_products = self.env['product.product'].with_context(
-            active_test=False).search([('type', '=', 'product'), ('qty_available', '>', 0)], limit=1)
+        current_products = self.env['product.product'].with_context(active_test=False).search(
+            [('type', '=', 'product'), ('qty_available', '>', 0)], limit=1)
 
         # Convert to naive datetime for `to_date` in previous product search
         previous_month_end_naive = previous_month_end_utc.replace(tzinfo=None)
@@ -399,8 +414,8 @@ class PosOrder(models.Model):
 
         # Fetch all orders within the date range in a single query
         all_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', start_date_utc),
-            ('date_order', '<', end_date_utc),  # Exclude end_date itself
+            ('date_order', '>=', start_date or start_date_utc),
+            ('date_order', '<', end_date or end_date_utc),  # Exclude end_date itself
             ('state', 'in', ['paid', 'done', 'invoiced']),
         ])
 
@@ -460,9 +475,11 @@ class PosOrder(models.Model):
 
         monthly_payments_data = []
 
-        company_payments = self.env['pos.payment'].with_context(active_test=False).sudo().search([
-            ('payment_date', '>=', month_start),
-        ])
+        payment_domain = [('payment_date', '>=', usr_start_date or month_start)]
+        if usr_end_date:
+            payment_domain += [('payment_date', '<=', usr_end_date)]
+
+        company_payments = self.env['pos.payment'].with_context(active_test=False).sudo().search(payment_domain)
 
         currency_payments = {
             'CASH':

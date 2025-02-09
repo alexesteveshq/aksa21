@@ -42,6 +42,8 @@ class SalesDashboard extends Component {
             paymentMethods: {},
             payment_methods_names: {},
             currency_payments: {},
+            startDate: "",
+            endDate: ""
         });
 
         this.state.expandedTodayRows = useState({});
@@ -58,6 +60,32 @@ class SalesDashboard extends Component {
             this.renderDailySalesGraph();
             this.renderCategoryBarGraph();
         });
+    }
+
+    applyDateFilter() {
+        console.log("Applying filter for date range: ", this.state.startDate, this.state.endDate);
+
+        // Ensure valid date range
+        if (!this.state.startDate || !this.state.endDate || this.state.startDate > this.state.endDate) {
+            alert("Please select a valid date range.");
+            return;
+        }
+
+        // Reload data based on selected dates
+        this.state.loading = true;
+
+        this.loadSalesData();
+    }
+
+    resetDateFilter() {
+        console.log("Resetting date filters...");
+
+        // Clear the date state
+        this.state.startDate = "";
+        this.state.endDate = "";
+
+        // Reload dashboard data with default (no date filter)
+        this.loadSalesData();
     }
 
     addToggleListeners() {
@@ -79,7 +107,10 @@ class SalesDashboard extends Component {
             console.log("Loading sales data...");
 
             // Fetch data from the backend using ORM service
-            const result = await this.orm.call("pos.order", "get_dashboard_data", []);
+            const result = await this.orm.call("pos.order", "get_dashboard_data", [
+                this.state.startDate,
+                this.state.endDate
+            ]);
 
             // Update state with fetched data
             this.state.totalSales = result.total_sales;
@@ -132,6 +163,9 @@ class SalesDashboard extends Component {
 
             this.state.loading = false;
 
+            this.renderGraph()
+            this.renderDailySalesGraph()
+
             console.log("Sales Data Loaded Successfully: ", this.state);
         } catch (error) {
             console.error("Error fetching sales data: ", error);
@@ -162,9 +196,15 @@ class SalesDashboard extends Component {
             fill: false,
         }));
 
+        // ✅ Destroy the existing graph if it exists
+        if (this.dailySalesGraphInstance) {
+            this.dailySalesGraphInstance.destroy();
+            this.dailySalesGraphInstance = null;
+        }
+
         // Render the graph using Chart.js
         const ctx = document.getElementById("dailySalesGraph").getContext("2d");
-        new Chart(ctx, {
+        this.dailySalesGraphInstance = new Chart(ctx, {
             type: "line",
             data: {
                 labels: labels,
@@ -172,6 +212,7 @@ class SalesDashboard extends Component {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: 'top',
@@ -298,6 +339,12 @@ class SalesDashboard extends Component {
             return;
         }
 
+        // ✅ Destroy the existing graph if it exists
+        if (this.salesPredictionGraphInstance) {
+            this.salesPredictionGraphInstance.destroy();
+            this.salesPredictionGraphInstance = null;
+        }
+
         const $canvasElement = $(document).find("#salesPredictionGraph");
         if ($canvasElement.length === 0) {
             console.error("Canvas element with ID 'salesPredictionGraph' not found!");
@@ -346,13 +393,14 @@ class SalesDashboard extends Component {
 
         const labels = Array.from({ length: 31 }, (_, i) => i + 1); // Days of the month
 
-        new Chart(ctx, {
+        this.salesPredictionGraphInstance = new Chart(ctx, {
             type: "line",
             data: {
                 labels: labels,
                 datasets: datasets,
             },
             options: {
+                maintainAspectRatio: false,
                 responsive: true,
                 plugins: {
                     legend: {

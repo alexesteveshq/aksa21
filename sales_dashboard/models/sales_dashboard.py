@@ -17,8 +17,9 @@ class PosOrder(models.Model):
             usr_start_date = datetime.strptime(usr_start_date, '%Y-%m-%d').replace(
                 hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC'))
         if usr_end_date:
-            usr_end_date = datetime.strptime(usr_end_date, '%Y-%m-%d').replace(
-                hour=23, minute=59, second=59).astimezone(pytz.timezone('UTC'))
+            usr_end_date = datetime.strptime(usr_end_date, '%Y-%m-%d').replace(hour=5, minute=0, second=0) + timedelta(days=1)
+            usr_end_date = usr_end_date.astimezone(pytz.timezone('UTC'))
+
 
         month_start = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC'))
 

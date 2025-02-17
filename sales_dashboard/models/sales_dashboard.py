@@ -163,30 +163,47 @@ class PosOrder(models.Model):
         })
 
         # Calculate product inventory for current and previous period
-        current_products = self.env['product.product'].with_context(active_test=False).search(
-            [('type', '=', 'product'), ('qty_available', '>', 0)], limit=1)
 
         # Convert to naive datetime for `to_date` in previous product search
         previous_month_end_naive = previous_month_end_utc.replace(tzinfo=None)
 
-        prev_products = self.env['product.product'].with_context(
-            to_date=previous_month_end_naive, active_test=False).search(
-            [('type', '=', 'product'), ('qty_available', '>', 0)], limit=1)
+        # Get current product inventory based on stock quants
+        self.env.cr.execute("""
+            SELECT pp.id, pp.default_code, pp.barcode, SUM(sq.quantity) AS quantity, pp.standard_price
+            FROM stock_quant sq
+            JOIN product_product pp ON sq.product_id = pp.id
+            GROUP BY pp.id, pp.default_code, pp.barcode, pp.standard_price
+            HAVING SUM(sq.quantity) > 0
+        """)
+        current_product_data = [
+            {
+                'id': row[0],
+                'product': row[2],  # Use pp.barcode
+                'default_code': row[1],  # Internal reference
+                'quantity': row[3],
+                'cost': round(row[4], 2)
+            } for row in self.env.cr.fetchall()
+        ]
 
-        # Create product data with unique IDs
-        current_product_data = [{
-            'id': product.id,
-            'product': product.name,
-            'quantity': product.qty_available,
-            'cost': round(product.standard_price, 2)
-        } for product in current_products]
+        # Get previous period's product inventory based on stock quants
+        self.env.cr.execute("""
+            SELECT pp.id, pp.default_code, pp.barcode, SUM(sq.quantity) AS quantity, pp.standard_price
+            FROM stock_quant sq
+            JOIN product_product pp ON sq.product_id = pp.id
+            WHERE sq.in_date <= %s
+            GROUP BY pp.id, pp.default_code, pp.barcode, pp.standard_price
+            HAVING SUM(sq.quantity) > 0
+        """, (previous_month_end_naive,))
 
-        previous_product_data = [{
-            'id': product.id,
-            'product': product.name,
-            'quantity': product.qty_available,
-            'cost': round(product.standard_price, 2)
-        } for product in prev_products]
+        previous_product_data = [
+            {
+                'id': row[0],
+                'product': row[2],  # Use pp.name
+                'default_code': row[1],  # Internal reference
+                'quantity': row[3],
+                'cost': round(row[4], 2)
+            } for row in self.env.cr.fetchall()
+        ]
 
         # Calculate today's sales and comparison with the same day in the previous month
         today_start = today.replace(hour=0, minute=0, second=0, microsecond=0)

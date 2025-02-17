@@ -443,7 +443,7 @@ class PosOrder(models.Model):
             orders_by_month[month_key].append(order)
 
         for (year, month), orders in orders_by_month.items():
-            month_start = datetime(year, month, 1, tzinfo=user_tz).astimezone(pytz.UTC)
+            first_day = datetime(year, month, 1, tzinfo=user_tz).astimezone(pytz.UTC)
 
             # Calculate totals
             total_sales = sum(order.amount_currency for order in orders)
@@ -465,7 +465,7 @@ class PosOrder(models.Model):
             # Append the month's data
             monthly_sales_data.append({
                 'year': year,
-                'month': month_start.strftime('%B'),  # Month name (e.g., 'November')
+                'month': first_day.strftime('%B'),  # Month name (e.g., 'November')
                 'total_sales': format_amount(self.env, total_sales, self.env.company.currency_id),
                 'total_cost': format_amount(self.env, total_cost, self.env.company.currency_id),
                 'total_orders': total_orders,

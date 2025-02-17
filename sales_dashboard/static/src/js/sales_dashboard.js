@@ -460,8 +460,8 @@ class SalesDashboard extends Component {
             title: null, // Remove the title
             paper_bgcolor: "rgba(0,0,0,0)", // Transparent background
             plot_bgcolor: "rgba(0,0,0,0)", // Transparent plot area background
-            height: 800,
-            width: 800,
+            height: 600,
+            width: 600,
             margin: { t: 0, b: 50, l: 50, r: 50 }, // Adjust chart margins
             showlegend: false, // Disable legend
         };

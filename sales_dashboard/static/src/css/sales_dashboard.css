@@ -15,6 +15,11 @@
     border-radius: 8px;
 }
 
+.o_sales_dashboard .monthly-sales-wrapper {
+    height: 310px;
+    overflow: auto;
+}
+
 .o_sales_dashboard .date-input {
     padding: 8px;
     border: 1px solid #ccc;

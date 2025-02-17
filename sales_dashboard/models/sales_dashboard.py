@@ -405,20 +405,16 @@ class PosOrder(models.Model):
         # Generate monthly sales data with detailed tickets
         monthly_sales_data = []
         user_tz = pytz.timezone(self.env.user.tz or 'UTC')
-        today = datetime.now(tz=pytz.UTC).astimezone(user_tz)
-        start_date = (today - timedelta(days=today.day)).replace(day=1)  # First day of the previous month
+        today = datetime.now(tz=pytz.UTC).astimezone(user_tz) # First day of the previous month
         end_date = (today + timedelta(days=31)).replace(day=1)  # First day of the next month
 
-        # Convert start_date and end_date to UTC
-        start_date_utc = start_date.astimezone(pytz.UTC)
-        end_date_utc = end_date.astimezone(pytz.UTC)
 
         # Fetch all orders within the date range in a single query
         all_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', start_date or start_date_utc),
-            ('date_order', '<', end_date or end_date_utc),  # Exclude end_date itself
+            ('date_order', '>=', usr_start_date or '2023-01-01'),
+            ('date_order', '<=', usr_end_date or end_date),  # Exclude end_date itself
             ('state', 'in', ['paid', 'done', 'invoiced']),
-        ])
+        ]).sorted('date_order', reverse=True)
 
         # Group orders by month
         orders_by_month = {}
@@ -429,7 +425,7 @@ class PosOrder(models.Model):
                 orders_by_month[month_key] = []
             orders_by_month[month_key].append(order)
 
-        for (year, month), orders in sorted(orders_by_month.items()):
+        for (year, month), orders in orders_by_month.items():
             month_start = datetime(year, month, 1, tzinfo=user_tz).astimezone(pytz.UTC)
 
             # Calculate totals
@@ -439,6 +435,7 @@ class PosOrder(models.Model):
 
             # Fetch detailed ticket data
             ticket_details = [{
+                'id': order.id,
                 'ticket_reference': order.pos_reference,
                 'seller': order.seller_id.name if order.seller_id else _('Unknown'),
                 'datetime': order.date_order.astimezone(user_tz).strftime('%Y-%m-%d %H:%M:%S'),

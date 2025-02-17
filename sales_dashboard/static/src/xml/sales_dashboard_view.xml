@@ -328,7 +328,6 @@
                                             </t>
                                         </t>
                                     </td>
-                                    <t t-set="count" t-value="count+1"/>
                                     <td><span t-esc="seller.avg_products_sold" /></td> <!-- New Column -->
                                     <td><span t-esc="seller.avg_order_count" /></td> <!-- New Column -->
                                     <td><span t-esc="seller.avg_products_per_order" /></td> <!-- New Column -->
@@ -385,67 +384,69 @@
                     </div>
                     <div class="o_monthly_sales_table">
                         <h2>Monthly sales</h2>
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Year</th>
-                                    <th>Month</th>
-                                    <th>Total Sales</th>
-                                    <th>Total Cost</th>
-                                    <th>Total Orders</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="state.monthlySalesData" t-as="month" t-key="month.year + month.month">
-                                    <!-- Main Row: Monthly Summary -->
-                                    <tr class="sales-section">
-                                        <td><t t-esc="month.year" /></td>
-                                        <td><t t-esc="month.month" /></td>
-                                        <td><t t-esc="month.total_sales" /></td>
-                                        <td><t t-esc="month.total_cost" /></td>
-                                        <td><t t-esc="month.total_orders" /></td>
+                        <div class="monthly-sales-wrapper">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Month</th>
+                                        <th>Total Sales</th>
+                                        <th>Total Cost</th>
+                                        <th>Total Orders</th>
                                     </tr>
-                                    <!-- Details Row: Toggable Tickets -->
-                                    <t t-if="month.tickets and month.tickets.length > 0">
-                                        <tr class="ticket-section">
-                                            <td colspan="5">
-                                                <div class="ranking-container">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Ticket Reference</th>
-                                                                <th>Sale Amount</th>
-                                                                <th>Margin</th>
-                                                                <th>Categories</th>
-                                                                <th>Seller</th>
-                                                                <th>Date</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr t-foreach="month.tickets || []" t-as="ticket" t-key="ticket.ticket_reference">
-                                                                <td><t t-esc="ticket.ticket_reference" /></td>
-                                                                <td><t t-esc="ticket.amount" /></td>
-                                                                <td><t t-esc="ticket.margin"/>%</td>
-                                                                <td><t t-esc="ticket.categories"/></td>
-                                                                <td><t t-esc="ticket.seller" /></td>
-                                                                <td><t t-esc="ticket.datetime" /></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </td>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.monthlySalesData" t-as="month" t-key="month.year + month.month">
+                                        <!-- Main Row: Monthly Summary -->
+                                        <tr class="sales-section">
+                                            <td><t t-esc="month.year" /></td>
+                                            <td><t t-esc="month.month" /></td>
+                                            <td><t t-esc="month.total_sales" /></td>
+                                            <td><t t-esc="month.total_cost" /></td>
+                                            <td><t t-esc="month.total_orders" /></td>
                                         </tr>
+                                        <!-- Details Row: Toggable Tickets -->
+                                        <t t-if="month.tickets and month.tickets.length > 0">
+                                            <tr class="ticket-section">
+                                                <td colspan="5">
+                                                    <div class="ranking-container">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Ticket Reference</th>
+                                                                    <th>Sale Amount</th>
+                                                                    <th>Margin</th>
+                                                                    <th>Categories</th>
+                                                                    <th>Seller</th>
+                                                                    <th>Date</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr t-foreach="month.tickets || []" t-as="ticket" t-key="ticket.id">
+                                                                    <td><t t-esc="ticket.ticket_reference" /></td>
+                                                                    <td><t t-esc="ticket.amount" /></td>
+                                                                    <td><t t-esc="ticket.margin"/>%</td>
+                                                                    <td><t t-esc="ticket.categories"/></td>
+                                                                    <td><t t-esc="ticket.seller" /></td>
+                                                                    <td><t t-esc="ticket.datetime" /></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-else="">
+                                            <tr class="ticket-section">
+                                                <td colspan="5">
+                                                    <p class="text-center">No tickets found for this month.</p>
+                                                </td>
+                                            </tr>
+                                        </t>
                                     </t>
-                                    <t t-else="">
-                                        <tr class="ticket-section">
-                                            <td colspan="5">
-                                                <p class="text-center">No tickets found for this month.</p>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </t>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

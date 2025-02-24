@@ -28,6 +28,10 @@
     outline: none;
 }
 
+.o_sales_dashboard .o_monthly_payments_table {
+    overflow-x: auto;
+}
+
 .o_sales_dashboard .date-input:focus {
     border-color: #007bff;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);

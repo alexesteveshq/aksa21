@@ -8,6 +8,7 @@
     'depends': ['point_of_sale', 'web', 'pos_sellers', 'stock_ext', 'base'],
     'data': [
         'views/sales_dashboard_menu.xml',
+        'views/res_company_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

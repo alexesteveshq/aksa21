@@ -179,7 +179,7 @@ class PosOrder(models.Model):
             FROM stock_quant sq
             JOIN product_product pp ON sq.product_id = pp.id
             JOIN res_company comp ON sq.company_id = comp.id 
-            WHERE comp.company_registry IN ('sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres')
+            WHERE comp.is_branch IS TRUE 
             GROUP BY pp.id, pp.default_code, pp.barcode, pp.standard_price
             HAVING SUM(sq.quantity) > 0
         """)
@@ -199,7 +199,7 @@ class PosOrder(models.Model):
             FROM stock_quant sq
             JOIN product_product pp ON sq.product_id = pp.id
             JOIN res_company comp ON sq.company_id = comp.id  
-            WHERE comp.company_registry IN ('sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres')
+            WHERE comp.is_branch IS TRUE 
                 AND sq.in_date <= %s
             GROUP BY pp.id, pp.default_code, pp.barcode, pp.standard_price
             HAVING SUM(sq.quantity) > 0

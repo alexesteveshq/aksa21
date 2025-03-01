@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-20 23:14+0000\n"
-"PO-Revision-Date: 2024-12-20 23:14+0000\n"
+"POT-Creation-Date: 2025-03-01 20:18+0000\n"
+"PO-Revision-Date: 2025-03-01 20:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -85,6 +85,20 @@ msgstr ""
 #: model:ir.model,name:pos_ext.model_account_move
 msgid "Journal Entry"
 msgstr "Asiento de diario"
+
+#. module: pos_ext
+#. odoo-javascript
+#: code:addons/pos_ext/static/src/js/ProductScreen.js:0
+#, python-format
+msgid "Not enough stock"
+msgstr "Insuficientes existencias"
+
+#. module: pos_ext
+#. odoo-javascript
+#: code:addons/pos_ext/static/src/js/ProductScreen.js:0
+#, python-format
+msgid "Not enough stock for product: "
+msgstr "No hay suficientes existencias para el producto: "
 
 #. module: pos_ext
 #: model:ir.model.fields,field_description:pos_ext.field_pos_order__lines

@@ -178,6 +178,8 @@ class PosOrder(models.Model):
             SELECT pp.id, pp.default_code, pp.barcode, SUM(sq.quantity) AS quantity, pp.standard_price
             FROM stock_quant sq
             JOIN product_product pp ON sq.product_id = pp.id
+            JOIN res_company comp ON sq.company_id = comp.id 
+            WHERE comp.company_registry IN ('sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres')
             GROUP BY pp.id, pp.default_code, pp.barcode, pp.standard_price
             HAVING SUM(sq.quantity) > 0
         """)
@@ -196,7 +198,9 @@ class PosOrder(models.Model):
             SELECT pp.id, pp.default_code, pp.barcode, SUM(sq.quantity) AS quantity, pp.standard_price
             FROM stock_quant sq
             JOIN product_product pp ON sq.product_id = pp.id
-            WHERE sq.in_date <= %s
+            JOIN res_company comp ON sq.company_id = comp.id  
+            WHERE comp.company_registry IN ('sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres')
+                AND sq.in_date <= %s
             GROUP BY pp.id, pp.default_code, pp.barcode, pp.standard_price
             HAVING SUM(sq.quantity) > 0
         """, (previous_month_end_naive,))

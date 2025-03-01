@@ -5,7 +5,7 @@
     'category': 'Point of Sale',
     'author': 'Alex Esteves',
     'version': '1.0',
-    'depends': ['point_of_sale', 'web', 'pos_sellers', 'stock_ext'],
+    'depends': ['point_of_sale', 'web', 'pos_sellers', 'stock_ext', 'base'],
     'data': [
         'views/sales_dashboard_menu.xml',
     ],

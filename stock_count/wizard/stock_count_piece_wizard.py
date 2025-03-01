@@ -14,6 +14,8 @@ class StockCountPieceWizard(models.TransientModel):
     missing_product_count_ids = fields.Many2many('product.count', 'missing_count_piece_product_rel',
                                                  string='Missing Pieces')
     spare_product_count_ids = fields.Many2many('product.count', 'spare_count_piece_product_rel', string='Spare Pieces')
+    total_missing_product = fields.Integer(string='Total missing pieces')
+    total_spare_product = fields.Integer(string='Total missing pieces')
     date = fields.Date(default=fields.Date.today())
     barcodes = fields.Binary(string='Barcodes')
     scan_status = fields.Selection([('not_scanned', 'Not Scanned'),
@@ -80,6 +82,8 @@ class StockCountPieceWizard(models.TransientModel):
                         self.scan_status = 'all_scanned'
                 else:
                     self.scan_status = 'not_detected'
+                self.total_missing_product = sum(self.missing_product_count_ids.mapped('quantity'))
+                self.total_spare_product = sum(self.spare_product_count_ids.mapped('quantity'))
         except Exception as e:
             print(e)
             self.scan_status = 'error'

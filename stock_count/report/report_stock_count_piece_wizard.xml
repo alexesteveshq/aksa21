@@ -7,6 +7,8 @@
                     <h2>Stock Count Report</h2>
                     <p><strong>Company:</strong> <t t-esc="doc.env.company.name"/></p>
                     <p><strong>Date:</strong> <t t-esc="doc.date"/></p>
+                    <p><strong>Total missing pieces:</strong> <t t-esc="doc.total_missing_product"/></p>
+                    <p><strong>Total spare pieces:</strong> <t t-esc="doc.total_spare_product"/></p>
 
                     <!-- Spare Pieces Section -->
                     <h3 class="mt-4 mb-3">Spare Pieces</h3>

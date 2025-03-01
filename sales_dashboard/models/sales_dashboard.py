@@ -68,12 +68,18 @@ class PosOrder(models.Model):
         order_amount_sum = sum(order.amount_currency for order in current_month_orders)
         order_avg = order_amount_sum / len(current_month_orders) if len(current_month_orders) > 0 else 0
         order_count = len(current_month_orders)
-        order_prod_avg = (len(current_month_orders.mapped('lines').filtered(
-            lambda ln: ln.amount_currency > 0)) / order_count)
+        if order_count:
+            order_prod_avg = (len(current_month_orders.mapped('lines').filtered(
+                lambda ln: ln.amount_currency > 0)) / order_count)
+        else:
+            order_prod_avg = 0
 
         # Calculate discount average from order lines
-        discount_avg = (sum(current_month_orders.mapped('lines').filtered(lambda ln: ln.discount > 0).mapped(
-            'discount')) / len(current_month_orders.mapped('lines').filtered(lambda ln: ln.discount > 0)))
+        if current_month_orders:
+            discount_avg = (sum(current_month_orders.mapped('lines').filtered(lambda ln: ln.discount > 0).mapped(
+                'discount')) / len(current_month_orders.mapped('lines').filtered(lambda ln: ln.discount > 0)))
+        else:
+            discount_avg = 0
 
         # Calculate previous period statistics
         previous_order_sum = sum(order.amount_currency for order in previous_month_orders)

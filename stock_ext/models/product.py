@@ -73,7 +73,7 @@ class ProductProduct(models.Model):
             if self._context.get('import_file') or not product.price_update:
                 continue
             else:
-                product.retail_price_untaxed_usd = product.retail_price_untaxed / currency_usd.inverse_rate
+                product.retail_price_untaxed_usd = product.retail_price_untaxed / (currency_usd.inverse_rate or 1)
 
     def get_product_category(self, code):
         category = self.env['stock.product.category'].search([('code', '=', code)], limit=1)

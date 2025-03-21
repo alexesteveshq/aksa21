@@ -1,0 +1,136 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pos_sale_restrict
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-21 15:36+0000\n"
+"PO-Revision-Date: 2025-03-21 15:36+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pos_sale_restrict
+#: model_terms:ir.ui.view,arch_db:pos_sale_restrict.res_config_settings_view_form
+msgid "<span class=\"o_form_label\">Commission percentage</span>"
+msgstr "<span class=\"o_form_label\">Porcentaje de comisión</span>"
+
+#. module: pos_sale_restrict
+#: model:ir.model,name:pos_sale_restrict.model_commission_percentage
+msgid "Commission Percentage"
+msgstr "Porcentaje de comisión"
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_pos_payment_method__commission_percentage_ids
+msgid "Commission percentages"
+msgstr "Porcentajes de comisión"
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_pos_payment_method__company_registry
+msgid "Company Registry"
+msgstr ""
+
+#. module: pos_sale_restrict
+#: model:ir.model,name:pos_sale_restrict.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_pos_session__fixed_commission_percentage
+msgid "Fixed Commission Percentage"
+msgstr "Porcentaje de comisión fijo"
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_pos_config__fixed_commission_percentage
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_res_config_settings__fixed_commission_percentage
+msgid "Fixed commission percentage"
+msgstr "Porcentaje de comisión fijo"
+
+#. module: pos_sale_restrict
+#: model_terms:ir.ui.view,arch_db:pos_sale_restrict.res_config_settings_view_form
+msgid "Fixed commission percentage per seller"
+msgstr "Porcentaje de comisión fijo por sucursal"
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__id
+msgid "ID"
+msgstr ""
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pos_sale_restrict
+#. odoo-javascript
+#: code:addons/pos_sale_restrict/static/src/js/PaymentScreen.js:0
+#, python-format
+msgid "Minimal price"
+msgstr "Precio mínimo"
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__payment_method_id
+msgid "Payment method"
+msgstr ""
+
+#. module: pos_sale_restrict
+#: model:ir.model,name:pos_sale_restrict.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Configuración de Punto de venta"
+
+#. module: pos_sale_restrict
+#: model:ir.model,name:pos_sale_restrict.model_pos_payment_method
+msgid "Point of Sale Payment Methods"
+msgstr "Métodos de pago de Punto de venta "
+
+#. module: pos_sale_restrict
+#: model:ir.model,name:pos_sale_restrict.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Sesión de Punto de venta"
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__product_category_id
+msgid "Product category"
+msgstr "Categoria de producto"
+
+#. module: pos_sale_restrict
+#. odoo-javascript
+#: code:addons/pos_sale_restrict/static/src/js/PaymentScreen.js:0
+#, python-format
+msgid "Product sale price is lower than the minimum price"
+msgstr "El precio de venta del producto es menor que el mínimo"
+
+#. module: pos_sale_restrict
+#: model:ir.model.fields,field_description:pos_sale_restrict.field_commission_percentage__value
+msgid "Value"
+msgstr "Valor"

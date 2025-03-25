@@ -18,7 +18,7 @@ odoo.define('pos_sale_restrict.PaymentScreen', function(require) {
             for (const line of this.currentOrder.orderlines) {
                 for (const pay_line of this.paymentLines) {
                     for (const commission of pay_line.payment_method.commission_percentage_ids) {
-                        if (commission.code === line.product.category_code){
+                        if (line.product.category_code.includes(commission.code)){
                             commission_price += (line.product.standard_price * (commission.value * 0.01)) +
                              (line.product.standard_price * (this.commission_percentage * 0.01))
                         }

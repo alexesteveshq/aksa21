@@ -30,6 +30,6 @@ class PosSession(models.Model):
         result = super(PosSession, self)._get_pos_ui_pos_payment_method(params)
         for method in result:
             commission_percentages = self.env['commission.percentage'].browse(method['commission_percentage_ids'])
-            percentages = [{'code': com.product_category_id.code, 'value': com.value} for com in commission_percentages]
+            percentages = [{'code': com.code, 'value': com.value} for com in commission_percentages]
             method['commission_percentage_ids'] = percentages
         return result

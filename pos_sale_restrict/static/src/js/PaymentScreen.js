@@ -31,6 +31,7 @@ odoo.define('pos_sale_restrict.PaymentScreen', function(require) {
                     });
                     return;
                 }
+                commission_price = 0
             }
             await super.validateOrder(...arguments);
         }

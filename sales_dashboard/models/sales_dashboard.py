@@ -174,45 +174,33 @@ class PosOrder(models.Model):
         previous_month_end_naive = previous_month_end_utc.replace(tzinfo=None)
 
         # Get current product inventory based on stock quants
-        self.env.cr.execute("""
-            SELECT pp.id, pp.default_code, pp.barcode, SUM(sq.quantity) AS quantity, pp.standard_price
-            FROM stock_quant sq
-            JOIN product_product pp ON sq.product_id = pp.id
-            JOIN res_company comp ON sq.company_id = comp.id 
-            WHERE comp.company_registry IN ('sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres')
-            GROUP BY pp.id, pp.default_code, pp.barcode, pp.standard_price
-            HAVING SUM(sq.quantity) > 0
-        """)
+
+        stock_companies = self.env['res.company'].search(
+            [('company_registry', 'in', ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres'])])
+        location_ids = set(self.env['stock.warehouse'].sudo().search(
+            [('company_id', 'in', stock_companies.ids)]).mapped('view_location_id').ids)
+        domain_loc = self.env['product.product'].sudo()._get_domain_locations_new(location_ids)
+        quant_query = self.env['stock.quant'].sudo().search(domain_loc[0])
         current_product_data = [
             {
-                'id': row[0],
-                'product': row[2],  # Use pp.barcode
-                'default_code': row[1],  # Internal reference
-                'quantity': row[3],
-                'cost': round(row[4], 2)
-            } for row in self.env.cr.fetchall()
+                'id': quant.id,
+                'product': quant.barcode,  # Use pp.barcode
+                'quantity': quant.quantity,
+                'cost': quant.product_id.standard_price
+            } for quant in quant_query
         ]
 
         # Get previous period's product inventory based on stock quants
-        self.env.cr.execute("""
-            SELECT pp.id, pp.default_code, pp.barcode, SUM(sq.quantity) AS quantity, pp.standard_price
-            FROM stock_quant sq
-            JOIN product_product pp ON sq.product_id = pp.id
-            JOIN res_company comp ON sq.company_id = comp.id  
-            WHERE comp.company_registry IN ('sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres')
-                AND sq.in_date <= %s
-            GROUP BY pp.id, pp.default_code, pp.barcode, pp.standard_price
-            HAVING SUM(sq.quantity) > 0
-        """, (previous_month_end_naive,))
+        prev_quant_domain = domain_loc[0] + [('in_date', '<=', previous_month_end_naive)]
+        prev_quant_query = self.env['stock.quant'].sudo().search(prev_quant_domain)
 
         previous_product_data = [
             {
-                'id': row[0],
-                'product': row[2],  # Use pp.name
-                'default_code': row[1],  # Internal reference
-                'quantity': row[3],
-                'cost': round(row[4], 2)
-            } for row in self.env.cr.fetchall()
+                'id': quant.id,
+                'product': quant.barcode,  # Use pp.barcode
+                'quantity': quant.quantity,
+                'cost': quant.product_id.standard_price
+            } for quant in prev_quant_query
         ]
 
         # Calculate today's sales and comparison with the same day in the previous month

@@ -14,7 +14,8 @@ class SalesDashboard extends Component {
         // Initialize state variables using useState
         this.state = useState({
             totalSales: 0,
-            totalSalesChange: 0,
+            totalSalesWithoutTax: 0,
+            totalTax: 0,
             companySales: [],  // Holds sales data for each company
             linearGraphData: [],
             dailySalesGraphData: [],
@@ -114,6 +115,8 @@ class SalesDashboard extends Component {
 
             // Update state with fetched data
             this.state.totalSales = result.total_sales;
+            this.state.totalSalesWithoutTax = result.total_sale_without_tax;
+            this.state.totalTax = result.total_tax;
             this.state.totalSalesChange = result.total_sales_change;
             this.state.companySales = result.daily_sales;
             this.state.todaySales = result.today_sales;

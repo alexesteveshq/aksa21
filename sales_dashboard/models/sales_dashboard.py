@@ -57,6 +57,8 @@ class PosOrder(models.Model):
 
         # Calculate total sales for both periods
         current_month_total_sales = sum(order.amount_currency for order in current_month_orders)
+        current_month_tax = current_month_total_sales * 0.16
+        current_month_without_tax = current_month_total_sales - current_month_tax
         previous_month_total_sales = sum(order.amount_currency for order in previous_month_orders)
 
         # Calculate total sales change percentage
@@ -548,6 +550,8 @@ class PosOrder(models.Model):
 
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
+            'total_tax': format_amount(self.env, current_month_tax, self.env.company.currency_id),
+            'total_sale_without_tax': format_amount(self.env, current_month_without_tax, self.env.company.currency_id),
             'total_sales_change': round(total_sales_change, 2),
             'best_selling_products': best_selling_products_data,
             'daily_sales': daily_sales,

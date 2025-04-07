@@ -108,6 +108,16 @@
                         <span t-else="" style="color: red; font-size: 18px;">
                             (-<t t-esc="Math.abs(state.totalSalesChange)" />%)
                         </span>
+                        <div class="totals-details">
+                            <div>
+                                <h2>Total sales (without taxes)</h2>
+                                <span t-esc="state.totalSalesWithoutTax" />
+                            </div>
+                            <div>
+                                <h2>Total taxes</h2>
+                                <span t-esc="state.totalTax" />
+                            </div>
+                        </div>
                     </div>
 
                     <table class="table table-hover">

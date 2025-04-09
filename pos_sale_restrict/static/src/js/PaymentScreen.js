@@ -25,7 +25,8 @@ odoo.define('pos_sale_restrict.PaymentScreen', function(require) {
                     }
                 }
                 if (line.get_price_currency_with_tax() >= 0 &&
-                 commission_price > 0 && (line.get_price_currency_with_tax() < (line.product.standard_price + commission_price))){
+                 commission_price > 0 && (line.get_price_currency_with_tax() < ((line.product.standard_price + commission_price) /
+                 this.paymentLines.length))){
                     this.showPopup('ErrorPopup',{
                         'title': this.env._t("Minimal price"),
                         'body':  this.env._t("Product sale price is lower than the minimum price"),

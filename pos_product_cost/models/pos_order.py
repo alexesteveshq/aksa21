@@ -12,4 +12,5 @@ class PosOrder(models.Model):
     @api.depends('lines', 'lines.total_cost')
     def _compute_order_cost(self):
         for order in self:
-            order.order_cost = sum(order.mapped('lines.total_cost'))
+            order.order_cost = sum(order.mapped('lines').filtered(
+                lambda ln: ln.product_id.category_code not in ['pouch', 'case', 'bag', 'gift']).mapped('total_cost'))

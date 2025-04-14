@@ -16,6 +16,7 @@ class StockCountPieceWizard(models.TransientModel):
     spare_product_count_ids = fields.Many2many('product.count', 'spare_count_piece_product_rel', string='Spare Pieces')
     total_missing_product = fields.Integer(string='Total missing pieces')
     total_spare_product = fields.Integer(string='Total missing pieces')
+    total_weight = fields.Float(string='Total weight')
     date = fields.Date(default=fields.Date.today())
     barcodes = fields.Binary(string='Barcodes')
     scan_status = fields.Selection([('not_scanned', 'Not Scanned'),
@@ -28,7 +29,7 @@ class StockCountPieceWizard(models.TransientModel):
     def default_get(self, fields):
         result = super(StockCountPieceWizard, self).default_get(fields)
         result['missing_product_count_ids'] = [
-            (0, 0, {'product_id': product.id, 'quantity': product.qty_available})
+            (0, 0, {'product_id': product.id, 'quantity': product.qty_available, 'weight': product.weight})
             for product in self.env['product.product'].search([('qty_available', '>', 0)])]
         return result
 
@@ -84,6 +85,9 @@ class StockCountPieceWizard(models.TransientModel):
                     self.scan_status = 'not_detected'
                 self.total_missing_product = sum(self.missing_product_count_ids.mapped('quantity'))
                 self.total_spare_product = sum(self.spare_product_count_ids.mapped('quantity'))
+                self.total_weight = round((sum(self.missing_product_count_ids.mapped('weight')) +
+                                     sum(self.spare_product_count_ids.mapped('weight'))), 2)
+
         except Exception as e:
             print(e)
             self.scan_status = 'error'

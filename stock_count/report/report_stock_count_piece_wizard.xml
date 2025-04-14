@@ -9,6 +9,7 @@
                     <p><strong>Date:</strong> <t t-esc="doc.date"/></p>
                     <p><strong>Total missing pieces:</strong> <t t-esc="doc.total_missing_product"/></p>
                     <p><strong>Total spare pieces:</strong> <t t-esc="doc.total_spare_product"/></p>
+                    <p><strong>Total weight:</strong> <t t-esc="doc.total_weight"/></p>
 
                     <!-- Spare Pieces Section -->
                     <h3 class="mt-4 mb-3">Spare Pieces</h3>
@@ -17,7 +18,8 @@
                         <div class="row font-weight-bold" style="border-bottom: 1px solid #000;">
                             <div class="col-4">Product Name</div>
                             <div class="col-4">Barcode</div>
-                            <div class="col-4">Quantity</div>
+                            <div class="col-2">Quantity</div>
+                            <div class="col-2">Weight</div>
                         </div>
 
                         <!-- Grouping Spare Pieces into Blocks of 5 -->
@@ -32,8 +34,11 @@
                                             <div class="col-4">
                                                 <t t-esc="product.barcode"/>
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-2">
                                                 <t t-esc="product.quantity"/>
+                                            </div>
+                                            <div class="col-2">
+                                                <t t-esc="product.weight"/>
                                             </div>
                                         </div>
                                     </t>
@@ -54,7 +59,8 @@
                         <div class="row font-weight-bold" style="border-bottom: 1px solid #000;">
                             <div class="col-4">Product Name</div>
                             <div class="col-4">Barcode</div>
-                            <div class="col-4">Quantity</div>
+                            <div class="col-2">Quantity</div>
+                            <div class="col-2">Weight</div>
                         </div>
 
                         <!-- Grouping Missing Pieces into Blocks of 5 -->
@@ -69,8 +75,11 @@
                                             <div class="col-4">
                                                 <t t-esc="product.barcode"/>
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-2">
                                                 <t t-esc="product.quantity"/>
+                                            </div>
+                                            <div class="col-2">
+                                                <t t-esc="product.weight"/>
                                             </div>
                                         </div>
                                     </t>

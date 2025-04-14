@@ -12,3 +12,4 @@ class ProductCount(models.Model):
     name = fields.Char(related='product_id.name')
     standard_price = fields.Float(related='product_id.standard_price')
     quantity = fields.Integer(string='Quantity')
+    weight = fields.Float(string='Weight')

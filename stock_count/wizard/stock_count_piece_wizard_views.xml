@@ -30,6 +30,7 @@
                             <field name="name"/>
                             <field name="standard_price"/>
                             <field name="quantity"/>
+                            <field name="weight"/>
                         </tree>
                     </field>
                     <field name="missing_product_count_ids" readonly="1">
@@ -38,6 +39,7 @@
                             <field name="name"/>
                             <field name="standard_price"/>
                             <field name="quantity"/>
+                            <field name="weight"/>
                         </tree>
                     </field>
                 </group>

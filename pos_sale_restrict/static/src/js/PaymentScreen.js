@@ -10,10 +10,11 @@ odoo.define('pos_sale_restrict.PaymentScreen', function(require) {
         setup() {
             super.setup();
             useListener('set-commission-percentage', this.setCommissionPercentage);
+            useListener('validate-price', () => this.showCommissionPriceMessage(false));
             this.commission_percentage = this.env.pos.commission_percentage
         }
 
-        async validateOrder(isForceValidate) {
+        checkCommissionPrice() {
             var commission_price = 0
             for (const line of this.currentOrder.orderlines) {
                 for (const pay_line of this.paymentLines) {
@@ -26,15 +27,36 @@ odoo.define('pos_sale_restrict.PaymentScreen', function(require) {
                 }
                 if (line.get_price_currency_with_tax() >= 0 &&
                  commission_price > 0 && (line.get_price_currency_with_tax() < (line.product.standard_price + (commission_price / this.paymentLines.length)))){
-                    this.showPopup('ErrorPopup',{
-                        'title': this.env._t("Minimal price"),
-                        'body':  this.env._t("Product sale price is lower than the minimum price"),
-                    });
-                    return;
+                    return false;
                 }
                 commission_price = 0
+                return true
             }
-            await super.validateOrder(...arguments);
+        }
+
+        showCommissionPriceMessage() {
+            if (this.checkCommissionPrice()){
+                this.showPopup('ConfirmPopup',{
+                    'title': this.env._t("Minimal price"),
+                    'body':  this.env._t("Product price is correct"),
+                });
+            }else{
+                this.showPopup('ErrorPopup',{
+                    'title': this.env._t("Minimal price"),
+                    'body':  this.env._t("Product sale price is lower than the minimum price"),
+                });
+            }
+        }
+
+        async validateOrder(isForceValidate) {
+            if (this.checkCommissionPrice()){
+                await super.validateOrder(...arguments);
+            }else{
+                this.showPopup('ErrorPopup',{
+                    'title': this.env._t("Minimal price"),
+                    'body':  this.env._t("Product sale price is lower than the minimum price"),
+                });
+            }
         }
 
         setCommissionPercentage(commission_percentage) {

@@ -189,6 +189,7 @@ class PosOrder(models.Model):
                 'product': quant.barcode,  # Use pp.barcode
                 'quantity': quant.quantity,
                 'cost': quant.product_id.standard_price
+                if quant.product_id.category_code not in ['pouch', 'case', 'bag', 'gift'] else 0
             } for quant in quant_query
         ]
 
@@ -202,6 +203,7 @@ class PosOrder(models.Model):
                 'product': quant.barcode,  # Use pp.barcode
                 'quantity': quant.quantity,
                 'cost': quant.product_id.standard_price
+                if quant.product_id.category_code not in ['pouch', 'case', 'bag', 'gift'] else 0
             } for quant in prev_quant_query
         ]
 

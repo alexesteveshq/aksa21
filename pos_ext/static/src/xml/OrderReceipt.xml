@@ -12,8 +12,22 @@
                 <br/>
             </div>
         </xpath>
+        <xpath expr="//t[@t-esc='receipt.footer']" position="before">
+            <div style="margin-bottom: 20px;"><t t-esc="receipt.partner.name"/></div>
+            <div style="margin-bottom: 20px;">___________________________</div>
+        </xpath>
     </t>
     <t t-name="OrderLinesReceipt" t-inherit="point_of_sale.OrderLinesReceipt" t-inherit-mode="extension" owl="1">
-        <xpath expr="//t[@t-esc='line.discount']/.." position="replace"/>
+        <xpath expr="//t[@t-foreach='receipt.orderlines']" position="replace">
+            <t t-foreach="receipt.orderlines" t-as="line" t-key="line.id">
+                <div style="margin-bottom: 20px;">
+                    <div t-esc="line.product_name_wrapped[0]" />
+                    <WrappedProductNameLines line="line" />
+                    <span class="price_display pos-receipt-right-align">
+                        <t t-esc="env.pos.format_currency_no_symbol(line.price_display)" />
+                    </span>
+                </div>
+            </t>
+        </xpath>
     </t>
 </templates>

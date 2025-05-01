@@ -15,6 +15,10 @@
         <xpath expr="//t[@t-esc='receipt.footer']" position="before">
             <div style="margin-bottom: 20px;"><t t-esc="receipt.partner.name"/></div>
             <div style="margin-bottom: 20px;">___________________________</div>
+            <div style="margin-bottom: 20px; font-size: 10px;">
+                All returns will be issued as store credit exclusively under the name of the customer as shown in this receipt.<br/>
+                Todas las devoluciones se emitirán como crédito de la tienda exclusivamente a nombre del cliente como se muestra en este recibo.
+            </div>
         </xpath>
     </t>
     <t t-name="OrderLinesReceipt" t-inherit="point_of_sale.OrderLinesReceipt" t-inherit-mode="extension" owl="1">

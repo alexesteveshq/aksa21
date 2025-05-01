@@ -27,7 +27,7 @@ odoo.define('pos_sale_restrict.PaymentScreen', function(require) {
                 }
                 if (line.get_price_currency_with_tax() >= 0 &&
                  commission_price > 0 && (line.get_price_currency_with_tax() < (line.product.standard_price + (commission_price / this.paymentLines.length)))){
-                    return false;
+                    return true;
                 }
                 commission_price = 0
                 return true

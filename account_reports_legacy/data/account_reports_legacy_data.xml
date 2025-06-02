@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Report -->
+    <record id="report_profit_and_loss_legacy" model="account.report">
+        <field name="name">Profit and Loss (Legacy)</field>
+        <field name="filter_journals" eval="False"/>
+        <field name="filter_analytic" eval="True"/>
+        <field name="is_legacy" eval="True"/>
+        <field name="filter_unfold_all" eval="True"/>
+        <field name="default_opening_date_filter">this_month</field>
+
+        <!-- Columns -->
+        <field name="column_ids">
+            <record id="col_legacy_mxn" model="account.report.column">
+                <field name="name">MXN</field>
+                <field name="expression_label">balance_mxn</field>
+                <field name="figure_type">monetary</field>
+                <field name="sequence">1</field>
+            </record>
+            <record id="col_legacy_usd" model="account.report.column">
+                <field name="name">USD</field>
+                <field name="expression_label">balance_usd</field>
+                <field name="figure_type">monetary</field>
+                <field name="sequence">2</field>
+            </record>
+        </field>
+
+        <field name="line_ids">
+            <record id="line_legacy_bank" model="account.report.line">
+                <field name="name">Bank Account Totals</field>
+                <field name="code">BANK_LEGACY</field>
+            </record>
+
+            <!-- Income -->
+            <record id="line_legacy_income" model="account.report.line">
+                <field name="name">Income</field>
+                <field name="code">INC_LEGACY</field>
+            </record>
+
+            <!-- Expenses -->
+            <record id="line_legacy_expense" model="account.report.line">
+                <field name="name">Expenses</field>
+                <field name="code">LEX_LEGACY_EXP</field>
+            </record>
+
+            <record id="line_legacy_utility" model="account.report.line">
+                <field name="name">Utility</field>
+                <field name="code">UTILITY_LEGACY</field>
+            </record>
+        </field>
+    </record>
+
+    <!-- Client Action -->
+    <record id="action_report_profit_and_loss_legacy" model="ir.actions.client">
+        <field name="name">Profit and Loss (Legacy)</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'report_id': ref('report_profit_and_loss_legacy')}"/>
+    </record>
+
+    <!-- Menu -->
+    <record id="menu_report_profit_and_loss_legacy" model="ir.ui.menu">
+        <field name="name">Profit and Loss (Legacy)</field>
+        <field name="parent_id" ref="account.menu_finance_reports"/>
+        <field name="action" ref="action_report_profit_and_loss_legacy"/>
+        <field name="sequence" eval="100"/>
+    </record>
+</odoo>

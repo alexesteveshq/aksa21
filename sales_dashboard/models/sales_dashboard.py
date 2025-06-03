@@ -477,12 +477,12 @@ class PosOrder(models.Model):
         # Define categories with journal codes for grouping
         categories = {
             'CASH': {
-                'MXN': ['CSH1'],
-                'USD': ['CASHU'],
+                'MXN': ['EMS'],
+                'USD': ['EUS'],
             },
             'BANKS': {
-                'MXN': ['INBMX', 'INMXN'],
-                'USD': ['INUSD'],
+                'MXN': ['IMS', 'INS'],
+                'USD': ['IUS'],
             },
             'ROOMCHARGE': {
                 'MXN': ['ROOMC'],  # Only ROOMC applies for MXN
@@ -501,14 +501,14 @@ class PosOrder(models.Model):
         currency_payments = {
             'CASH':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'CSH1')), self.env.company.currency_id).replace('$', ''),
+                lambda p: p.payment_method_id.journal_id.code == 'EMS')), self.env.company.currency_id).replace('$', ''),
                  'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'CASHU')), self.env.company.currency_id).replace('$', '')},
+                lambda p: p.payment_method_id.journal_id.code == 'EUS')), self.env.company.currency_id).replace('$', '')},
             'BANKS':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code in ['INBMX', 'INMXN'])), self.env.company.currency_id).replace('$', ''),
+                lambda p: p.payment_method_id.journal_id.code in ['IMS', 'INS'])), self.env.company.currency_id).replace('$', ''),
                 'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'INUSD')), self.env.company.currency_id).replace('$', '')},
+                lambda p: p.payment_method_id.journal_id.code == 'IUS')), self.env.company.currency_id).replace('$', '')},
             'ROOMCHARGE':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
                 lambda p: p.payment_method_id.journal_id.code == 'ROOMC')), self.env.company.currency_id).replace('$', '')}
@@ -546,7 +546,7 @@ class PosOrder(models.Model):
         }
 
         payment_methods_names = {method.journal_id.code: method.name for method in company_payments.mapped(
-            'payment_method_id').filtered(lambda m: m.journal_id.code in ['CSH1', 'CASHU', 'INBMX', 'INMXN', 'INUSD', 'ROOMC'])}
+            'payment_method_id').filtered(lambda m: m.journal_id.code in ['EMS', 'EUS', 'IMS', 'INS', 'IUS', 'ROOMC'])}
 
         category_stock_data = self.get_category_stock(companies)
 

@@ -14,6 +14,11 @@
         'views/account_account_views.xml',
         'views/account_journal_views.xml',
     ],
+    'assets': {
+        'point_of_sale.assets': [
+            'account_reports_legacy/static/src/**/*',
+        ],
+    },
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,

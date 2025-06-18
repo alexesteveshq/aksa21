@@ -69,7 +69,11 @@ class PosOrder(models.Model):
         # Calculate order-related statistics
         order_amount_sum = sum(order.amount_currency for order in current_month_orders)
         order_avg = order_amount_sum / len(current_month_orders) if len(current_month_orders) > 0 else 0
-        order_count = len(current_month_orders)
+        start_month = datetime.now().replace(
+            day=1, hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC'))
+        orders_tocount = self.env['pos.order'].with_context(active_test=False).sudo().search(
+            [('date_order', '>=', usr_start_date or start_month)])
+        order_count = len(orders_tocount)
         if order_count:
             order_prod_avg = (len(current_month_orders.mapped('lines').filtered(
                 lambda ln: ln.amount_currency > 0)) / order_count)
@@ -426,11 +430,12 @@ class PosOrder(models.Model):
         user_tz = pytz.timezone(self.env.user.tz or 'UTC')
         today = datetime.now(tz=pytz.UTC).astimezone(user_tz) # First day of the previous month
         end_date = (today + timedelta(days=31)).replace(day=1)  # First day of the next month
-
+        default_date = datetime.strptime('2024-11-01', '%Y-%m-%d').replace(
+            hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC'))
 
         # Fetch all orders within the date range in a single query
         all_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', usr_start_date or '2023-01-01'),
+            ('date_order', '>=', usr_start_date or default_date),
             ('date_order', '<=', usr_end_date or end_date),  # Exclude end_date itself
             ('state', 'in', ['paid', 'done', 'invoiced']),
         ]).sorted('date_order', reverse=True)

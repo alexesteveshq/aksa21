@@ -123,13 +123,13 @@ class AccountReport(models.Model):
                 SUM(CASE WHEN curr.name = 'MXN' THEN l.amount_currency ELSE 0 END) AS balance_mxn,
                 SUM(CASE WHEN curr.name = 'USD' THEN l.amount_currency ELSE 0 END) AS balance_usd
             FROM account_move_line l
-            JOIN account_account a ON l.account_id = a.id
+            JOIN account_account a ON l.account_id = a.id 
+            JOIN account_journal j ON l.journal_id = j.id 
             LEFT JOIN res_currency curr ON a.currency_id = curr.id
-            WHERE (a.account_type = 'asset_cash' OR a.account_type = 'asset_receivable') 
-              AND l.amount_currency > 0
+            WHERE l.parent_state = 'posted'
+              AND a.account_type IN ('asset_cash', 'asset_receivable') AND j.expense_journal IS NOT TRUE 
+              AND l.date BETWEEN '{date_from}' AND '{date_to}' 
               AND a.legacy_report IS TRUE  
-              AND l.date BETWEEN '{date_from}' AND '{date_to}'
-              AND l.parent_state = 'posted'
             GROUP BY a.code, a.name
             ORDER BY a.code
         """

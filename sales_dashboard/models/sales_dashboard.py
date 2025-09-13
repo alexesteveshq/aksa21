@@ -1,5 +1,6 @@
 from odoo import models, api, _
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from odoo.tools import format_amount
 import pytz
 
@@ -13,10 +14,15 @@ class PosOrder(models.Model):
         timezone = pytz.timezone(self._context.get('tz') or self.env.user.tz or 'UTC')
         today = datetime.now(tz=timezone)
 
+        usr_start_date_prev, usr_end_date_prev = None, None
         if usr_start_date:
+            usr_start_date_prev = datetime.strptime(usr_start_date, '%Y-%m-%d').replace(
+                hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC')) - relativedelta(months=1)
             usr_start_date = datetime.strptime(usr_start_date, '%Y-%m-%d').replace(
                 hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC'))
         if usr_end_date:
+            usr_end_date_prev = datetime.strptime(usr_end_date, '%Y-%m-%d').replace(
+                hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC')) - relativedelta(months=1)
             usr_end_date = datetime.strptime(usr_end_date, '%Y-%m-%d').replace(hour=5, minute=0, second=0) + timedelta(days=1)
             usr_end_date = usr_end_date.astimezone(pytz.timezone('UTC'))
 
@@ -37,8 +43,8 @@ class PosOrder(models.Model):
         ]
 
         prev_domain = [
-            ('date_order', '>=', previous_month_start_utc),
-            ('date_order', '<=', previous_month_end),
+            ('date_order', '>=', usr_start_date_prev or previous_month_start_utc),
+            ('date_order', '<=', usr_end_date_prev or previous_month_end),
             ('is_refunded', '=', False),
             ('refunded_orders_count', '=', 0),
             ('state', 'in', ['paid', 'done', 'invoiced'])

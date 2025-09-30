@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_increase_product_price_wizard" model="ir.actions.act_window">
+        <field name="name">Increase Prices</field>
+        <field name="res_model">update.product.price.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_view_types">form</field>
+    </record>
+
+    <record id="action_print_stickers_po" model="ir.actions.server">
+        <field name="name">Print Stickers</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="model_purchase_order"/>
+        <field name="binding_model_id" ref="model_purchase_order" />
+        <field name="state">code</field>
+        <field name="code">action = model.print_stickers()</field>
+    </record>
+</odoo>

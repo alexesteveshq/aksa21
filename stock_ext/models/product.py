@@ -135,6 +135,23 @@ class ProductProduct(models.Model):
                 usd_value = matches_usd.group(1)
                 product.retail_price_untaxed_usd = float(usd_value) / 1.16
 
+    def update_price_percentage(self, value):
+        for product in self:
+            pattern_mxn = re.compile(r'MXN\s*([\d.]+)')
+            matches_mxn = pattern_mxn.search(product.raw_data)
+            pattern_usd = re.compile(r'USD\s*([\d.]+)')
+            matches_usd = pattern_usd.search(product.raw_data)
+            if matches_mxn:
+                mxn_value = matches_mxn.group(1)
+                amount = (float(mxn_value) + (float(mxn_value) * value / 100)) / 1.16
+                product.retail_price_untaxed = round(amount)
+                product.raw_data = False
+            if matches_usd:
+                usd_value = matches_usd.group(1)
+                amount = (float(usd_value) + (float(usd_value) * value / 100)) / 1.16
+                product.retail_price_untaxed = round(amount)
+                product.raw_data = False
+
     def print_sticker(self, print_enabled=True):
         if not self.raw_data or self.force_sticker_update:
             manager = LabelManager()

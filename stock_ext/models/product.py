@@ -50,7 +50,7 @@ class ProductProduct(models.Model):
         variants = self.env['piece.variant'].search([])
         currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
         for product in self:
-            if self._context.get('import_file') or not product.price_update:
+            if self._context.get('import_file') or not product.price_update or self._context.get('increase_price'):
                 continue
             else:
                 variant = variants.filtered(lambda var: var.min_weight <= product.weight <= var.max_weight)
@@ -70,7 +70,7 @@ class ProductProduct(models.Model):
     def _compute_retail_price_untaxed_usd(self):
         currency_usd = self.env['res.currency'].search([('name', '=', 'USR')])
         for product in self:
-            if self._context.get('import_file') or not product.price_update:
+            if self._context.get('import_file') or not product.price_update or self._context.get('increase_price'):
                 continue
             else:
                 product.retail_price_untaxed_usd = product.retail_price_untaxed / (currency_usd.inverse_rate or 1)
@@ -136,7 +136,7 @@ class ProductProduct(models.Model):
                 product.retail_price_untaxed_usd = float(usd_value) / 1.16
 
     def update_price_percentage(self, value):
-        for product in self:
+        for product in self.filtered(lambda p: p.raw_data):
             pattern_mxn = re.compile(r'MXN\s*([\d.]+)')
             matches_mxn = pattern_mxn.search(product.raw_data)
             pattern_usd = re.compile(r'USD\s*([\d.]+)')
@@ -149,7 +149,7 @@ class ProductProduct(models.Model):
             if matches_usd:
                 usd_value = matches_usd.group(1)
                 amount = (float(usd_value) + (float(usd_value) * value / 100)) / 1.16
-                product.retail_price_untaxed = round(amount)
+                product.retail_price_untaxed_usd = round(amount)
                 product.raw_data = False
 
     def print_sticker(self, print_enabled=True):

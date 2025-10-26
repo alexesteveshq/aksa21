@@ -320,11 +320,18 @@ class SalesDashboard extends Component {
                     },
                 },
                 scales: {
-                    x: {
-                        stacked: true,
-                        title: { display: true, text: 'Product Categories' },
+                  x: {
+                    stacked: true,
+                    title: { display: true, text: 'Product Categories' },
+                    ticks: {
+                      autoSkip: false,
                     },
-                    y: { stacked: true, title: { display: true, text: 'Total Quantity' } },
+                  },
+                  y: {
+                    stacked: true,
+                    title: { display: true, text: 'Total Quantity' },
+                    beginAtZero: true,
+                  },
                 },
             },
         };

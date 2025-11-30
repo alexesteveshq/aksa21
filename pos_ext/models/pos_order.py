@@ -31,6 +31,16 @@ class PosOrder(models.Model):
     lines = fields.One2many(readonly=False)
     payment_ids = fields.One2many(readonly=False)
 
+    def _prepare_mail_values(self, name, client, ticket):
+        res = super(PosOrder, self)._prepare_mail_values(name, client, ticket)
+        res['body_html'] = ("<p>Thank you for choosing LEGACY JEWELRY. We look forward to serving you again.<br> "
+                          "If you have any questions about your purchase or need support, please do not hesitate to email us at customersupport@legacyjewelry.com.mx.<br>"
+                          "We have included a copy of your receipt in this email for your future reference.</p>"
+                          "<p>Gracias por elegir LEGACY JEWELRY. Esperamos tener el gusto de atenderle nuevamente.<br>"
+                          "Si tiene alguna duda sobre su compra o requiere asistencia, por favor no dude en escribirnos a  customersupport@legacyjewelry.com.mx.<br>"
+                          "Hemos incluido una copia de su recibo en este correo para su referencia.</p>")
+        return res
+
     def action_pos_order_paid(self):
         currency = self.mapped('payment_ids.payment_method_id.currency_id')
         if len(currency) == 1 and currency.name == 'MXN':

@@ -30,6 +30,9 @@
                     <span class="price_display pos-receipt-right-align">
                         <t t-esc="env.pos.format_currency_no_symbol(line.price_display)" />
                     </span>
+                    <div t-if="line.quantity > 1">
+                        Cantidad: <t t-esc="Math.round(line.quantity * Math.pow(10, env.pos.dp['Product Unit of Measure'])) / Math.pow(10, env.pos.dp['Product Unit of Measure'])"/>
+                    </div>
                 </div>
             </t>
         </xpath>

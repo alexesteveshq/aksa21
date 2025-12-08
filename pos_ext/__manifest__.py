@@ -18,6 +18,7 @@
         'views/pos_order_report_view.xml',
         'views/report_saledetails.xml',
         'views/pos_order_view.xml',
+        'views/pos_payment_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

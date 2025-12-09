@@ -132,7 +132,7 @@ class PosOrder(models.Model):
 
             # Skip companies with zero sales in both periods
             # Skip companies with zero sales in both periods
-            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
+            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres', 'aventuras']:
                 continue
 
             # Calculate percentage change
@@ -188,7 +188,7 @@ class PosOrder(models.Model):
         # Get current product inventory based on stock quants
 
         stock_companies = self.env['res.company'].search(
-            [('company_registry', 'in', ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres'])])
+            [('company_registry', 'in', ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres', 'aventuras'])])
         location_ids = set(self.env['stock.warehouse'].sudo().search(
             [('company_id', 'in', stock_companies.ids)]).mapped('view_location_id').ids)
         domain_loc = self.env['product.product'].sudo()._get_domain_locations_new(location_ids)
@@ -279,7 +279,7 @@ class PosOrder(models.Model):
             } for order in company_today_orders.filtered(lambda o: o.amount_currency > 0)]
 
             # Skip companies with zero sales in both periods
-            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
+            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres', 'aventuras']:
                 continue
 
             # Calculate percentage change
@@ -526,7 +526,7 @@ class PosOrder(models.Model):
         }
 
         for company in companies:
-            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres']:
+            if company.company_registry not in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres', 'aventuras']:
                 continue
 
             payments_summary = {category: {'MXN': {}, 'USD': {}} for category in categories}
@@ -599,7 +599,7 @@ class PosOrder(models.Model):
     def get_category_stock(self, companies):
         # SQL query to fetch product quantities grouped by company and category
         companies = companies.filtered(
-            lambda comp: comp.company_registry in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres'])
+            lambda comp: comp.company_registry in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres', 'aventuras'])
 
         query = """
             SELECT

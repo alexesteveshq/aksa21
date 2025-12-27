@@ -270,6 +270,7 @@ class PosOrder(models.Model):
 
             company_order_details = [{
                 'ticket_reference': order.pos_reference,
+                'payment_method': " - ".join(order.mapped('payment_ids.payment_method_id.name')),
                 'margin': round(((order.amount_currency - order.order_cost)/order.amount_currency)
                                 * 100) if order.amount_currency and order.order_cost else 0,
                 'amount_currency': format_amount(self.env, order.amount_currency, self.env.company.currency_id),

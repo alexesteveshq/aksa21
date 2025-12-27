@@ -59,6 +59,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Ticket Reference</th>
+                                                        <th>Payment method</th>
                                                         <th>Sale amount</th>
                                                         <th>Margin</th>
                                                         <th>Categories</th>
@@ -69,6 +70,7 @@
                                                 <tbody>
                                                     <tr t-foreach="company.order_details || []" t-as="order" t-key="order.ticket_reference">
                                                         <td><span t-esc="order.ticket_reference" /></td>
+                                                        <td><span t-esc="order.payment_method" /></td>
                                                         <td><span t-esc="order.amount_currency" /></td>
                                                         <td><span t-esc="order.margin" />%</td>
                                                         <td><span t-esc="order.categories" /></td>

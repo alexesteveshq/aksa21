@@ -564,8 +564,8 @@ class PosOrder(models.Model):
 
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
-            'total_tax': format_amount(self.env, current_month_tax, self.env.company.currency_id),
-            'total_sale_without_tax': format_amount(self.env, current_month_without_tax, self.env.company.currency_id),
+            'total_tax': format_amount(self.env, (current_month_total_sales / 1.16) * 0.16, self.env.company.currency_id),
+            'total_sale_without_tax': format_amount(self.env, current_month_total_sales / 1.16, self.env.company.currency_id),
             'total_sales_change': round(total_sales_change, 2),
             'best_selling_products': best_selling_products_data,
             'daily_sales': daily_sales,

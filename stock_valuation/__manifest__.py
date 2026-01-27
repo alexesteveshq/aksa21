@@ -9,7 +9,7 @@
     'author': 'Visionee',
     'version': '16.0.0.0',
     'depends': [
-        'stock',
+        'stock_ext',
     ],
     'data': [
         'data/ir_actions.xml',

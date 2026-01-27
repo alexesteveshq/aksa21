@@ -8,6 +8,7 @@
                 <group>
                     <field name="date_start"/>
                     <field name="date_end"/>
+                    <field name="category_id"/>
                     <field name="value_increase"/>
                 </group>
                 <footer>

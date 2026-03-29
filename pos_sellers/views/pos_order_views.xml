@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
                 <field name="seller_id" readonly="1"/>
+                <field name="commission_amount" readonly="1"/>
             </field>
         </field>
     </record>

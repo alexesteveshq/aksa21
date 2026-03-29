@@ -87,7 +87,7 @@ class PosOrder(models.Model):
             order_prod_avg = 0
 
         # Calculate discount average from order lines
-        if current_month_orders:
+        if current_month_orders and current_month_orders.mapped('lines').filtered(lambda ln: ln.discount > 0):
             discount_avg = (sum(current_month_orders.mapped('lines').filtered(lambda ln: ln.discount > 0).mapped(
                 'discount')) / len(current_month_orders.mapped('lines').filtered(lambda ln: ln.discount > 0)))
         else:
@@ -305,6 +305,7 @@ class PosOrder(models.Model):
 
             # Total and average sales
             current_seller_sales = sum(order.amount_currency for order in seller_orders)
+            current_seller_commission = sum(order.commission_amount for order in seller_orders)
             previous_seller_sales = sum(order.amount_currency for order in previous_seller_orders)
             seller_change = calculate_change(current_seller_sales, previous_seller_sales)
 
@@ -335,6 +336,7 @@ class PosOrder(models.Model):
                 'id': seller.id,
                 'name': seller.name,
                 'amount_sold': current_seller_sales,
+                'commission': current_seller_commission,
                 'percentage_change': seller_change,
                 'discount_avg': round(current_seller_discount_avg, 2),
                 'discount_change': discount_avg_change,
@@ -348,6 +350,7 @@ class PosOrder(models.Model):
 
         # Format monetary values
         for record in seller_ranking:
+            record['commission'] = format_amount(self.env, record['commission'], self.env.company.currency_id)
             record['amount_sold'] = format_amount(self.env, record['amount_sold'], self.env.company.currency_id)
 
         # Initialize dictionaries to track sales and totals by category
@@ -490,11 +493,11 @@ class PosOrder(models.Model):
         categories = {
             'CASH': {
                 'MXN': ['EMS'],
-                'USD': ['EUS'],
+                'USD': ['EUS', 'LUSD'],
             },
             'BANKS': {
-                'MXN': ['IMS', 'INS'],
-                'USD': ['IUS'],
+                'MXN': ['IMS', 'INS', 'BANM'],
+                'USD': ['IUS', 'BANU'],
             },
             'ROOMCHARGE': {
                 'MXN': ['ROOMC'],  # Only ROOMC applies for MXN
@@ -515,12 +518,12 @@ class PosOrder(models.Model):
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
                 lambda p: p.payment_method_id.journal_id.code == 'EMS')), self.env.company.currency_id).replace('$', ''),
                  'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'EUS')), self.env.company.currency_id).replace('$', '')},
+                lambda p: p.payment_method_id.journal_id.code in ['EUS', 'LUSD'])), self.env.company.currency_id).replace('$', '')},
             'BANKS':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code in ['IMS', 'INS'])), self.env.company.currency_id).replace('$', ''),
+                lambda p: p.payment_method_id.journal_id.code in ['IMS', 'INS', 'BANM'])), self.env.company.currency_id).replace('$', ''),
                 'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code == 'IUS')), self.env.company.currency_id).replace('$', '')},
+                lambda p: p.payment_method_id.journal_id.code in ['IUS', 'BANU'])), self.env.company.currency_id).replace('$', '')},
             'ROOMCHARGE':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
                 lambda p: p.payment_method_id.journal_id.code == 'ROOMC')), self.env.company.currency_id).replace('$', '')}
@@ -558,7 +561,7 @@ class PosOrder(models.Model):
         }
 
         payment_methods_names = {method.journal_id.code: method.name for method in company_payments.mapped(
-            'payment_method_id').filtered(lambda m: m.journal_id.code in ['EMS', 'EUS', 'IMS', 'INS', 'IUS', 'ROOMC'])}
+            'payment_method_id').filtered(lambda m: m.journal_id.code in ['EMS', 'EUS', 'LUSD', 'IMS', 'INS', 'BANM', 'IUS', 'BANU', 'ROOMC'])}
 
         category_stock_data = self.get_category_stock(companies)
 

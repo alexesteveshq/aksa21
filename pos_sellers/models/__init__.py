@@ -4,4 +4,6 @@ from . import pos_session
 from . import pos_config
 from . import res_config_settings
 from . import pos_order
+from . import commission_rate
+from . import category_commission_rate
 from . import res_partner

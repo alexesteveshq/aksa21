@@ -7,3 +7,4 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     pos_payment_seller_ids = fields.Many2many(related='pos_config_id.payment_seller_ids', readonly=False)
+    pos_admin_commission_rate = fields.Float(related='pos_config_id.admin_commission_rate', readonly=False)

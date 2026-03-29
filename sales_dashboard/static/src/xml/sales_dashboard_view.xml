@@ -200,10 +200,7 @@
                                     <tr>
                                         <th class="text-center align-middle">Company</th>
                                         <t t-foreach="state.categories" t-as="category" t-key="category">
-                                            <th t-if="category == 'BANKS'" colspan="3" class="text-center">
-                                                <t t-esc="category" />
-                                            </th>
-                                            <th t-else="" class="text-center" colspan="2">
+                                            <th class="text-center" t-att-colspan="getCategoryColspan(category)">
                                                 <t t-esc="category" />
                                             </th>
                                         </t>
@@ -212,27 +209,12 @@
                                     <tr>
                                         <th>Totals</th>
                                         <t t-foreach="state.currencyPayments" t-as="category" t-key="category">
-                                            <t t-if="category != 'ROOMCHARGE'">
-                                                <t t-if="category == 'BANKS'">
-                                                    <th class="text-center" colspan="2">
-                                                        <t t-esc="state.currencyPayments[category]['MXN'] + ' (MXN)'"/>
-                                                    </th>
-                                                    <th class="text-center">
-                                                        <t t-esc="state.currencyPayments[category]['USD'] + ' (USD)'"/>
-                                                    </th>
-                                                </t>
-                                                <t t-else="">
-                                                    <th class="text-center">
-                                                        <t t-esc="state.currencyPayments[category]['MXN'] + ' (MXN)'"/>
-                                                    </th>
-                                                    <th class="text-center">
-                                                        <t t-esc="state.currencyPayments[category]['USD'] + ' (USD)'"/>
-                                                    </th>
-                                                </t>
-                                            </t>
-                                            <t t-else="">
-                                                <th class="text-center">
-                                                    <t t-esc="state.currencyPayments[category]['MXN'] + ' (MXN)'"/>
+                                            <th class="text-center" t-att-colspan="getCurrencyColspan(category, 'MXN')">
+                                                <t t-esc="state.currencyPayments[category]['MXN'] + ' (MXN)'"/>
+                                            </th>
+                                            <t t-if="category !== 'ROOMCHARGE'">
+                                                <th class="text-center" t-att-colspan="getCurrencyColspan(category, 'USD')">
+                                                    <t t-esc="state.currencyPayments[category]['USD'] + ' (USD)'"/>
                                                 </th>
                                             </t>
                                         </t>
@@ -301,6 +283,7 @@
                                     <th>Position</th>
                                     <th>Seller</th>
                                     <th>Amount Sold</th> <!-- Merged change into amount sold -->
+                                    <th>Commission</th>
                                     <th>Amount change %</th> <!-- Merged change into amount sold -->
                                     <th>Discount Avg</th> <!-- Merged change into discount avg -->
                                     <th>Discount change %</th>
@@ -316,6 +299,9 @@
                                     <td><span t-esc="seller.name" /></td>
                                     <td>
                                         <span t-esc="seller.amount_sold" />
+                                    </td>
+                                    <td>
+                                        <span t-esc="seller.commission" />
                                     </td>
                                     <td>
                                         <span t-esc="seller.percentage_change" /> %

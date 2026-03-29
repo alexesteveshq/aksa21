@@ -63,6 +63,20 @@ class SalesDashboard extends Component {
         });
     }
 
+    getCategoryColspan(category) {
+        const methods = this.state.paymentMethods[category];
+        if (!methods) return 1;
+        const mxn = methods['MXN'] ? methods['MXN'].length : 0;
+        const usd = category !== 'ROOMCHARGE' && methods['USD'] ? methods['USD'].length : 0;
+        return mxn + usd;
+    }
+
+    getCurrencyColspan(category, currency) {
+        const methods = this.state.paymentMethods[category];
+        if (!methods || !methods[currency]) return 1;
+        return methods[currency].length;
+    }
+
     applyDateFilter() {
         console.log("Applying filter for date range: ", this.state.startDate, this.state.endDate);
 
@@ -157,6 +171,7 @@ class SalesDashboard extends Component {
             // Set seller ranking data, including discount_avg and discount_change
             this.state.sellerRanking = (result.seller_ranking || []).map(seller => ({
                 ...seller,
+                commission: seller.commission || 0,
                 discount_avg: seller.discount_avg || 0,
                 discount_change: seller.discount_change || undefined,
                 avg_products_sold: seller.avg_products_sold || 0, // New field

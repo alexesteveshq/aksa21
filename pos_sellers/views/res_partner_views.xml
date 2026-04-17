@@ -23,6 +23,7 @@
             </xpath>
             <field name="vat" position="after">
                 <field name="is_admin"/>
+                <field name="admin_commission_rate" attrs="{'invisible': [('is_admin', '=', False)], 'required': [('is_admin', '=', True)]}"/>
             </field>
         </field>
     </record>

@@ -9,6 +9,7 @@ class ResPartner(models.Model):
     commission_rate_ids = fields.One2many('commission.rate', 'partner_id', string='Commissions rates')
     category_commission_rate_ids = fields.One2many('category.commission.rate', 'partner_id', string='Category Commission Rates')
     is_admin = fields.Boolean(string='Is Admin')
+    admin_commission_rate = fields.Float(string='Admin Commission Rate (%)')
 
     def seller_pos_assign(self):
         for partner in self:

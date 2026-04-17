@@ -11,20 +11,26 @@ class PosOrder(models.Model):
 
     @api.depends('payment_ids', 'payment_ids.payment_method_id', 'payment_ids.amount',
                  'lines.product_id', 'lines.product_id.category_id',
-                 'session_id.config_id.admin_commission_rate')
+                 'lines.price_subtotal', 'lines.price_subtotal_incl',
+                 'seller_id.admin_commission_rate')
     def _compute_commission_amount(self):
         for order in self:
             order.commission_amount = 0
+            if not order.amount_total:
+                continue
             company_currency = order.company_id.currency_id
+            total_with_tax_lines = sum(line.price_subtotal_incl for line in order.lines)
+            untaxed_total_lines = sum(line.price_subtotal for line in order.lines)
+            untaxed_ratio = untaxed_total_lines / total_with_tax_lines if total_with_tax_lines else 1.0
 
             total_in_company_currency = sum(
                 (payment.payment_method_id.currency_id or company_currency)._convert(
                     payment.amount, company_currency, order.company_id, fields.Date.today())
                 for payment in order.payment_ids
-            )
+            ) * untaxed_ratio
 
             if order.seller_id.is_admin:
-                order.commission_amount = (total_in_company_currency * order.session_id.config_id.admin_commission_rate) / 100
+                order.commission_amount = (total_in_company_currency * order.seller_id.admin_commission_rate) / 100
             else:
                 seller_categories = order.seller_id.category_commission_rate_ids
                 matched_category = seller_categories.filtered(
@@ -35,7 +41,7 @@ class PosOrder(models.Model):
                     for payment in order.payment_ids:
                         from_currency = payment.payment_method_id.currency_id or company_currency
                         amount = from_currency._convert(
-                            payment.amount, company_currency, order.company_id, fields.Date.today())
+                            payment.amount, company_currency, order.company_id, fields.Date.today()) * untaxed_ratio
                         commission_rate = order.seller_id.commission_rate_ids.filtered(
                             lambda r: r.payment_method_id == payment.payment_method_id)
                         if commission_rate.rate:

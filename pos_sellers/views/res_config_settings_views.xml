@@ -15,10 +15,6 @@
                         <div class="content-group mt16">
                             <field name="pos_payment_seller_ids" colspan="4" nolabel="1" widget="many2many_tags" attrs="{'readonly': [('pos_has_active_session','=', True)], 'required': [('pos_company_has_template', '=', True)]}" options="{'no_create': True}" />
                         </div>
-                        <div class="content-group mt8">
-                            <label for="pos_admin_commission_rate" class="o_form_label"/>
-                            <field name="pos_admin_commission_rate" attrs="{'readonly': [('pos_has_active_session','=', True)]}"/>
-                        </div>
                     </div>
                 </div>
             </xpath>

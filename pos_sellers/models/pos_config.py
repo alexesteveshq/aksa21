@@ -12,4 +12,3 @@ class PosConfig(models.Model):
 
     payment_seller_ids = fields.Many2many('res.partner', string='Payment Sellers',
                                           default=lambda self: self._default_sellers())
-    admin_commission_rate = fields.Float(string='Admin Commission Rate (%)', default=15.0)

@@ -7,7 +7,7 @@
     'description': 'Point of sale seller features',
     'category': 'Point of Sale',
     'author': 'Alex Esteves',
-    'version': '1.2',
+    'version': '1.3',
     'depends': [
         'point_of_sale',
     ],

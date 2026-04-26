@@ -54,8 +54,7 @@ class PosOrder(models.Model):
             curr_domain += [('date_order', '<=', usr_end_date)]
 
         # Fetch current month's orders up to the current time across all companies
-        current_month_orders = self.with_context(active_test=False).sudo().search(curr_domain).filtered(
-            lambda o: not o.is_refunded and not o.refunded_order_ids)
+        current_month_orders = self.with_context(active_test=False).sudo().search(curr_domain)
 
         # Fetch the previous month's orders up to the same day
         previous_month_orders = self.with_context(active_test=False).sudo().search(prev_domain).filtered(

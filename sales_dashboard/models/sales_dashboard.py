@@ -692,9 +692,6 @@ class PosOrder(models.Model):
         return result
 
     def get_weight_by_category(self, companies):
-        if not companies:
-            return {'gold': 0.0, 'silver': 0.0}
-
         self.env.cr.execute("""
             SELECT
                 CASE
@@ -705,11 +702,10 @@ class PosOrder(models.Model):
             FROM stock_quant sq
             JOIN product_product pp ON sq.product_id = pp.id
             JOIN stock_product_category spc ON pp.category_id = spc.id
-            WHERE sq.company_id IN %s
-                AND sq.quantity > 0
-                AND (spc.code = 'oro' OR spc.code ILIKE 'silver%%')
+            WHERE sq.quantity > 0
+                AND (spc.code = 'oro' OR spc.code ILIKE '%%silver%%')
             GROUP BY metal
-        """, (tuple(companies.ids),))
+        """)
 
         rows = self.env.cr.fetchall()
         result = {'gold': 0.0, 'silver': 0.0}

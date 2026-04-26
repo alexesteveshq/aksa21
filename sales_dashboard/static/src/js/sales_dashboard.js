@@ -44,7 +44,9 @@ class SalesDashboard extends Component {
             payment_methods_names: {},
             currency_payments: {},
             startDate: "",
-            endDate: ""
+            endDate: "",
+            totalGoldWeight: 0,
+            totalSilverWeight: 0
         });
 
         this.state.expandedTodayRows = useState({});
@@ -158,6 +160,8 @@ class SalesDashboard extends Component {
             this.state.paymentMethodsNames = result.payment_methods_names || {};
             this.state.currencyPayments = result.currency_payments || {};
             this.state.categoryStockData = result.category_stock_data || [];
+            this.state.totalGoldWeight = result.total_gold_weight || 0;
+            this.state.totalSilverWeight = result.total_silver_weight || 0;
 
             // Set today's sales data
             this.state.todaySales = result.today_sales || 0;

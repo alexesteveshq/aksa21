@@ -187,6 +187,14 @@
                                 <h4>Total Cost: <span t-esc="state.previousTotalCost" /> </h4>
                             </div>
                         </div>
+
+                        <div class="o_dashboard_blue_block" style="margin-bottom: 20px;">
+                            <h3>Total Weight</h3>
+                            <div>
+                                <h4>Total Gold: <span t-esc="state.totalGoldWeight" /> g</h4>
+                                <h4>Total Silver: <span t-esc="state.totalSilverWeight" /> g</h4>
+                            </div>
+                        </div>
                     </div>
                     <div class="o_monthly_payments_table">
                         <h2>Payment Methods</h2>

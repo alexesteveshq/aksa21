@@ -564,6 +564,7 @@ class PosOrder(models.Model):
             'payment_method_id').filtered(lambda m: m.journal_id.code in ['EMS', 'EUS', 'LUSD', 'IMS', 'INS', 'BANM', 'IUS', 'BANU', 'ROOMC'])}
 
         category_stock_data = self.get_category_stock(companies)
+        weight_data = self.get_weight_by_category(stock_companies)
 
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),
@@ -598,6 +599,8 @@ class PosOrder(models.Model):
             'payment_methods_names': payment_methods_names,
             'currency_payments': currency_payments,
             'category_stock_data': category_stock_data,
+            'total_gold_weight': weight_data['gold'],
+            'total_silver_weight': weight_data['silver'],
         }
 
     def get_category_stock(self, companies):
@@ -686,4 +689,30 @@ class PosOrder(models.Model):
         result = list(company_data.values())
         result.append(legacy_data)
 
+        return result
+
+    def get_weight_by_category(self, companies):
+        if not companies:
+            return {'gold': 0.0, 'silver': 0.0}
+
+        self.env.cr.execute("""
+            SELECT
+                CASE
+                    WHEN spc.code = 'oro' THEN 'gold'
+                    ELSE 'silver'
+                END AS metal,
+                COALESCE(SUM(sq.quantity * pp.weight), 0) AS total_weight
+            FROM stock_quant sq
+            JOIN product_product pp ON sq.product_id = pp.id
+            JOIN stock_product_category spc ON pp.category_id = spc.id
+            WHERE sq.company_id IN %s
+                AND sq.quantity > 0
+                AND (spc.code = 'oro' OR spc.code ILIKE 'silver%%')
+            GROUP BY metal
+        """, (tuple(companies.ids),))
+
+        rows = self.env.cr.fetchall()
+        result = {'gold': 0.0, 'silver': 0.0}
+        for metal, total_weight in rows:
+            result[metal] = round(total_weight, 4)
         return result

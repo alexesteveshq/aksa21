@@ -607,6 +607,17 @@ class PosOrder(models.Model):
         companies = companies.filtered(
             lambda comp: comp.company_registry in ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres', 'aventuras'])
 
+        # Get internal locations via warehouse view_location_id (same logic as quant_query)
+        location_ids = set(self.env['stock.warehouse'].sudo().search(
+            [('company_id', 'in', companies.ids)]).mapped('view_location_id').ids)
+        domain_loc = self.env['product.product'].sudo()._get_domain_locations_new(location_ids)
+        # domain_loc[0] is typically ('location_id', 'child_of', [...]) or ('location_id', 'in', [...])
+        # Extract the list of valid internal location ids via ORM to reuse in SQL
+        valid_quants = self.env['stock.quant'].sudo().search(domain_loc[0])
+        valid_location_ids = valid_quants.mapped('location_id').ids
+
+        valid_loc_ids = tuple(valid_location_ids) if valid_location_ids else (0,)
+
         query = """
             SELECT
                 sq.company_id AS company_id,
@@ -623,18 +634,17 @@ class PosOrder(models.Model):
             JOIN
                 res_company c ON sq.company_id = c.id
             WHERE
-                sq.company_id IN %s
+                sq.location_id IN %s
                 AND pp.category_id IS NOT NULL
                 AND pc.name IS NOT NULL
-                AND sq.quantity > 0 
+                AND sq.quantity > 0
             GROUP BY
                 sq.company_id, c.name, pp.category_id, pc.name
             ORDER BY
                 sq.company_id, pp.category_id;
         """
 
-        # Execute the query with the provided company IDs
-        self.env.cr.execute(query, (tuple(companies.ids),))
+        self.env.cr.execute(query, (valid_loc_ids,))
         query_results = self.env.cr.fetchall()
 
         # Structure the data for the frontend

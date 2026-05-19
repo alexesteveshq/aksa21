@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pos_occupancy.SalesDashboardOccupancy"
+       t-inherit="sales_dashboard.SalesDashboard"
+       t-inherit-mode="extension"
+       owl="1">
+
+        <!-- Today's Sales by Company: add "Ocupación" header column -->
+        <xpath expr="//h2[contains(text(), 'Today')]/following::thead[1]/tr/th[last()]" position="after">
+            <th>% Ocupación</th>
+        </xpath>
+
+        <!-- Today's Sales by Company: add occupancy value per company row -->
+        <xpath expr="//tr[hasclass('sales-section')]/td[last()]" position="after">
+            <td>
+                <t t-if="company.occupancy_percentage">
+                    <span t-esc="company.occupancy_percentage"/>%
+                </t>
+                <t t-else="">
+                    <span style="color:#999;">—</span>
+                </t>
+            </td>
+        </xpath>
+
+        <!-- Today's Sales by Company: adjust the colspan of the ticket-section row -->
+        <xpath expr="//tr[hasclass('ticket-section')]/td[@colspan='4']" position="attributes">
+            <attribute name="colspan">5</attribute>
+        </xpath>
+
+        <!-- Current Month block: add average occupancy next to Total Sales -->
+        <xpath expr="//div[hasclass('totals-details')]" position="before">
+            <div style="text-align:center; margin-top: 12px;">
+                <h3 style="margin: 0;">% Ocupación Promedio</h3>
+                <span style="font-size: 18px;">
+                    <t t-esc="state.monthAvgOccupancy"/>%
+                </span>
+            </div>
+        </xpath>
+
+    </t>
+
+</templates>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="pos_occupancy.OccupancyButton" owl="1">
+        <div class="control-button occupancy-button" t-on-click="onClick">
+            <i class="fa fa-percent" aria-hidden="true"/>
+            <span style="padding-left: 8px;">
+                <t t-esc="displayLabel"/>
+            </span>
+        </div>
+    </t>
+
+</templates>

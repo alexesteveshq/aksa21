@@ -1,0 +1,22 @@
+.pos {
+    .occupancy-button {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 0 10px;
+        color: white;
+        font-size: 13px;
+        line-height: 1;
+        background: transparent;
+        white-space: nowrap;
+    }
+
+    .occupancy-button:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .occupancy-button i {
+        font-size: 13px;
+        opacity: 0.85;
+    }
+}

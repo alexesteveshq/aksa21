@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ChromeOccupancy" t-inherit="point_of_sale.Chrome" t-inherit-mode="extension" owl="1">
+        <xpath expr="//TicketButton" position="after">
+            <OccupancyButton t-if="env.pos and env.pos.pos_session"/>
+        </xpath>
+    </t>
+
+</templates>

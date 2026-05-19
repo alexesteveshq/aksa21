@@ -711,6 +711,6 @@ class PosOrder(models.Model):
                 result['gold'] += weight
             elif 'silver' in code.lower():
                 result['silver'] += weight
-        result['gold'] = round(result['gold'], 4)
-        result['silver'] = round(result['silver'], 4)
+        result['gold'] = '{:,.2f}'.format(round(result['gold'], 2))
+        result['silver'] = '{:,.2f}'.format(round(result['silver'], 2))
         return result

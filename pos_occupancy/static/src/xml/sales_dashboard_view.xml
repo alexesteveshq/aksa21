@@ -38,6 +38,21 @@
             </div>
         </xpath>
 
+        <!-- Current Month table: add "% Ocupación" column -->
+        <xpath expr="//div[hasclass('o_column_left')]//table//thead/tr/th[last()]" position="after">
+            <th>% Ocupación</th>
+        </xpath>
+        <xpath expr="//div[hasclass('o_column_left')]//table//tbody/tr/td[last()]" position="after">
+            <td>
+                <t t-if="company.occupancy_percentage">
+                    <span t-esc="company.occupancy_percentage"/>%
+                </t>
+                <t t-else="">
+                    <span style="color:#999;">—</span>
+                </t>
+            </td>
+        </xpath>
+
     </t>
 
 </templates>

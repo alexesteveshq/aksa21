@@ -49,13 +49,25 @@ class PosOrder(models.Model):
             company_id = company_id_by_name.get(entry.get('company'))
             entry['occupancy_percentage'] = per_company.get(company_id, 0.0)
 
-        # Month average: one value per (company, day), latest non-zero kept
-        month_sessions = self.env['pos.session'].sudo().search([
+        # Period for company sales table: honor user-selected range, else current month
+        if usr_start_date:
+            period_start_utc = datetime.strptime(usr_start_date, '%Y-%m-%d')
+        else:
+            period_start_utc = month_start_utc
+        if usr_end_date:
+            period_end_utc = datetime.strptime(usr_end_date, '%Y-%m-%d') + timedelta(days=1)
+        else:
+            period_end_utc = tomorrow_start_utc
+
+        period_sessions = self.env['pos.session'].sudo().search([
             ('config_id.company_id', 'in', companies.ids),
-            ('start_at', '>=', month_start_utc),
+            ('start_at', '>=', period_start_utc),
+            ('start_at', '<', period_end_utc),
         ], order='start_at desc')
+
+        # one (company, day) value kept (latest non-zero)
         values_per_day = {}
-        for session in month_sessions:
+        for session in period_sessions:
             value = session.occupancy_percentage or 0.0
             if value <= 0 or not session.start_at:
                 continue
@@ -64,7 +76,20 @@ class PosOrder(models.Model):
             if key in values_per_day:
                 continue
             values_per_day[key] = value
-        month_values = list(values_per_day.values())
-        result['month_avg_occupancy'] = round(sum(month_values) / len(month_values), 2) if month_values else 0.0
+
+        # Per-company average across days in the period
+        per_company_days = {}
+        for (company_id, _date), value in values_per_day.items():
+            per_company_days.setdefault(company_id, []).append(value)
+        per_company_avg = {
+            cid: round(sum(vals) / len(vals), 2) for cid, vals in per_company_days.items()
+        }
+        for entry in result.get('daily_sales', []):
+            company_id = company_id_by_name.get(entry.get('company'))
+            entry['occupancy_percentage'] = per_company_avg.get(company_id, 0.0)
+
+        # Overall month avg (across all companies/days in the period)
+        all_values = list(values_per_day.values())
+        result['month_avg_occupancy'] = round(sum(all_values) / len(all_values), 2) if all_values else 0.0
 
         return result

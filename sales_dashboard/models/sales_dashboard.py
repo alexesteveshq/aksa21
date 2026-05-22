@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from odoo.tools import format_amount
 import pytz
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class PosOrder(models.Model):
@@ -10,21 +12,22 @@ class PosOrder(models.Model):
 
     @api.model
     def get_dashboard_data(self, usr_start_date=None, usr_end_date=None):
+        _logger.info('!!!!!!! %s %s', usr_start_date, usr_end_date)
         # Get the user's timezone or fallback to 'UTC'
         timezone = pytz.timezone(self._context.get('tz') or self.env.user.tz or 'UTC')
         today = datetime.now(tz=timezone)
 
         usr_start_date_prev, usr_end_date_prev = None, None
         if usr_start_date:
-            usr_start_date_prev = datetime.strptime(usr_start_date, '%Y-%m-%d').replace(
-                hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC')) - relativedelta(months=1)
-            usr_start_date = datetime.strptime(usr_start_date, '%Y-%m-%d').replace(
-                hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC'))
+            # Localize the selected date in the user's timezone, then convert to UTC
+            usr_start_date = timezone.localize(
+                datetime.strptime(usr_start_date, '%Y-%m-%d')).astimezone(pytz.timezone('UTC'))
+            usr_start_date_prev = usr_start_date - relativedelta(months=1)
         if usr_end_date:
-            usr_end_date_prev = datetime.strptime(usr_end_date, '%Y-%m-%d').replace(
-                hour=5, minute=0, second=0).astimezone(pytz.timezone('UTC')) - relativedelta(months=1)
-            usr_end_date = datetime.strptime(usr_end_date, '%Y-%m-%d').replace(hour=5, minute=0, second=0) + timedelta(days=1)
-            usr_end_date = usr_end_date.astimezone(pytz.timezone('UTC'))
+            # Upper bound is the start of the day after the selected end date (exclusive)
+            usr_end_date = timezone.localize(
+                datetime.strptime(usr_end_date, '%Y-%m-%d') + timedelta(days=1)).astimezone(pytz.timezone('UTC'))
+            usr_end_date_prev = usr_end_date - relativedelta(months=1)
 
 
         month_start = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC'))
@@ -44,14 +47,14 @@ class PosOrder(models.Model):
 
         prev_domain = [
             ('date_order', '>=', usr_start_date_prev or previous_month_start_utc),
-            ('date_order', '<=', usr_end_date_prev or previous_month_end),
+            ('date_order', '<' if usr_end_date_prev else '<=', usr_end_date_prev or previous_month_end),
             ('is_refunded', '=', False),
             ('refunded_orders_count', '=', 0),
             ('state', 'in', ['paid', 'done', 'invoiced'])
         ]
 
         if usr_end_date:
-            curr_domain += [('date_order', '<=', usr_end_date)]
+            curr_domain += [('date_order', '<', usr_end_date)]
 
         # Fetch current month's orders up to the current time across all companies
         current_month_orders = self.with_context(active_test=False).sudo().search(curr_domain)
@@ -564,6 +567,8 @@ class PosOrder(models.Model):
 
         category_stock_data = self.get_category_stock(companies)
         weight_data = self.get_weight_by_category(quant_query)
+
+        _logger.info('!!!!!!! %s %s %s', format_amount(self.env, current_month_total_sales, self.env.company.currency_id), usr_start_date, usr_end_date)
 
         return {
             'total_sales': format_amount(self.env, current_month_total_sales, self.env.company.currency_id),

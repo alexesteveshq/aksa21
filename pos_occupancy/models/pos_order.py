@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 import pytz
 
-from odoo import models
+from odoo import api, models
 
 
 COMPANY_REGISTRIES = ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujeres', 'aventuras']
@@ -12,6 +12,7 @@ COMPANY_REGISTRIES = ['sian_kaan', 'dreams_vista', 'grand_outlet', 'costa_mujere
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
+    @api.model
     def get_dashboard_data(self, usr_start_date=None, usr_end_date=None):
         result = super().get_dashboard_data(usr_start_date=usr_start_date, usr_end_date=usr_end_date)
 

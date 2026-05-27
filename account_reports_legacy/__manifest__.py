@@ -6,8 +6,10 @@
     'summary': 'Account Report Legacy',
     'description': 'Account Report Legacy',
     'author': 'Alex Esteves',
+    'version': '1.2',
     'depends': [
         'account_reports',
+        'sales_dashboard',
     ],
     'data': [
         'data/account_reports_legacy_data.xml',

@@ -4,7 +4,7 @@
     'description': 'Enhanced point of sale dashboard using Owl framework',
     'category': 'Point of Sale',
     'author': 'Alex Esteves',
-    'version': '1.0',
+    'version': '1.2',
     'depends': ['point_of_sale', 'web', 'pos_sellers', 'stock_ext', 'base'],
     'data': [
         'views/sales_dashboard_menu.xml',

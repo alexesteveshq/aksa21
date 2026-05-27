@@ -498,8 +498,8 @@ class PosOrder(models.Model):
                 'USD': ['EUS', 'LUSD'],
             },
             'BANKS': {
-                'MXN': ['IMS', 'INS', 'BANM'],
-                'USD': ['IUS', 'BANU'],
+                'MXN': ['IMS', 'INS', 'BANM', 'KAPM'],
+                'USD': ['IUS', 'BANU', 'KAPU'],
             },
             'ROOMCHARGE': {
                 'MXN': ['ROOMC'],  # Only ROOMC applies for MXN
@@ -523,9 +523,9 @@ class PosOrder(models.Model):
                 lambda p: p.payment_method_id.journal_id.code in ['EUS', 'LUSD'])), self.env.company.currency_id).replace('$', '')},
             'BANKS':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code in ['IMS', 'INS', 'BANM'])), self.env.company.currency_id).replace('$', ''),
+                lambda p: p.payment_method_id.journal_id.code in ['IMS', 'INS', 'BANM', 'KAPM'])), self.env.company.currency_id).replace('$', ''),
                 'USD': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
-                lambda p: p.payment_method_id.journal_id.code in ['IUS', 'BANU'])), self.env.company.currency_id).replace('$', '')},
+                lambda p: p.payment_method_id.journal_id.code in ['IUS', 'BANU', 'KAPU'])), self.env.company.currency_id).replace('$', '')},
             'ROOMCHARGE':
                 {'MXN': format_amount(self.env, sum(payment.amount for payment in company_payments.filtered(
                 lambda p: p.payment_method_id.journal_id.code == 'ROOMC')), self.env.company.currency_id).replace('$', '')}
@@ -562,8 +562,12 @@ class PosOrder(models.Model):
             for category, currencies in categories.items()
         }
 
-        payment_methods_names = {method.journal_id.code: method.name for method in company_payments.mapped(
-            'payment_method_id').filtered(lambda m: m.journal_id.code in ['EMS', 'EUS', 'LUSD', 'IMS', 'INS', 'BANM', 'IUS', 'BANU', 'ROOMC'])}
+        relevant_journal_codes = ['EMS', 'EUS', 'LUSD', 'IMS', 'INS', 'BANM', 'KAPM', 'IUS', 'BANU', 'KAPU', 'ROOMC']
+        payment_methods_names = {
+            method.journal_id.code: method.name
+            for method in self.env['pos.payment.method'].sudo().search(
+                [('journal_id.code', 'in', relevant_journal_codes)])
+        }
 
         category_stock_data = self.get_category_stock(companies)
         weight_data = self.get_weight_by_category(quant_query)

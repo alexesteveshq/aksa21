@@ -12,6 +12,12 @@
                 <br/>
             </div>
         </xpath>
+        <xpath expr="//div[hasclass('after-footer')]" position="after">
+            <div class="pos-receipt-center-align" style="margin-top: 20px;">
+                <img src="/pos_ext/static/src/img/legacy_qr.png" alt="@the.legacy.jewelry"
+                     style="width: 65%; display: block; margin: 0 auto;"/>
+            </div>
+        </xpath>
         <xpath expr="//t[@t-esc='receipt.footer']" position="before">
             <div style="margin-bottom: 20px;"><t t-esc="receipt.partner.name"/></div>
             <div style="margin-bottom: 20px;">___________________________</div>

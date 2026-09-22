@@ -7,6 +7,7 @@
     'summary': 'Inventory module extension',
     'description': 'Inventory module extension',
     'category': 'Inventory',
+    'version': '16.0.1.2',
     'author': 'Alex Esteves',
     'depends': [
         'stock_account',

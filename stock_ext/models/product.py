@@ -4,6 +4,12 @@ from odoo import fields, models, api
 from ..LabelManager import LabelManager
 import re
 
+# Multiplicador con el que se tarifica el retail (pesos por dolar). Vivia en la
+# tasa de la divisa USX, que Odoo guarda por compania: cada tienda tenia el suyo
+# y el precio de un producto cambiaba segun desde donde se editara. Ahora es un
+# parametro unico, editable en Ajustes de Inventario.
+DEFAULT_RETAIL_USD_RATE = 18.0
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -45,10 +51,14 @@ class ProductProduct(models.Model):
     category_id = fields.Many2one('stock.product.category', string='category')
     category_code = fields.Char(string='Category code')
 
+    def _get_retail_usd_rate(self):
+        return float(self.env['ir.config_parameter'].sudo().get_param(
+            'stock_ext.retail_usd_rate') or DEFAULT_RETAIL_USD_RATE)
+
     @api.depends('retail_variant', 'weight', 'lst_price', 'cost_retail_calculation')
     def _compute_retail_price_untaxed(self):
         variants = self.env['piece.variant'].search([])
-        currency_usx = self.env['res.currency'].search([('name', '=', 'USX')])
+        retail_usd_rate = self._get_retail_usd_rate()
         for product in self:
             if self._context.get('import_file') or not product.price_update or self._context.get('increase_price'):
                 continue
@@ -62,7 +72,7 @@ class ProductProduct(models.Model):
                 elif variant and product.retail_variant:
                     price = (float(product.retail_variant) * product.weight) * variant.value
                     price = price - (price * 15 / 100)
-                    product.retail_price_untaxed = (price * currency_usx.inverse_rate) / 1.16
+                    product.retail_price_untaxed = (price * retail_usd_rate) / 1.16
                 elif product.cost_retail_calculation:
                     product.retail_price_untaxed = product.lst_price * currency_mxr.inverse_rate
 

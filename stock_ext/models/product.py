@@ -162,18 +162,18 @@ class ProductProduct(models.Model):
                 product.retail_price_untaxed_usd = round(amount)
                 product.raw_data = False
 
+    def _get_sticker_zpl(self):
+        self.ensure_one()
+        data = {'code': self.barcode or "",
+                'product': self.name,
+                'weight': self.weight,
+                'price_usd': str(round(self.retail_price_untaxed_usd * 1.16)),
+                'price_mxn': str(round(self.retail_price_untaxed * 1.16))}
+        return LabelManager().generate_label_data(data).dumpZPL()
+
     def print_sticker(self, print_enabled=True):
         if not self.raw_data or self.force_sticker_update:
-            manager = LabelManager()
-            data = {'code': self.barcode or "",
-                    'product': self.name,
-                    'weight': self.weight,
-                    'price_usd': str(round(self.price_usd)),
-                    'price_mxn': str(round(self.price_mxn))}
-            data.update({'price_usd': str(round(self.retail_price_untaxed_usd * 1.16)),
-                         'price_mxn': str(round(self.retail_price_untaxed * 1.16))})
-            label = manager.generate_label_data(data)
-            self.write({'raw_data': label.dumpZPL()})
+            self.write({'raw_data': self._get_sticker_zpl()})
         self.write({'print_enabled': print_enabled,
                     'print_queue': int(self.qty_available)})
 

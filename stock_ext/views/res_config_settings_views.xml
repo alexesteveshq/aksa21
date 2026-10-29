@@ -19,6 +19,10 @@
                             <div class="content-group">
                                 <field name="retail_usd_rate"/>
                             </div>
+                            <label for="retail_discount" string="Discount (%)"/>
+                            <div class="content-group">
+                                <field name="retail_discount"/>
+                            </div>
                         </div>
                     </div>
                 </div>

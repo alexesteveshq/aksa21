@@ -10,3 +10,5 @@ class ResConfigSettings(models.TransientModel):
                                          config_parameter='stock_ext.retail_variant_amount')
     retail_usd_rate = fields.Float(string='Retail USD rate',
                                    config_parameter='stock_ext.retail_usd_rate')
+    retail_discount = fields.Float(string='Retail discount (%)', default=15.0,
+                                   config_parameter='stock_ext.retail_discount')

@@ -9,6 +9,8 @@ import re
 # y el precio de un producto cambiaba segun desde donde se editara. Ahora es un
 # parametro unico, editable en Ajustes de Inventario.
 DEFAULT_RETAIL_USD_RATE = 18.0
+# Descuento (%) que se aplica al precio retail calculado por variante de pieza.
+DEFAULT_RETAIL_DISCOUNT = 15.0
 
 
 class ProductTemplate(models.Model):
@@ -55,10 +57,15 @@ class ProductProduct(models.Model):
         return float(self.env['ir.config_parameter'].sudo().get_param(
             'stock_ext.retail_usd_rate') or DEFAULT_RETAIL_USD_RATE)
 
+    def _get_retail_discount(self):
+        return float(self.env['ir.config_parameter'].sudo().get_param(
+            'stock_ext.retail_discount') or DEFAULT_RETAIL_DISCOUNT)
+
     @api.depends('retail_variant', 'weight', 'lst_price', 'cost_retail_calculation')
     def _compute_retail_price_untaxed(self):
         variants = self.env['piece.variant'].search([])
         retail_usd_rate = self._get_retail_usd_rate()
+        retail_discount = self._get_retail_discount()
         for product in self:
             if self._context.get('import_file') or not product.price_update or self._context.get('increase_price'):
                 continue
@@ -71,7 +78,7 @@ class ProductProduct(models.Model):
                     product.retail_price_untaxed = price_currency / 1.16
                 elif variant and product.retail_variant:
                     price = (float(product.retail_variant) * product.weight) * variant.value
-                    price = price - (price * 15 / 100)
+                    price = price - (price * retail_discount / 100)
                     product.retail_price_untaxed = (price * retail_usd_rate) / 1.16
                 elif product.cost_retail_calculation:
                     product.retail_price_untaxed = product.lst_price * currency_mxr.inverse_rate

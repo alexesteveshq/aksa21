@@ -152,7 +152,8 @@ class StockPiece(models.Model):
             if variants:
                 fixed_price = self.env['ir.config_parameter'].sudo().get_param('stock_ext.retail_variant_amount')
                 retail_price_untaxed = (float(fixed_price) * self.weight) * variants[0].value
-                price = retail_price_untaxed - (retail_price_untaxed * 15/100)
+                retail_discount = self.env['product.product']._get_retail_discount()
+                price = retail_price_untaxed - (retail_price_untaxed * retail_discount / 100)
                 price_taxed = price + (price * self.lot_id.tax_id.amount / 100)
                 data.update({'price_usd': str(round(price_taxed)),
                              'price_mxn': str(round(round(price_taxed) * currency_mxn.inverse_rate))})

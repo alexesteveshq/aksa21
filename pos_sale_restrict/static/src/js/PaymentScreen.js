@@ -15,23 +15,35 @@ odoo.define('pos_sale_restrict.PaymentScreen', function(require) {
         }
 
         checkCommissionPrice() {
-            var commission_price = 0
+            // Codigos de categoria con precio minimo: los configurados en cualquier metodo de pago del TPV.
+            // Asi un metodo sin comisiones (p.ej. Banamex) ya no se salta la validacion.
+            const restricted_codes = new Set();
+            for (const method of this.env.pos.payment_methods) {
+                for (const commission of method.commission_percentage_ids || []) {
+                    if (commission.code) restricted_codes.add(commission.code);
+                }
+            }
             for (const line of this.currentOrder.orderlines) {
+                const category_code = line.product.category_code || '';
+                if (![...restricted_codes].some(code => category_code.includes(code))) continue;
+                var method_percentage = 0
                 for (const pay_line of this.paymentLines) {
                     for (const commission of pay_line.payment_method.commission_percentage_ids) {
-                        if (line.product.category_code.includes(commission.code)){
-                            commission_price += (line.product.standard_price * (commission.value * 0.01)) +
-                             (line.product.standard_price * (this.commission_percentage * 0.01))
+                        if (commission.code && category_code.includes(commission.code)){
+                            method_percentage += commission.value
+                            break
                         }
                     }
                 }
-                if (line.get_price_currency_with_tax() >= 0 &&
-                 commission_price > 0 && (line.get_price_currency_with_tax() < (line.product.standard_price + (commission_price / this.paymentLines.length)))){
+                if (this.paymentLines.length) method_percentage /= this.paymentLines.length
+                const cost = line.product.standard_price * line.get_quantity()
+                const min_price = cost * (1 + (this.commission_percentage + method_percentage) * 0.01)
+                const price = line.get_price_currency_with_tax()
+                if (price >= 0 && price < min_price){
                     return false;
                 }
-                commission_price = 0
-                return true
             }
+            return true
         }
 
         showCommissionPriceMessage() {

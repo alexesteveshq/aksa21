@@ -17,51 +17,52 @@ class PosOrder(models.Model):
         timezone = pytz.timezone(self._context.get('tz') or self.env.user.tz or 'UTC')
         today = datetime.now(tz=timezone)
 
-        usr_start_date_prev, usr_end_date_prev = None, None
-        if usr_start_date:
-            # Localize the selected date in the user's timezone, then convert to UTC
-            usr_start_date = timezone.localize(
-                datetime.strptime(usr_start_date, '%Y-%m-%d')).astimezone(pytz.timezone('UTC'))
-            usr_start_date_prev = usr_start_date - relativedelta(months=1)
-        if usr_end_date:
-            # Upper bound is the start of the day after the selected end date (exclusive)
-            usr_end_date = timezone.localize(
-                datetime.strptime(usr_end_date, '%Y-%m-%d') + timedelta(days=1)).astimezone(pytz.timezone('UTC'))
-            usr_end_date_prev = usr_end_date - relativedelta(months=1)
+        utc = pytz.UTC
+        now_local = today.replace(tzinfo=None)
 
+        def to_utc(naive_local_dt):
+            """Naive local datetime -> aware UTC datetime (DST-safe)."""
+            return timezone.localize(naive_local_dt).astimezone(utc)
 
-        month_start = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC'))
+        # Period boundaries are computed on naive *local* datetimes and only converted to UTC at the
+        # end, so "one month before" always means the same local wall-clock moment.
+        month_start_local = now_local.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        curr_start_local = datetime.strptime(usr_start_date, '%Y-%m-%d') if usr_start_date else month_start_local
+        # Upper bound is exclusive: the day after the selected end date, or "now" for the running period
+        curr_end_local = (datetime.strptime(usr_end_date, '%Y-%m-%d') + timedelta(days=1)) if usr_end_date \
+            else now_local
 
-        # Calculate the same period in the previous month
-        previous_month_start = (month_start - timedelta(days=1)).replace(day=1)
-        previous_month_end = previous_month_start + timedelta(days=today.day - 1)
+        # The previous period is the very same window shifted one month back (same elapsed time).
+        # relativedelta clamps month-ends (e.g. Mar 31 -> Feb 28).
+        prev_start_local = curr_start_local - relativedelta(months=1)
+        prev_end_local = curr_end_local - relativedelta(months=1)
 
-        # Convert `today` and other relevant datetimes to UTC for comparison
-        previous_month_start_utc = previous_month_start.astimezone(pytz.timezone('UTC'))
-        previous_month_end_utc = previous_month_end.astimezone(pytz.timezone('UTC'))
+        usr_start_date = to_utc(curr_start_local) if usr_start_date else None
+        usr_end_date = to_utc(curr_end_local) if usr_end_date else None
 
+        month_start = to_utc(month_start_local)
+        previous_month_start = to_utc(month_start_local - relativedelta(months=1))
+        previous_month_end_utc = to_utc(prev_end_local)
+
+        valid_states = ['paid', 'done', 'invoiced']
+        # Both periods use exactly the same criteria (net sales: refunds included as negative amounts),
+        # otherwise the comparison is not apples to apples.
         curr_domain = [
-            ('date_order', '>=', usr_start_date or month_start),
-            ('state', 'in', ['paid', 'done', 'invoiced'])
+            ('date_order', '>=', to_utc(curr_start_local)),
+            ('date_order', '<', to_utc(curr_end_local)),
+            ('state', 'in', valid_states),
         ]
-
         prev_domain = [
-            ('date_order', '>=', usr_start_date_prev or previous_month_start_utc),
-            ('date_order', '<' if usr_end_date_prev else '<=', usr_end_date_prev or previous_month_end),
-            ('is_refunded', '=', False),
-            ('refunded_orders_count', '=', 0),
-            ('state', 'in', ['paid', 'done', 'invoiced'])
+            ('date_order', '>=', to_utc(prev_start_local)),
+            ('date_order', '<', to_utc(prev_end_local)),
+            ('state', 'in', valid_states),
         ]
 
-        if usr_end_date:
-            curr_domain += [('date_order', '<', usr_end_date)]
-
-        # Fetch current month's orders up to the current time across all companies
+        # Fetch current period's orders across all companies
         current_month_orders = self.with_context(active_test=False).sudo().search(curr_domain)
 
-        # Fetch the previous month's orders up to the same day
-        previous_month_orders = self.with_context(active_test=False).sudo().search(prev_domain).filtered(
-            lambda o: not o.is_refunded and not o.refunded_order_ids)
+        # Fetch the equivalent window of the previous month
+        previous_month_orders = self.with_context(active_test=False).sudo().search(prev_domain)
 
         # Calculate total sales for both periods
         current_month_total_sales = sum(order.amount_currency for order in current_month_orders)
@@ -69,10 +70,16 @@ class PosOrder(models.Model):
         current_month_without_tax = current_month_total_sales - current_month_tax
         previous_month_total_sales = sum(order.amount_currency for order in previous_month_orders)
 
+        def calculate_change(current, previous):
+            if not previous:
+                if not current:
+                    return 0.0
+                return 100.0 if current > 0 else -100.0
+            # abs() keeps the sign meaningful if the previous period is negative (net refunds)
+            return round(((current - previous) / abs(previous)) * 100, 2)
+
         # Calculate total sales change percentage
-        total_sales_change = round(
-            ((current_month_total_sales - previous_month_total_sales) / previous_month_total_sales) * 100,
-            2) if previous_month_total_sales else 100.0 if current_month_total_sales else 0.0
+        total_sales_change = calculate_change(current_month_total_sales, previous_month_total_sales)
 
         # Calculate order-related statistics
         order_amount_sum = sum(order.amount_currency for order in current_month_orders)
@@ -103,11 +110,6 @@ class PosOrder(models.Model):
         previous_discount_avg = previous_discount_total / previous_order_count if previous_order_count > 0 else 0
 
         # Calculate changes
-        def calculate_change(current, previous):
-            if previous == 0:
-                return 100.0 if current > 0 else -100.0
-            return round(((current - previous) / previous) * 100, 2)
-
         order_avg_change = calculate_change(order_avg, previous_order_avg)
         order_count_change = order_count - previous_order_count  # Difference in count instead of percentage
         discount_avg_change = round(discount_avg - previous_discount_avg, 2)
@@ -220,31 +222,29 @@ class PosOrder(models.Model):
         ]
 
         # Calculate today's sales and comparison with the same day in the previous month
-        today_start = today.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        today_start_local = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
 
         today_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', today_start.astimezone(pytz.UTC)),
-            ('state', 'in', ['paid', 'done', 'invoiced']),
-            ('is_refunded', '=', False),
-            ('refunded_orders_count', '=', 0),
-        ]).filtered(lambda o: not o.is_refunded and not o.refunded_order_ids)
+            ('date_order', '>=', to_utc(today_start_local)),
+            ('state', 'in', valid_states),
+        ])
 
-        previous_same_day = previous_month_start + timedelta(
-            days=today.day - 1) if previous_month_end.day >= today.day else None
-        previous_same_day_end = previous_same_day.replace(hour=23, minute=59, second=59) if previous_same_day else None
-
-        previous_same_day_orders = self.with_context(active_test=False).sudo().search([
-            ('date_order', '>=', previous_same_day),
-            ('date_order', '<=', previous_same_day_end),
-            ('state', 'in', ['paid', 'done', 'invoiced']),
-            ('is_refunded', '=', False),
-            ('refunded_orders_count', '=', 0),
-        ]).filtered(lambda o: not o.is_refunded and not o.refunded_order_ids) if previous_same_day else []
+        # Same day of the previous month, up to the same hour (same elapsed time as today).
+        # If that day does not exist (e.g. the 31st), there is nothing to compare against.
+        previous_same_day_start_local = today_start_local - relativedelta(months=1)
+        if previous_same_day_start_local.day == today_start_local.day:
+            previous_same_day_orders = self.with_context(active_test=False).sudo().search([
+                ('date_order', '>=', to_utc(previous_same_day_start_local)),
+                ('date_order', '<', to_utc(now_local - relativedelta(months=1))),
+                ('state', 'in', valid_states),
+            ])
+        else:
+            previous_same_day_orders = self.browse()
 
         today_sales = sum(order.amount_currency for order in today_orders)
         previous_same_day_sales = sum(order.amount_currency for order in previous_same_day_orders)
-        today_sales_change = round(((today_sales - previous_same_day_sales) / previous_same_day_sales) * 100,
-                                   2) if previous_same_day_sales else (100.0 if today_sales else 0.0)
+        today_sales_change = calculate_change(today_sales, previous_same_day_sales)
 
         # Calculate today's sales by company
         today_sales_by_company = {company.id: 0 for company in companies}
